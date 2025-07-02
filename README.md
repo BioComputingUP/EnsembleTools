@@ -5,10 +5,10 @@ Badges which can be included! <br>
 ![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.1234567-blue)
 
 
-<img src="idpet_logo_1.png" alt="Logo" width="180" height="70" />
+<img src="/images/idpet_logo_1.png" alt="Logo" width="180" height="70" />
 
 # IDPEnsembleTools : an open-source library for analysis of conformational ensembles of disordered proteins 
-![Pipline Example](/pipline_example.jpeg)
+![Pipline Example](/images/pipline_example.jpeg)
 
 ## Overview
 IDPensembleTools is a python package by which you can load and analyze multiple conformational ensembles in different formats such as (`pdb`, `xtc`,`dcd`,...)
