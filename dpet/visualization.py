@@ -24,7 +24,8 @@ def plot_histogram(
         range: Tuple = None,
         title: str = "Histogram",
         xlabel: str = "x",
-        ylabel: str = "Density"
+        ylabel: str = "Density",
+        location: str = None
     ):
     """
     Plot an histogram for different features.
@@ -56,24 +57,37 @@ def plot_histogram(
     """
     
     _bins = _get_hist_bins(data=data, bins=bins, range=range)
+    legend_handles = []
 
     for i, data_i in enumerate(data):
-        h_i = ax.hist(
+        ax.hist(
             data_i,
             label=labels[i],
-            bins=_bins if i == 0 else _bins,
+            bins=_bins,
             density=True,
-            histtype='step',
-            # edgecolor='black',
-            # histtype='stepfilled',
-            # alpha=0.25
+            histtype='step'
         )
-        if i == 0:
-            _bins = h_i[1]
+
+        # Add mean and/or median lines
+        if location in ['mean', 'both']:
+            mean_val = np.mean(data_i)
+            ax.axvline(mean_val, color='k', linestyle='--', linewidth=1)
+            if i == 0:
+                legend_handles.append(Line2D([0], [0], color='k', linestyle='--', label='Mean'))
+
+        if location in ['median', 'both']:
+            median_val = np.median(data_i)
+            ax.axvline(median_val, color='r', linestyle='--', linewidth=1)
+            if i == 0:
+                legend_handles.append(Line2D([0], [0], color='r', linestyle='--', label='Median'))
+
     ax.set_title(title)
     ax.set_xlabel(xlabel)
     ax.set_ylabel(ylabel)
-    ax.legend()
+
+    # Merge histogram and stat lines into legend
+    ax.legend(handles=ax.get_legend_handles_labels()[0] + legend_handles)
+
     return ax
 
 def _get_hist_bins(data: List[np.ndarray], bins: int, range: Tuple = None):
@@ -97,6 +111,7 @@ def plot_violins(
         title: str = "Histogram",
         xlabel: str = "x",
         color: str = 'blue'
+      
 
     ):
     """
@@ -155,7 +170,7 @@ def plot_violins(
         pc.set_alpha(0.7)  # Set transparency level
 
     ax.set_xticks(ticks=[y + 1 for y in range(len(labels))])
-    ax.set_xticklabels(labels=labels, rotation=45.0, ha="center")
+    ax.set_xticklabels(labels=labels, rotation= 45, ha="center")
     ax.set_ylabel(xlabel)
     ax.set_title(title)
     return ax
@@ -230,15 +245,20 @@ def plot_comparison_matrix(
     with the ensemble labels.
 
     """
+    from mpl_toolkits.axes_grid1 import make_axes_locatable
+
     
     comparison_out = process_all_vs_all_output(
         comparison_out=comparison_out, confidence_level=confidence_level
     )
     scores_mean = comparison_out['scores_mean']
-
-    ax.set_title(title)
     im = ax.imshow(scores_mean, cmap=cmap)
-    plt.colorbar(im, label=cbar_label)
+    divider = make_axes_locatable(ax)
+    cax = divider.append_axes("right", size="5%", pad=0.05)  # size and padding can be adjusted
+    cbar = ax.figure.colorbar(im, cax=cax)
+    cbar.set_label(cbar_label, fontsize=10)  # adjust font size here
+    cbar.ax.tick_params(labelsize=8) 
+    ax.set_title(title)
     ax.set_xticks(np.arange(len(codes)))
     ax.set_yticks(np.arange(len(codes)))
     ax.set_xticklabels(codes, rotation=45, ha='right', rotation_mode='anchor')
@@ -338,7 +358,8 @@ class Visualization:
             save: bool = False,
             ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
             size: int = 10,
-            plotly = False
+            plotly = False,
+            cmap_lable: str = 'viridis',
     ) -> List[plt.Axes]:
         """
         Plot the results of t-SNE analysis. 
@@ -381,7 +402,7 @@ class Visualization:
         bestclust = analysis.reducer.best_kmeans.labels_
         
         if ax is None:
-            fig, ax = plt.subplots(1, 4, figsize=(18, 4))
+            fig, ax = plt.subplots(1, 4, figsize=(20, 5))
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -390,7 +411,7 @@ class Visualization:
             
         # Create a consistent colormap for the original labels
         unique_labels = np.unique(analysis.all_labels)
-        cmap = plt.get_cmap('plasma')
+        cmap = plt.get_cmap('Set1')
         colors = cmap(np.linspace(0, 1, len(unique_labels)))
         label_colors = {label: color for label, color in zip(unique_labels, colors)}
         point_colors = [label_colors[label] for label in analysis.all_labels]
@@ -408,8 +429,9 @@ class Visualization:
         for values in analysis.get_features(color_by).values():
             feature_values.extend(values)
         colors = np.array(feature_values)
-
-        feature_labeled = ax[2].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], c=colors, s=size, alpha=0.5)
+        # Scatter plot with different labels
+        cmap_label = cmap_lable
+        feature_labeled = ax[2].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], cmap=cmap_label, c=colors, s=size, alpha=0.5)
         cbar = plt.colorbar(feature_labeled, ax=ax[2])
         ax[2].set_title(f'Scatter Plot ({color_by} labels)')
 
@@ -421,7 +443,7 @@ class Visualization:
                 xi, yi = np.mgrid[min(ensemble_data[:, 0]):max(ensemble_data[:, 0]):100j,
                                 min(ensemble_data[:, 1]):max(ensemble_data[:, 1]):100j]
                 zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
-                ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, colors=[label_colors[label]])
+                ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, colors=[label_colors[label]], linewidths=3)
             ax[3].set_title('Density Plot (Ensemble-wise)')
             # ax[3].legend(title='Ensemble', loc='upper right')
         else:
@@ -460,6 +482,7 @@ class Visualization:
                                          kde_by_ensemble: bool = False,
                                          size: int = 10,
                                          plotly = False,
+                                         cmap_lable: str = 'viridis',
                                          n_comp = 2) -> List[plt.Axes]:
         """
         Plot the results of dimensionality reduction using the method specified in the analysis.
@@ -496,7 +519,7 @@ class Visualization:
         if method in ("dimenfix", "umap") and n_comp <= 2:
             self._dimenfix_umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly)
         elif method == "tsne" and n_comp == 2:
-            self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, plotly=plotly)
+            return self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, cmap_lable=cmap_lable, plotly=plotly)
         elif n_comp == 3 :
             self._scatter_3d(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, plotly=plotly)
         else:
@@ -1342,7 +1365,7 @@ class Visualization:
             dpi: int = 96,
             save: bool = False,
             ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
-            color: str = 'blue'
+            color: str = 'blue',
         ) -> Union[plt.Axes, List[plt.Axes]]:
         """
         Plot the distribution of the radius of gyration (Rg) within each ensemble.
@@ -1431,7 +1454,8 @@ class Visualization:
                     bins=bins,
                     range=hist_range,
                     title=title,
-                    xlabel=axis_label
+                    xlabel=axis_label,
+                    location=location
                 )
             else:
                 _bins = _get_hist_bins(
@@ -2306,9 +2330,9 @@ class Visualization:
             ax.plot(x, values, marker='o', linestyle='-', label=key)
         
         ax.set_xticks([i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
-        ax.set_title("Site-specific Flexibility")
+        ax.set_title("Site-specific Flexibility parameter plot")
         ax.set_xlabel("Residue Index")
-        ax.set_ylabel("Flexibility")
+        ax.set_ylabel("Site-specific Flexibility parameter")
         ax.legend()
         
         if pointer is not None:
@@ -2366,9 +2390,9 @@ class Visualization:
             ax.plot(x, values, label=key, marker= 'o', linestyle='-')
         
         ax.set_xticks([i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
-        ax.set_title("Site-specific Order")
+        ax.set_title("Site-specific Order Parameter")
         ax.set_xlabel("Residue Index")
-        ax.set_ylabel("Order")
+        ax.set_ylabel("Order parameter")
         ax.legend()
         
         if pointer is not None:
