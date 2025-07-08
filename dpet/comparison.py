@@ -287,13 +287,20 @@ def score_avg_jsd(
 
     Returns
     -------
-    results: Union[float, Tuple[float, np.ndarray], Tuple[Tuple[float, np.ndarray], np.ndarray]]
-        If `return_bins` is `False`, only returns a float value for the average
-        JSD score over the F features. If `return_bins` is `True`, returns a
-        tuple with the average JSD score and the number of bins used in the
-        comparisons. If `return_scores` is `True` will also return the F scores
-        used to compute the average JSD score.
+    avg_score : float
+        The average JSD score across the F features.
 
+    If `return_scores=True`:
+        (avg_score, all_scores) : Tuple[float, np.ndarray]
+            The average score and an array of JSD scores of shape (F,).
+
+    If `return_bins=True`:
+        (avg_score, num_bins) : Tuple[float, int]
+            The average score and the number of bins used.
+
+    If both `return_scores` and `return_bins` are True:
+        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]
+            The average score, array of per-feature scores, and number of bins used.
     """
 
     if limits not in ("m", "a"):
@@ -376,10 +383,22 @@ def score_adaJSD(
         Ca-Ca distances. See the `Ensemble.get_features` function for more
         information.
 
-    Remaining arguments and output
-    ------------------------------
-        See `dpet.comparison.score_avg_jsd` for more information.
+    Returns
+    -------
+    avg_score : float
+        The average JSD score across the F features.
 
+    If `return_scores=True`:
+        (avg_score, all_scores) : Tuple[float, np.ndarray]
+            The average score and an array of JSD scores of shape (F,).
+
+    If `return_bins=True`:
+        (avg_score, num_bins) : Tuple[float, int]
+            The average score and the number of bins used.
+
+    If both `return_scores` and `return_bins` are True:
+        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]
+            The average score, array of per-feature scores, and number of bins used.
     """
     
     min_sep = featurization_params.get("min_sep", 2)
@@ -421,19 +440,20 @@ def get_adaJSD_matrix(
     ----------
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
-
-    Remaining arguments
-    -------------------
-        See `dpet.comparison.score_adaJSD` for more information.
+    return_bins : bool, optional
+        If True, also return the histogram bin edges used in the comparison.
+    **remaining
+        Additional arguments passed to `dpet.comparison.score_adaJSD`.
     
     Output
     ------
-        If `return_bins` is False, it will return a tuple containing the
-        adaJSD score and a (N, N) NumPy array (where N is the number of residues
-        of the protein in the ensembles being compared) containing the JSD
-        scores of individual Ca-Ca distances. If `return_bins` is True, it will
-        return also the bin value used in all the comparisons.
-
+    score : float
+        The overall adaJSD score between the two ensembles.
+    jsd_matrix : np.ndarray of shape (N, N)
+        Matrix containing JSD scores for each Ca-Ca distance pair, where N is
+        the number of residues.
+    bin_edges : np.ndarray, optional
+        Returned only if `return_bins=True`. The bin edges used in histogram comparisons.
     """
     min_sep = featurization_params.get("min_sep", 2)
     max_sep = featurization_params.get("max_sep")
@@ -501,10 +521,22 @@ def score_ataJSD(
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
 
-    Remaining arguments and output
-    ------------------------------
-        See `dpet.comparison.score_avg_jsd` for more information.
+    Returns
+    -------
+    avg_score : float
+        The average JSD score across the F features.
 
+    If `return_scores=True`:
+        (avg_score, all_scores) : Tuple[float, np.ndarray]
+            The average score and an array of JSD scores of shape (F,).
+
+    If `return_bins=True`:
+        (avg_score, num_bins) : Tuple[float, int]
+            The average score and the number of bins used.
+
+    If both `return_scores` and `return_bins` are True:
+        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]
+            The average score, array of per-feature scores, and number of bins used.
     """
     # Calculate torsion angles (alpha_angles).
     alpha_1 = _get_ata_jsd_features(ens_1)
@@ -537,19 +569,21 @@ def get_ataJSD_profile(
     ----------
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
-
-    Remaining arguments
-    -------------------
-        See `dpet.comparison.score_ataJSD` for more information.
+   return_bins : bool, optional
+        If True, also return the histogram bin edges used in the comparison.
+    **remaining
+        Additional arguments passed to `dpet.comparison.score_ataJSD`.
     
     Output
     ------
-        If `return_bins` is False, it will return a tuple containing the
-        ataJSD score and a (N-3, ) NumPy array (where N is the number of
-        residues of the protein in the ensembles being compared) containing the
-        JSD scores of individual alpha angles. If `return_bins` is True, it will
-        return also the bin value used in all the comparisons.
-
+    score : float
+        The overall ataJSD score between the two ensembles.
+    jsd_profile : np.ndarray of shape (N - 3,)
+        JSD scores for individual α backbone angles, where N is the number
+        of residues in the protein.
+    bin_edges : np.ndarray, optional
+        Returned only if `return_bins=True`. The bin edges used in histogram
+        comparisons.
     """
 
     out = score_ataJSD(
@@ -690,9 +724,22 @@ def score_ramaJSD(
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
 
-    Remaining arguments and output
-    ------------------------------
-        See `dpet.comparison.score_avg_jsd` for more information.
+    Returns
+    -------
+    avg_score : float
+        The average JSD score across the F features.
+
+    If `return_scores=True`:
+        (avg_score, all_scores) : Tuple[float, np.ndarray]
+            The average score and an array of JSD scores of shape (F,).
+
+    If `return_bins=True`:
+        (avg_score, num_bins) : Tuple[float, int]
+            The average score and the number of bins used.
+
+    If both `return_scores` and `return_bins` are True:
+        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]
+            The average score, array of per-feature scores, and number of bins used.
     """
 
     phi_psi_1 = _get_rama_jsd_features(ens_1)
@@ -723,19 +770,21 @@ def get_ramaJSD_profile(
     ----------
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
+    return_bins : bool, optional
+        If True, also return the histogram bin edges used in the comparison.
+    **remaining
+        Additional arguments passed to `dpet.comparison.score_ramaJSD`.
 
-    Remaining arguments
-    -------------------
-        See `dpet.comparison.score_ramaJSD` for more information.
-    
-    Output
-    ------
-        If `return_bins` is False, it will return a tuple containing the
-        ramaJSD score and a (N-2, ) NumPy array (where N is the number of
-        residues of the protein in the ensembles being compared) containing the
-        JSD scores of individual residues. If `return_bins` is True, it will
-        return also the bin value used in all the comparisons.
-
+    Returns
+    -------
+    score : float
+        The overall ramaJSD score between the two ensembles.
+    jsd_profile : np.ndarray of shape (N - 2,)
+        JSD scores for the Ramachandran distribution of each residue,
+        where N is the number of residues in the protein.
+    bin_edges : np.ndarray, optional
+        Returned only if `return_bins=True`. The bin edges used in histogram
+        comparisons.
     """
 
     out = score_ramaJSD(
@@ -845,7 +894,7 @@ def all_vs_all_comparison(
     Returns
     -------
     results: dict
-        Aa dictionary containing the following key-value pairs:
+        A dictionary containing the following key-value pairs:
             `scores`: a (M, M, B) NumPy array storing the comparison
                 scores, where M is the number of ensembles being
                 compared and B is the number of bootstrap iterations (B
