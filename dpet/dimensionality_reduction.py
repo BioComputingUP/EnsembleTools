@@ -5,7 +5,6 @@ from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
 import numpy as np
 from sklearn.manifold import MDS
-from neo_force_scheme import NeoForceScheme
 from sklearn.metrics import silhouette_score
 from umap import UMAP
 

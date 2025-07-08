@@ -313,7 +313,7 @@ def _get_random_pairs(
     return pairs[rand_ids]
 
 def _to_array(x):
-    return np.array(x, copy=False)
+    return np.asarray(x)
 
 _phi_psi_offsets = {"phi": 1, "psi": 0}
 
@@ -462,7 +462,7 @@ class Visualization:
 
         fig.tight_layout()
 
-        if plotly == True:
+        if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
             fig = px.scatter(x=analysis.reducer.best_tsne[:, 0], y=analysis.reducer.best_tsne[:, 1], color=colors, hover_data={'index':self._index_models()} )
             fig.update_coloraxes(colorbar_title=f'{color_by}')
@@ -633,7 +633,7 @@ class Visualization:
         if save:
             fig.savefig(self.plot_dir + f'/{analysis.reduce_dim_method}_scatter.png', dpi=800)
         
-        if plotly == True:
+        if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
             fig = px.scatter(x=analysis.transformed_data[:, 0], y=analysis.transformed_data[:, 1], color=colors, hover_data={'index':self._index_models()} )
             fig.update_coloraxes(colorbar_title=f'{color_by}')
@@ -722,7 +722,7 @@ class Visualization:
         legend_handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor=label_colors[label], markersize=10) for label in legend_labels]
         fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right')
 
-        if plotly == True:
+        if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
             fig = px.scatter(x=analysis.transformed_data[:, 0], y=analysis.transformed_data[:, 1], color=colors, hover_data={'index':self._index_models()} )
             fig.update_coloraxes(colorbar_title=f'{color_by}')
