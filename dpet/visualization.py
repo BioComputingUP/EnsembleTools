@@ -359,7 +359,7 @@ class Visualization:
             ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
             size: int = 10,
             plotly = False,
-            cmap_lable: str = 'viridis',
+            cmap_label: str = 'viridis',
     ) -> List[plt.Axes]:
         """
         Plot the results of t-SNE analysis. 
@@ -430,7 +430,7 @@ class Visualization:
             feature_values.extend(values)
         colors = np.array(feature_values)
         # Scatter plot with different labels
-        cmap_label = cmap_lable
+        
         feature_labeled = ax[2].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], cmap=cmap_label, c=colors, s=size, alpha=0.5)
         cbar = plt.colorbar(feature_labeled, ax=ax[2])
         ax[2].set_title(f'Scatter Plot ({color_by} labels)')
@@ -482,7 +482,7 @@ class Visualization:
                                          kde_by_ensemble: bool = False,
                                          size: int = 10,
                                          plotly = False,
-                                         cmap_lable: str = 'viridis',
+                                         cmap_label: str = 'viridis',
                                          n_comp = 2) -> List[plt.Axes]:
         """
         Plot the results of dimensionality reduction using the method specified in the analysis.
@@ -517,11 +517,11 @@ class Visualization:
 
         method = self.analysis.reduce_dim_method
         if method in ("dimenfix", "umap") and n_comp <= 2:
-            self._dimenfix_umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly)
+            self._dimenfix_umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly, cmap_label=cmap_label)
         elif method == "tsne" and n_comp == 2:
-            return self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, cmap_lable=cmap_lable, plotly=plotly)
+            return self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, cmap_label=cmap_label, plotly=plotly)
         elif n_comp == 3 :
-            self._scatter_3d(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, plotly=plotly)
+            self._scatter_3d(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, plotly=plotly, cmap_label=cmap_label)
         else:
             raise NotImplementedError(f"Scatter plot for method '{method}' is not implemented. Please select between 'tsne', 'dimenfix', and 'umap'.")
 
@@ -531,7 +531,8 @@ class Visualization:
                          ax: Union[None, List[plt.Axes]] = None,
                          kde_by_ensemble: bool = False,
                          size: int = 10,
-                         plotly = False 
+                         plotly = False, 
+                         cmap_label: str = 'viridis' 
                          ) -> List[plt.Axes]:
         """
         Plot the complete results for dimenfix and umap methods. 
@@ -575,7 +576,7 @@ class Visualization:
 
         # Create a consistent colormap for the original labels
         unique_labels = np.unique(analysis.all_labels)
-        cmap = plt.get_cmap('plasma')
+        cmap = plt.get_cmap('Set1')
         colors = cmap(np.linspace(0, 1, len(unique_labels)))
         label_colors = {label: color for label, color in zip(unique_labels, colors)}
         point_colors = [label_colors[label] for label in analysis.all_labels]
@@ -592,7 +593,7 @@ class Visualization:
             feature_values.extend(values)
         colors = np.array(feature_values)
         
-        rg_labeled = axes[2].scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1], c=colors, s=size, alpha=0.5)
+        rg_labeled = axes[2].scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1], c=colors, s=size, alpha=0.5, cmap=cmap_label)
         cbar = plt.colorbar(rg_labeled, ax=axes[2])
         axes[2].set_title(f'Scatter Plot ({color_by} labels)')
 
@@ -608,7 +609,7 @@ class Visualization:
         # Manage legend for original labels
         legend_labels = list(label_colors.keys())
         legend_handles = [Line2D([0], [0], marker='o', color='w', markerfacecolor=label_colors[label], markersize=10) for label in legend_labels]
-        fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right', bbox_to_anchor=(1, 0.5))
+        
 
         if kde_by_ensemble:
             # KDE plot for each ensemble
@@ -629,7 +630,8 @@ class Visualization:
             zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
             ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, cmap='Blues')
             ax[3].set_title('Density Plot')
-
+        fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right', bbox_to_anchor=(1.09, 1.0))
+        fig.tight_layout()
         if save:
             fig.savefig(self.plot_dir + f'/{analysis.reduce_dim_method}_scatter.png', dpi=800)
         
@@ -647,7 +649,8 @@ class Visualization:
                          ax: Union[None, List[plt.Axes]] = None,
                          kde_by_ensemble: bool = False,
                          size: int = 10,
-                         plotly=False
+                         plotly=False,
+                         cmap_label: str = 'viridis'
 
                          ) -> List[plt.Axes]:
 
@@ -659,7 +662,7 @@ class Visualization:
 
         if analysis.reduce_dim_method not in ("dimenfix", "umap"):
             bestclust = analysis.reducer.best_kmeans.labels_
-            cmap = plt.get_cmap('jet', analysis.reducer.bestK)
+            cmap = plt.get_cmap('Set1', analysis.reducer.bestK)
             labels_clust = bestclust.astype(float)
 
         else:
@@ -702,7 +705,7 @@ class Visualization:
 
 
         ax2 = fig.add_subplot(132, projection='3d')
-        rg_labeled = ax2.scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1],analysis.transformed_data[:, 2] ,c=colors, s=size, alpha=0.5)
+        rg_labeled = ax2.scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1],analysis.transformed_data[:, 2] ,c=colors, s=size, alpha=0.5, cmap=cmap_label)
         cbar = plt.colorbar(rg_labeled, ax=ax2, fraction=0.075)
         ax2.set_title(f'Scatter plot ({color_by} labels)')
         ax2.view_init(elev=20, azim=45)
