@@ -9,7 +9,7 @@ import mdtraj
 from dpet.featurization.distances import *
 from dpet.ensemble_analysis import EnsembleAnalysis
 from dpet.featurization.angles import featurize_a_angle
-from dpet.data.coord import *
+from dpet.coord import *
 from dpet.featurization.glob import compute_asphericity, compute_prolateness
 from dpet.comparison import scores_data, process_all_vs_all_output
 import plotly.express as px

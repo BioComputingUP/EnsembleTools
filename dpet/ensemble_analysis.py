@@ -6,7 +6,7 @@ from dpet.featurization.distances import rmsd
 import pandas as pd
 from dpet.data.api_client import APIClient
 from dpet.ensemble import Ensemble
-from dpet.data.extract_tar_gz import extract_tar_gz
+from dpet.data.io_utils import setup_data_dir, extract_tar_gz
 import os
 import mdtraj
 import numpy as np
@@ -27,12 +27,21 @@ class EnsembleAnalysis:
     ----------
     ensembles : List[Ensemble])
         List of ensembles.
-    output_dir : str
-        Directory path for storing data.
+    output_dir : str, optional
+        Directory path for storing data. If not provided, a directory named
+        ${HOME}/.idpet/data will be created.
     """
-    def __init__(self, ensembles:List[Ensemble], output_dir:str):
-        self.output_dir = Path(output_dir)
-        os.makedirs(self.output_dir, exist_ok=True)
+    def __init__(self,
+            ensembles: List[Ensemble],
+            output_dir: str = None,
+        ):
+        if output_dir is None:
+            self.output_dir = os.getenv(
+                "IDPET_OUTPUT_DIR",  # If defined, gets an environmental variable.
+                str(Path.home() / ".idpet" / "data")  # Else, uses a default path.
+            )
+        else:
+            self.output_dir = output_dir
         self.api_client = APIClient()
         self.feature_names = []
         self.all_labels = []
@@ -108,6 +117,7 @@ class EnsembleAnalysis:
         ped_id = match.group(1)
         ensemble_id = match.group(2)
         tar_gz_filename = f'{code}.tar.gz'
+        setup_data_dir(self.output_dir)
         tar_gz_file = os.path.join(self.output_dir, tar_gz_filename)
 
         pdb_filename = f'{code}.pdb'
@@ -160,6 +170,7 @@ class EnsembleAnalysis:
         if not re.match(pdb_pattern, code):
             raise ValueError(f"Entry {code} does not match the PDB ID pattern.")
 
+        setup_data_dir(self.output_dir)
         zip_filename = f'{code}.zip'
         zip_file = os.path.join(self.output_dir, zip_filename)
 
@@ -197,7 +208,7 @@ class EnsembleAnalysis:
                 print(f"Extracted file {zip_file}.")
 
                 # Remove unused files.
-                for unused_path in self.output_dir.glob("*.tpr"):
+                for unused_path in Path(self.output_dir).glob("*.tpr"):
                     os.remove(unused_path)
                 readme_path = os.path.join(self.output_dir, "README.txt")
                 if os.path.exists(readme_path):
@@ -398,6 +409,8 @@ class EnsembleAnalysis:
                 Learning rate. Default is 100.0.
             - range_n_clusters : List[int], optional
                 Range of cluster values. Default is range(2, 10, 1).
+            - random_state: int, optional
+                Random seed for sklearn.
 
         - kpca:
             - circular : bool, optional

@@ -1,5 +1,6 @@
 from abc import ABC, abstractmethod
 from typing import List, Tuple
+import inspect
 from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
@@ -112,6 +113,8 @@ class TSNEReduction(DimensionalityReduction):
         Learning rate. Default is 100.0.
     range_n_clusters : List[int], optional
         Range of cluster values. Default is range(2, 10, 1).
+    random_state: int, optional
+        Random seed for sklearn.
     """
 
     def __init__(
@@ -121,7 +124,9 @@ class TSNEReduction(DimensionalityReduction):
             circular:bool=False, 
             n_components:int=2, 
             learning_rate:float='auto', 
-            range_n_clusters:List[int] = range(2,10,1)):
+            range_n_clusters:List[int] = range(2,10,1),
+            random_state:int=None
+        ):
         
         self.perplexity_vals = perplexity_vals
         self.metric = unit_vector_distance if circular else metric
@@ -129,6 +134,15 @@ class TSNEReduction(DimensionalityReduction):
         self.learning_rate = learning_rate
         self.results = []
         self.range_n_clusters = range_n_clusters
+        self.random_state = random_state
+        # For compatibility with different sklearn versions.
+        sig = inspect.signature(TSNE.__init__)
+        if "n_iter" in sig.parameters:
+            self.n_iter_args = {"n_iter": 3500}
+        elif "max_iter" in sig.parameters:
+            self.n_iter_args = {"max_iter": 3500}
+        else:
+            raise TypeError()
 
     def fit(self, data:np.ndarray):
         return super().fit(data)
@@ -145,13 +159,14 @@ class TSNEReduction(DimensionalityReduction):
                 perplexity=perplexity,
                 early_exaggeration=10.0,
                 learning_rate=self.learning_rate,
-                n_iter=3500,
                 metric=self.metric,
                 n_iter_without_progress=300,
                 min_grad_norm=1e-7,
                 init="random",
                 method="barnes_hut",
                 angle=0.5,
+                random_state=self.random_state,
+                **self.n_iter_args
             )
             tsne = tsneObject.fit_transform(data)
             self._cluster(tsne, perplexity)

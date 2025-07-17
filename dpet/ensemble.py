@@ -8,6 +8,7 @@ from dpet.featurization.angles import featurize_a_angle, featurize_phi_psi, feat
 from dpet.featurization.distances import featurize_ca_dist
 from dpet.featurization.glob import compute_asphericity, compute_end_to_end_distances, compute_ensemble_sasa, compute_prolateness
 from dpet.featurization.ensemble_level import calc_flory_scaling_exponent
+from dpet.data.io_utils import setup_data_dir
 
 
 class Ensemble():
@@ -88,6 +89,8 @@ class Ensemble():
             else:
                 traj_suffix = ''
 
+            # Saves files for faster access next time the data is loaded.
+            setup_data_dir(data_dir)
             traj_dcd = os.path.join(data_dir, f'{self.code}{traj_suffix}.dcd')
             traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
             
@@ -115,6 +118,7 @@ class Ensemble():
                 else:
                     traj_suffix = ''
 
+                setup_data_dir(data_dir)
                 traj_dcd = os.path.join(data_dir, f'{self.code}{traj_suffix}.dcd')
                 traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
                 self.trajectory.save(traj_dcd)

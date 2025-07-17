@@ -1,6 +1,10 @@
 import os
 import tarfile
 
+
+def setup_data_dir(data_dir: str):
+    os.makedirs(data_dir, exist_ok=True)
+
 def extract_tar_gz(tar_gz_file:str, output_dir:str, new_name:str):
     # Extract the .pdb file with renaming
     with tarfile.open(tar_gz_file, 'r:gz') as tar:
