@@ -9,6 +9,7 @@ from sklearn.manifold import MDS
 from sklearn.metrics import silhouette_score
 from umap import UMAP
 
+
 class DimensionalityReduction(ABC):
     @abstractmethod
     def fit(self, data:np.ndarray):
@@ -214,9 +215,19 @@ class UMAPReduction(DimensionalityReduction):
         The metric to use for distance calculation. Default is 'euclidean'.
     range_n_clusters : range or List, optional
         Range of cluster values to consider for silhouette scoring. Default is range(2, 10, 1).
+    random_state : int, optional
+        Random state of the UMAP implementation.
     """
 
-    def __init__(self, num_dim:int=2, n_neighbors:List[int]=[15], circular= False,min_dist:float=0.1 , metric:str='euclidean', range_n_clusters:List[int] = range(2,10,1)):
+    def __init__(self,
+            num_dim:int=2,
+            n_neighbors:List[int]=[15],
+            circular=False,
+            min_dist:float=0.1,
+            metric:str='euclidean',
+            range_n_clusters:List[int] = range(2,10,1),
+            random_state:int=None
+        ):
         self.num_dim = num_dim
         self.n_neighbors = n_neighbors
         self.min_dist = min_dist
@@ -227,6 +238,7 @@ class UMAPReduction(DimensionalityReduction):
         self.best_score = -1
         self.best_n_clusters = None
         self.best_n_neighbors = None
+        self.random_state = random_state
     
     def fit(self, data):
         return super().fit(data)
@@ -236,7 +248,13 @@ class UMAPReduction(DimensionalityReduction):
 
     def fit_transform(self, data) -> np.ndarray:
         for n_neighbor in self.n_neighbors:
-            umap_model = UMAP(n_neighbors=n_neighbor, min_dist=self.min_dist, n_components=self.num_dim, metric=self.metric)
+            umap_model = UMAP(
+                n_neighbors=n_neighbor,
+                min_dist=self.min_dist,
+                n_components=self.num_dim,
+                metric=self.metric,
+                random_state=self.random_state
+            )
             embedding = umap_model.fit_transform(data)
             scores = self.cluster(embedding, n_neighbor)
             best_score_for_n_neighbor = max(scores, key=lambda x: x[2])
