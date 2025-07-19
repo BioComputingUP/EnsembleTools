@@ -990,7 +990,8 @@ def all_vs_all_comparison(
         # Apply the same bin number to every comparison, based on the number
         # of conformers in the smallest ensemble.
         num_bins = get_num_comparison_bins(bins, x=features)
-        print("num_bins:", num_bins)
+        if verbose:
+            print(f"num_bins: {num_bins}")
         scoring_params = {"bins": num_bins}
         if feature in ("ca_dist", ):
             scoring_params["limits"] = "m"

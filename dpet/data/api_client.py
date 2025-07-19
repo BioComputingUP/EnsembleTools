@@ -1,4 +1,6 @@
 import requests
+from dpet.utils import logger
+
 
 class APIClient:
     def __init__(self):
@@ -10,7 +12,7 @@ class APIClient:
             response.raise_for_status()  # Raise an exception for HTTP errors
             return response
         except requests.RequestException as e:
-            print("Error during GET request:", e)
+            logger.error(f"Error during GET request: {e}")
             return None
 
     def download_response_content(self, response, save_path):
@@ -18,9 +20,9 @@ class APIClient:
             with open(save_path, 'wb') as f:
                 for chunk in response.iter_content(chunk_size=8192):
                     f.write(chunk)
-            print("Download complete. Saved to:", save_path)
+            logger.info(f"Download complete. Saved to: {save_path}")
         except Exception as e:
-            print("Error during content download:", e)
+            logger.error(f"Error during content download: {e}")
 
     def close_session(self):
         self.session.close()

@@ -5,9 +5,9 @@ from sklearn.cluster import KMeans
 from sklearn.decomposition import PCA, KernelPCA
 from sklearn.manifold import TSNE
 import numpy as np
-from sklearn.manifold import MDS
 from sklearn.metrics import silhouette_score
 from umap import UMAP
+from dpet.utils import logger
 
 
 class DimensionalityReduction(ABC):
@@ -153,7 +153,7 @@ class TSNEReduction(DimensionalityReduction):
 
     def fit_transform(self, data:np.ndarray) -> np.ndarray:
         self.data = data
-        print("tsne is running...")
+        logger.info("tsne is running...")
         for perplexity in self.perplexity_vals:
             tsneObject = TSNE(
                 n_components=self.n_components,
@@ -176,11 +176,11 @@ class TSNEReduction(DimensionalityReduction):
         self.bestK = best_result['n_clusters']
         self.best_tsne = best_result['tsne_features']
         self.best_kmeans = best_result['kmeans_model']
-        print("Best Perplexity:", self.bestP)
-        print("Best Number of Clusters:", self.bestK)
-        print("Silhouette Score Low Dimensional:", best_result['silhouette_ld'])
-        print("Silhouette Score High Dimensional:", best_result['silhouette_hd'])
-        print("Silhouette Score Product", best_result['silhouette_product'])
+        logger.info(f"Best Perplexity: {self.bestP}")
+        logger.info(f"Best Number of Clusters: {self.bestK}")
+        logger.info("Silhouette Score Low Dimensional: {}".format(best_result['silhouette_ld']))
+        logger.info("Silhouette Score High Dimensional: {}".format(best_result['silhouette_hd']))
+        logger.info("Silhouette Score Product: {}".format(best_result['silhouette_product']))
         return self.best_tsne
 
     def _cluster(self, tsne:np.ndarray, perplexity:float):
@@ -247,6 +247,7 @@ class UMAPReduction(DimensionalityReduction):
         return super().transform(data)
 
     def fit_transform(self, data) -> np.ndarray:
+        logger.info('UMAP is running...')
         for n_neighbor in self.n_neighbors:
             umap_model = UMAP(
                 n_neighbors=n_neighbor,
@@ -264,9 +265,8 @@ class UMAPReduction(DimensionalityReduction):
                 self.best_embedding = embedding
                 self.best_n_clusters = best_score_for_n_neighbor[1]
                 self.best_n_neighbors = n_neighbor
-        print('UMAP is running...')
-        print(f'Best number of neighbors: {self.best_n_neighbors}')
-        print(f'Best number of clusters : {self.best_n_clusters}')
+        logger.info(f'Best number of neighbors: {self.best_n_neighbors}')
+        logger.info(f'Best number of clusters : {self.best_n_clusters}')
         
         return self.best_embedding
     

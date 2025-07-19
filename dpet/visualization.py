@@ -12,6 +12,7 @@ from dpet.featurization.angles import featurize_a_angle
 from dpet.coord import *
 from dpet.featurization.glob import compute_asphericity, compute_prolateness
 from dpet.comparison import scores_data, process_all_vs_all_output
+from dpet.utils import logger
 import plotly.express as px
 import pandas as pd
 PLOT_DIR = "plots"
@@ -733,7 +734,9 @@ class Visualization:
 
         plt.show()
 
-    def pca_cumulative_explained_variance(self, save: bool = False, ax: Union[None, plt.Axes] = None) -> plt.Axes:
+    def pca_cumulative_explained_variance(
+            self, save: bool = False, ax: Union[None, plt.Axes] = None
+        ) -> plt.Axes:
         """
         Plot the cumulative variance. Only applicable when the
         dimensionality reduction method is "pca".
@@ -748,8 +751,9 @@ class Visualization:
 
         Returns
         -------
-        plt.Axes
-            The Axes object for the cumulative explained variance plot.
+        plt.Axes, cumvar
+            The Axes object for the cumulative explained variance plot and a
+            numpy array with the cumulative variance.
         """ 
         
         analysis = self.analysis
@@ -762,18 +766,20 @@ class Visualization:
         else:
             fig = ax.figure
 
-        ax.plot(np.cumsum(analysis.reduce_dim_model.explained_variance_ratio_) * 100)
+        pc_vars = analysis.reduce_dim_model.explained_variance_ratio_
+        cumvar = np.cumsum(pc_vars) * 100
+        ax.plot(cumvar)
         ax.set_xlabel("PCA dimension")
         ax.set_ylabel("Cumulative explained variance %")
         ax.set_title("Cumulative Explained Variance by PCA Dimension")
         ax.grid(True)
-        first_three_variance = analysis.reduce_dim_model.explained_variance_ratio_[0:3].sum() * 100
+        first_three_variance = pc_vars[0:3].sum()*100
         ax.text(0.5, 0.9, f"First three: {first_three_variance:.2f}%", transform=ax.transAxes, ha='center')
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'PCA_variance' + analysis.featurization + analysis.ens_codes[0]))
 
-        return ax
+        return ax, cumvar
 
     def _set_labels(self, ax, reduce_dim_method, dim_x, dim_y):
         ax.set_xlabel(f"{reduce_dim_method} dim {dim_x+1}")
@@ -846,7 +852,8 @@ class Visualization:
             axes[i + 1].legend(**legend_kwargs)
             self._set_labels(axes[i + 1], "pca", dim_x, dim_y)
 
-        fig.tight_layout()
+        if ax is None:
+            fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'PCA_2d_landscapes_' + analysis.featurization + analysis.ens_codes[0]))
@@ -990,7 +997,11 @@ class Visualization:
 
         return axes
 
-    def pca_rg_correlation(self, save: bool = False, ax: Union[None, List[plt.Axes]] = None) -> List[plt.Axes]:
+    def pca_rg_correlation(self,
+            save: bool = False,
+            ax: Union[None, List[plt.Axes]] = None,
+            pca_dim: int = 0,
+        ) -> List[plt.Axes]:
         """
         Examine and plot the correlation between PC dimension 1 and the amount of Rg.
         Typically high correlation can be detected in case of IDPs/IDRs .
@@ -1003,18 +1014,21 @@ class Visualization:
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
 
+        pca_dim: int, optional
+            Index of the principal component to analyze, defaults to 0 (first
+            principal component).
+
         Returns
         -------
-        List[plt.Axes]
-            A list of plt.Axes objects representing the subplots created.
+        List[plt.Axes], dict
+            A list of plt.Axes objects representing the subplots created and a
+            dictionary with all the raw data being plotted.
         """
 
         analysis = self.analysis
 
         if analysis.reduce_dim_method not in ("pca", "kpca"):
             raise ValueError("Analysis is only valid for pca and kpca dimensionality reduction.")
-
-        pca_dim = 0
 
         if ax is None:
             fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(3, 3 * len(analysis.ens_codes)), dpi=120)
@@ -1025,6 +1039,7 @@ class Visualization:
             fig = axes[0].figure
 
         # Plot the correlation for each ensemble
+        data = {}
         for i, ensemble in enumerate(analysis.ensembles):
             rg_i = mdtraj.compute_rg(ensemble.trajectory)
             axes[i].scatter(ensemble.reduce_dim_data[:, pca_dim],
@@ -1032,13 +1047,19 @@ class Visualization:
                             color=f"C{i}")
             axes[i].legend(fontsize=8)
             axes[i].set_xlabel(f"Dim {pca_dim + 1}")
-            axes[i].set_ylabel("Rg")
+            axes[i].set_ylabel(r"$R_g$ [nm]")
+            data[ensemble.code] = {
+                "pc": ensemble.reduce_dim_data[:, pca_dim],
+                "rg": rg_i
+            }
 
-        fig.tight_layout()
+        if ax is None:
+            fig.tight_layout()
+
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'PCA_RG' + analysis.ens_codes[0]))
 
-        return axes
+        return axes, data
     
     def global_sasa(self, 
                 bins: int = 50, 
@@ -1188,7 +1209,7 @@ class Visualization:
 
         return ax
 
-    def rg_vs_asphericity(self, save: bool = False, ax: plt.Axes = None) -> plt.Axes:
+    def rg_vs_asphericity(self, save: bool = False, ax: plt.Axes = None, verbose: bool = True) -> plt.Axes:
         """
         Plot the Rg versus Asphericity and get the pearson correlation coefficient to evaluate 
         the correlation between Rg and Asphericity.
@@ -1199,6 +1220,8 @@ class Visualization:
             If True, the plot will be saved in the data directory. Default is False.
         ax: plt.Axes, optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
+        verbose: bool, optional
+            Verbosity for the output of the method.
 
         Returns
         -------
@@ -1218,7 +1241,11 @@ class Visualization:
             y = compute_asphericity(ensemble.trajectory)
             p = np.corrcoef(x, y)
             ax.scatter(x, y, s=4, label=ensemble.code)
-            print(f"Pearson coeff for {ensemble.code} = {round(p[0][1], 3)}")
+            msg = f"Pearson coeff for {ensemble.code} = {round(p[0][1], 3)}"
+            if verbose:
+                print(msg)
+            else:
+                logger.info(msg)
         
         ax.set_ylabel("Asphericity")
         ax.set_xlabel("Radius of Gyration (Rg) [nm]")
@@ -1229,7 +1256,7 @@ class Visualization:
         
         return ax
   
-    def rg_vs_prolateness(self, save: bool = False, ax: plt.Axes = None) -> plt.Axes:
+    def rg_vs_prolateness(self, save: bool = False, ax: plt.Axes = None, verbose: bool = True) -> plt.Axes:
         """
         Plot the Rg versus Prolateness and get the Pearson correlation coefficient to evaluate 
         the correlation between Rg and Prolateness. 
@@ -1240,6 +1267,8 @@ class Visualization:
             If True, the plot will be saved in the data directory. Default is False.
         ax: plt.Axes, optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
+        verbose: bool, optional
+            Verbosity for the output of the method.
 
         Returns
         -------
@@ -1259,7 +1288,11 @@ class Visualization:
             y = compute_prolateness(ensemble.trajectory)
             p = np.corrcoef(x, y)
             ax.scatter(x, y, s=4, label=ensemble.code)
-            print(f"Pearson coeff for {ensemble.code} = {round(p[0][1], 3)}")
+            msg = f"Pearson coeff for {ensemble.code} = {round(p[0][1], 3)}"
+            if verbose:
+                print(msg)
+            else:
+                logger.info(msg)
 
         ax.set_ylabel("Prolateness")
         ax.set_xlabel("Radius of Gyration (Rg) [nm]")
@@ -2526,15 +2559,15 @@ class Visualization:
             idx = i * 2
             traj = ens.trajectory
             feat, names = featurize_com_dist(traj=traj, min_sep=min_sep,max_sep=max_sep,inverse=inverse ,get_names=get_names)  # Compute (N, *) feature arrays.
-            print(f"# Ensemble: {ens.code}")
-            print("features:", feat.shape)
+            logger.info(f"# Ensemble: {ens.code}")
+            logger.info(f"features: {feat.shape}")
 
             com_dmap = calc_ca_dmap(traj=traj)
             com_dmap_mean = com_dmap.mean(axis=0)
             ca_dmap = calc_ca_dmap(traj=traj)
             ca_dmap_mean = ca_dmap.mean(axis=0)
 
-            print("distance matrix:", com_dmap_mean.shape)
+            logger.info(f"distance matrix: {com_dmap_mean.shape}")
             
             im0 = axes[idx].imshow(ca_dmap_mean)
             axes[idx].set_title(f"{ens.code} CA")

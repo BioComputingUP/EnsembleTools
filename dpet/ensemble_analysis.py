@@ -1,19 +1,20 @@
+import os
+import itertools
 from pathlib import Path
 import re
 from typing import Dict, List, Optional, Union, Tuple
+import numpy as np
 import zipfile
-from dpet.featurization.distances import rmsd
 import pandas as pd
+import mdtraj
+from dpet.featurization.distances import rmsd
 from dpet.data.api_client import APIClient
 from dpet.ensemble import Ensemble
 from dpet.data.io_utils import setup_data_dir, extract_tar_gz
-import os
-import mdtraj
-import numpy as np
 from dpet.dimensionality_reduction import DimensionalityReductionFactory
 from dpet.featurization.ensemble_level import ensemble_features
-import itertools
 from dpet.comparison import all_vs_all_comparison
+from dpet.utils import logger
 
 
 class EnsembleAnalysis:
@@ -125,7 +126,8 @@ class EnsembleAnalysis:
 
         if not os.path.exists(tar_gz_file) and not os.path.exists(pdb_file):
             url = f'https://deposition.proteinensemble.org/api/v1/entries/{ped_id}/ensembles/{ensemble_id}/ensemble-pdb'
-            print(f"Downloading entry {code} from PED.")
+            
+            logger.info(f"Downloading entry {code} from PED.")
             headers = {'accept': '*/*'}
 
             response = self.api_client.perform_get_request(url, headers=headers)
@@ -136,16 +138,16 @@ class EnsembleAnalysis:
             
             # Download and save the response content to a file
             self.api_client.download_response_content(response, tar_gz_file)
-            print(f"Downloaded file {tar_gz_filename} from PED.")
+            logger.info(f"Downloaded file {tar_gz_filename} from PED.")
         else:
-            print(f"Ensemble {code} already downloaded. Skipping.")
+            logger.info(f"Ensemble {code} already downloaded. Skipping.")
 
         # Extract the .tar.gz file
         if not os.path.exists(pdb_file):
             extract_tar_gz(tar_gz_file, self.output_dir, pdb_filename)
-            print(f"Extracted file {pdb_filename}.")
+            logger.info(f"Extracted file {pdb_filename}.")
         else:
-            print(f"File {pdb_filename} already exists. Skipping extraction.")
+            logger.info(f"File {pdb_filename} already exists. Skipping extraction.")
 
         # Set the data path to the downloaded file
         # If the trajectory is already generated it will be used instead of the pdb file
@@ -160,7 +162,7 @@ class EnsembleAnalysis:
         traj_top = os.path.join(self.output_dir, f'{ensemble.code}{traj_suffix}.top.pdb')
 
         if os.path.exists(traj_dcd) and os.path.exists(traj_top):
-            print(f'Trajectory file already exists for ensemble {code}.')
+            logger.info(f'Trajectory file already exists for ensemble {code}.')
             ensemble.data_path = traj_dcd
             ensemble.top_path = traj_top
 
@@ -175,7 +177,7 @@ class EnsembleAnalysis:
         zip_file = os.path.join(self.output_dir, zip_filename)
 
         if not os.path.exists(zip_file):
-            print(f"Downloading entry {code} from Atlas.")
+            logger.info(f"Downloading entry {code} from Atlas.")
             url = f"https://www.dsimb.inserm.fr/ATLAS/database/ATLAS/{code}/{code}_protein.zip"
             headers = {'accept': '*/*'}
 
@@ -187,9 +189,9 @@ class EnsembleAnalysis:
             
             # Download and save the response content to a file
             self.api_client.download_response_content(response, zip_file)
-            print(f"Downloaded file {zip_filename} from Atlas.")
+            logger.info(f"Downloaded file {zip_filename} from Atlas.")
         else:
-            print("File already exists. Skipping download.")
+            logger.info("File already exists. Skipping download.")
 
         try:
             with zipfile.ZipFile(zip_file, 'r') as zip_ref:
@@ -205,7 +207,7 @@ class EnsembleAnalysis:
                         new_ensembles.append(ensemble)
                 # Unzip
                 zip_ref.extractall(self.output_dir)
-                print(f"Extracted file {zip_file}.")
+                logger.info(f"Extracted file {zip_file}.")
 
                 # Remove unused files.
                 for unused_path in Path(self.output_dir).glob("*.tpr"):
@@ -343,9 +345,8 @@ class EnsembleAnalysis:
         for ensemble in self.ensembles:
             ensemble.extract_features(featurization, *args, **kwargs)
         self.feature_names = list(self.ensembles)[0].names
-        print("Feature names:", self.feature_names)
-
-
+        # YO!!!!
+        logger.info(f"Feature names: {self.feature_names}")
 
 
     def _create_all_labels(self):
@@ -372,7 +373,7 @@ class EnsembleAnalysis:
             fit_on = self.ens_codes
         concat_features = [ensemble.features for ensemble in self.ensembles if ensemble.code in fit_on]
         concat_features = np.concatenate(concat_features, axis=0)
-        print("Concatenated featurized ensemble shape:", concat_features.shape)
+        logger.info(f"Concatenated featurized ensemble shape: {concat_features.shape}")
         return concat_features
 
     def reduce_features(self, method: str, fit_on:List[str]=None, *args, **kwargs) -> np.ndarray:
@@ -453,7 +454,7 @@ class EnsembleAnalysis:
                 self.reduce_dim_model = self.reducer.fit(data=fit_on_data)
                 for ensemble in self.ensembles:
                     ensemble.reduce_dim_data = self.reducer.transform(ensemble.features)
-                    print("Reduced dimensionality ensemble shape:", ensemble.reduce_dim_data.shape)
+                    logger.info(f"Reduced dimensionality ensemble shape: {ensemble.reduce_dim_data.shape}")
                 self.transformed_data = self.reducer.transform(data=self.concat_features)
             else:
                 self.transformed_data = self.reducer.fit_transform(data=self.concat_features)

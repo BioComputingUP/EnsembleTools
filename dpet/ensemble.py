@@ -9,6 +9,7 @@ from dpet.featurization.distances import featurize_ca_dist
 from dpet.featurization.glob import compute_asphericity, compute_end_to_end_distances, compute_ensemble_sasa, compute_prolateness
 from dpet.featurization.ensemble_level import calc_flory_scaling_exponent
 from dpet.data.io_utils import setup_data_dir
+from dpet.utils import logger
 
 
 class Ensemble():
@@ -77,9 +78,9 @@ class Ensemble():
             )
         elif self.data_path.endswith('.pdb'):
             chain_ids = self.get_chains_from_pdb()
-            print(f"{self.code} chain ids: {chain_ids}")
+            logger.info(f"{self.code} chain ids: {chain_ids}")
             
-            print(f"Generating trajectory for {self.code}...")
+            logger.info(f"Generating trajectory for {self.code}...")
             self.trajectory = mdtraj.load(self.data_path)
 
             chain_selected = self._select_chain(chain_ids)
@@ -97,17 +98,17 @@ class Ensemble():
             self.trajectory.save(traj_dcd)
             self.trajectory[0].save(traj_top)
             
-            print(f"Generated trajectory saved to {data_dir}.")
+            logger.info(f"Generated trajectory saved to {data_dir}.")
         elif self.data_path.endswith(('.dcd', '.xtc')) and os.path.exists(self.top_path):
-            print(f"Loading trajectory for {self.code}...")
+            logger.info(f"Loading trajectory for {self.code}...")
             self.trajectory = mdtraj.load(self.data_path, top=self.top_path)
         elif os.path.isdir(self.data_path):
             files_in_dir = [f for f in os.listdir(self.data_path) if f.endswith('.pdb')]
             if files_in_dir:
                 chain_ids = self.get_chains_from_pdb()
-                print(f"{self.code} chain ids: {chain_ids}")
+                logger.info(f"{self.code} chain ids: {chain_ids}")
 
-                print(f"Generating trajectory for {self.code}...")
+                logger.info(f"Generating trajectory for {self.code}...")
                 full_paths = [os.path.join(self.data_path, file) for file in files_in_dir]
                 self.trajectory = mdtraj.load(full_paths)
                 
@@ -123,7 +124,7 @@ class Ensemble():
                 traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
                 self.trajectory.save(traj_dcd)
                 self.trajectory[0].save(traj_top)
-                print(f"Generated trajectory saved to {data_dir}.")
+                logger.info(f"Generated trajectory saved to {data_dir}.")
             else:
                 raise FileNotFoundError(f"No PDB files found in directory: {self.data_path}")
         else:
@@ -167,7 +168,7 @@ class Ensemble():
             xyz=self.original_trajectory.xyz[random_indices],
             topology=self.original_trajectory.topology)
         self._select_residues()
-        print(f"{sample_size} conformations sampled from {self.code} trajectory.")
+        logger.info(f"{sample_size} conformations sampled from {self.code} trajectory.")
         
     def extract_features(self, featurization: str, *args, **kwargs):
         """
@@ -186,7 +187,7 @@ class Ensemble():
         -----
         This method extracts features from the trajectory using the specified featurization method and updates the ensemble's features attribute.
         """
-        print(f"Performing feature extraction for Ensemble: {self.code}.")
+        logger.info(f"Performing feature extraction for Ensemble: {self.code}.")
 
         if featurization == "ca_dist":
             features, names = featurize_ca_dist(
@@ -234,7 +235,7 @@ class Ensemble():
 
         self.features = features
         self.names = names
-        print("Transformed ensemble shape:", self.features.shape)
+        logger.info(f"Transformed ensemble shape: {self.features.shape}")
 
     def get_features(self, featurization: str, normalize: bool = False, *args, **kwargs) -> Sequence:
         """
@@ -354,7 +355,7 @@ class Ensemble():
 
         chain_indices = self.trajectory.topology.select(f"chainid {chain_index}")
         self.trajectory = self.trajectory.atom_slice(chain_indices)
-        print(f"Chain {chain_id_upper} selected from ensemble {self.code}.")
+        logger.info(f"Chain {chain_id_upper} selected from ensemble {self.code}.")
 
         return True
 
@@ -385,7 +386,7 @@ class Ensemble():
         start_residue, end_residue = self.residue_range
         atom_indices = self.trajectory.topology.select(f'residue >= {start_residue} and residue <= {end_residue}')
         self.trajectory = self.trajectory.atom_slice(atom_indices)
-        print(f"Selected residues from ensemble {self.code}")
+        logger.info(f"Selected residues from ensemble {self.code}")
     
     def get_num_residues(self):
         return self.trajectory.topology.n_residues
