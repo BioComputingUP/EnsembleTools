@@ -15,6 +15,7 @@ from dpet.comparison import scores_data, process_all_vs_all_output
 from dpet.utils import logger
 import plotly.express as px
 import pandas as pd
+
 PLOT_DIR = "plots"
 
 def plot_histogram(
@@ -785,7 +786,11 @@ class Visualization:
         ax.set_xlabel(f"{reduce_dim_method} dim {dim_x+1}")
         ax.set_ylabel(f"{reduce_dim_method} dim {dim_y+1}")
 
-    def pca_2d_landscapes(self, save: bool = False, ax: Union[None, List[plt.Axes]] = None) -> List[plt.Axes]:
+    def pca_2d_landscapes(self,
+            save: bool = False,
+            dims: List[int] = [0, 1],
+            ax: Union[None, List[plt.Axes]] = None,
+        ) -> List[plt.Axes]:
         """
         Plot 2D landscapes when the dimensionality reduction method is "pca" or "kpca".
 
@@ -793,7 +798,9 @@ class Visualization:
         ----------
         save: bool, optional
             If True the plot will be saved in the data directory. Default is False.
-
+        dims: List[int], optional
+            Indices of the principal components to analyze, starting from 0.
+            The default components are the first and second.
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
 
@@ -809,8 +816,8 @@ class Visualization:
             raise ValueError("Analysis is only valid for pca or kpca dimensionality reduction.")
 
         # 2D scatter plot settings
-        dim_x = 0
-        dim_y = 1
+        dim_x = dims[0]
+        dim_y = dims[1]
         marker = "."
         legend_kwargs = {"loc": 'upper right', "bbox_to_anchor": (1.1, 1.1), "fontsize": 8}
 
@@ -860,7 +867,12 @@ class Visualization:
 
         return axes
 
-    def pca_1d_histograms(self, save: bool = False, sel_dim = 1 ,ax: Union[None, List[plt.Axes]] = None) -> List[plt.Axes]:
+    def pca_1d_histograms(self,
+            save: bool = False,
+            dim: int = 0,
+            n_bins: int = 30,
+            ax: Union[None, List[plt.Axes]] = None
+        ) -> List[plt.Axes]:
         """
         Plot 1D histogram when the dimensionality reduction method is "pca" or "kpca".
 
@@ -872,8 +884,12 @@ class Visualization:
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
 
-        selected_dim: int, optional
-            To select the specific component (dimension) for which you want to visualize the histogram distribution. Default is 1. 
+        dim: int, optional
+            To select the specific component (dimension) for which you want to visualize the histogram distribution.
+            Default is 0 (first principal component in PCA). 
+        
+        n_bins: int, optional
+            Number of bins in the histograms.
 
         Returns
         -------
@@ -886,14 +902,16 @@ class Visualization:
         if analysis.reduce_dim_method not in ("pca", "kpca"):
             raise ValueError("Analysis is only valid for pca and kpca dimensionality reduction.")
 
-        n_bins = 30
-        k = sel_dim-1
+        k = dim
         bins = np.linspace(analysis.transformed_data[:, k].min(),
                         analysis.transformed_data[:, k].max(),
                         n_bins)
 
         if ax is None:
             fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(4, 2 * len(analysis.ens_codes)), dpi=120)
+            if len(analysis.ens_codes) == 1:
+                axes = [axes]
+
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -927,18 +945,33 @@ class Visualization:
 
         return axes
 
-    def pca_residue_correlation(self, sel_dims: List[int], save: bool = False, ax: Union[None, List[plt.Axes]] = None) -> List[plt.Axes]:
+    def pca_residue_correlation(self,
+            sel_dims: List[int] = [0, 1, 2],
+            save: bool = False,
+            ax: Union[None, List[plt.Axes]] = None,
+            dpi: int = 96,
+            cmap: str = "RdBu",
+            cmap_range: Union[None, Tuple[float]] = None
+        ) -> List[plt.Axes]:
         """
         Plot the correlation between residues based on PCA weights.
 
         Parameters
         ----------
-        sel_dims : List[int]
+        sel_dims : List[int], optional
             A list of indices specifying the PCA dimensions to include in the plot.
         save : bool, optional
             If True, the plot will be saved as an image file. Default is False.
         ax : Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
+        dpi : int, optional
+            For changing the quality and dimension of the output figure. Default is 96.
+        cmap: str, optional
+            Matplotlib colormap name.
+        cmap_range: Union[None, Tuple[float]], optional
+            Range of the colormap. Defaults to 'None', the range will be
+            identified automatically. If a tuple, the first and second elements
+            are the min. and max. of the range.
 
         Returns
         -------
@@ -959,13 +992,11 @@ class Visualization:
         if analysis.reduce_dim_method != "pca" or analysis.featurization != "ca_dist":
             raise ValueError("Analysis is only valid for pca dimensionality reduction with ca_dist feature extraction.")
         
-        cmap = plt.get_cmap("RdBu")  # RdBu, PiYG
-        norm = colors.Normalize(-0.07, 0.07)  # NOTE: this range should be adapted when analyzing other systems via PCA!
-        dpi = 120
+        cmap = plt.get_cmap(cmap)
 
         fig_r = 0.8
         if ax is None:
-            fig, axes = plt.subplots(1, 3, dpi=dpi, figsize=(15*fig_r, 4*fig_r))
+            fig, axes = plt.subplots(1, len(sel_dims), dpi=dpi, figsize=(15*fig_r, 4*fig_r))
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -974,24 +1005,35 @@ class Visualization:
 
         # Get the number of residues from one of the trajectories
         num_residues = next(iter(analysis.trajectories.values())).topology.n_residues
-
+        pca_model = analysis.reduce_dim_model
         for k, sel_dim in enumerate(sel_dims):
-            feature_ids_sorted_by_weight = np.flip(np.argsort(abs(analysis.reduce_dim_model.components_[sel_dim,:])))
             matrix = np.zeros((num_residues, num_residues))
-            for i in feature_ids_sorted_by_weight:
+            vals = []
+            loadings = pca_model.components_.T * np.sqrt(pca_model.explained_variance_)
+            loadings = loadings.T
+            for i in range(loadings.shape[1]):
                 r1, r2 = analysis.feature_names[i].split("-")
                 # Note: this should be patched for proteins with resSeq values not starting from 1!
-                matrix[int(r1[3:])-1, int(r2[3:])-1] = analysis.reduce_dim_model.components_[sel_dim,i]
-                matrix[int(r2[3:])-1, int(r1[3:])-1] = analysis.reduce_dim_model.components_[sel_dim,i]
+                v_ij = loadings[sel_dim,i]
+                matrix[int(r1[3:])-1, int(r2[3:])-1] = v_ij
+                matrix[int(r2[3:])-1, int(r1[3:])-1] = v_ij
+                vals.append(v_ij)
+            if cmap_range is None:
+                # Automatically find the range.
+                _cmap_range = (-np.abs(vals).max(), np.abs(vals).max())
+            else:
+                _cmap_range = cmap_range
+            norm = colors.Normalize(_cmap_range[0], _cmap_range[1])
             im = axes[k].imshow(matrix, cmap=cmap, norm=norm)  # RdBu, PiYG
             axes[k].set_xlabel("Residue j")
             axes[k].set_ylabel("Residue i")
-            axes[k].set_title(r"Weight of $d_{ij}$" + f" for PCA dim {sel_dim+1}")
+            axes[k].set_title(r"Loading of $d_{ij}$" + f" for PCA dim {sel_dim+1}")
             cbar = fig.colorbar(
                 im, ax=axes[k],
-                label="PCA weight"
+                label="PCA loading"
             )
-        fig.tight_layout()
+        if ax is None:
+            fig.tight_layout()
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'PCA_correlation' + analysis.featurization + analysis.ens_codes[0]))
 
@@ -1000,7 +1042,7 @@ class Visualization:
     def pca_rg_correlation(self,
             save: bool = False,
             ax: Union[None, List[plt.Axes]] = None,
-            pca_dim: int = 0,
+            dim: int = 0,
         ) -> List[plt.Axes]:
         """
         Examine and plot the correlation between PC dimension 1 and the amount of Rg.
@@ -1014,7 +1056,7 @@ class Visualization:
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
 
-        pca_dim: int, optional
+        dim: int, optional
             Index of the principal component to analyze, defaults to 0 (first
             principal component).
 
@@ -1032,6 +1074,8 @@ class Visualization:
 
         if ax is None:
             fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(3, 3 * len(analysis.ens_codes)), dpi=120)
+            if len(analysis.ens_codes) == 1:
+                axes = [axes]
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -1042,14 +1086,14 @@ class Visualization:
         data = {}
         for i, ensemble in enumerate(analysis.ensembles):
             rg_i = mdtraj.compute_rg(ensemble.trajectory)
-            axes[i].scatter(ensemble.reduce_dim_data[:, pca_dim],
+            axes[i].scatter(ensemble.reduce_dim_data[:, dim],
                             rg_i, label=ensemble.code,
                             color=f"C{i}")
             axes[i].legend(fontsize=8)
-            axes[i].set_xlabel(f"Dim {pca_dim + 1}")
+            axes[i].set_xlabel(f"Dim {dim + 1}")
             axes[i].set_ylabel(r"$R_g$ [nm]")
             data[ensemble.code] = {
-                "pc": ensemble.reduce_dim_data[:, pca_dim],
+                "pc": ensemble.reduce_dim_data[:, dim],
                 "rg": rg_i
             }
 
@@ -1467,7 +1511,7 @@ class Visualization:
             else:
                 fig = ax.figure
 
-        axis_label = "Radius of Gyration [nm] (Rg)"
+        axis_label = "Radius of Gyration [nm]"
         title = "Radius of Gyration Distribution"
 
         if violin_plot:
@@ -1509,21 +1553,12 @@ class Visualization:
                         ax[i].set_ylabel("Density")
                     ax[i].set_xlabel(axis_label)
                     legend_handles = []
-                    if location =='mean':
+                    if location in ('mean', 'both'):
                         mean_rg = np.mean(rg_i)
                         mean_line = ax[i].axvline(mean_rg, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
                         legend_handles.append(mean_legend)
-                    if location == 'median':
-                        median_rg = np.median(rg_i)
-                        median_line = ax[i].axvline(median_rg, color='r', linestyle='dashed', linewidth=1)
-                        median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')
-                        legend_handles.append(median_legend)
-                    if location == 'both':
-                        mean_rg = np.mean(rg_i)
-                        mean_line = ax[i].axvline(mean_rg, color='k', linestyle='dashed', linewidth=1)
-                        mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
-                        legend_handles.append(mean_legend)
+                    if location in ('median', 'both'):
                         median_rg = np.median(rg_i)
                         median_line = ax[i].axvline(median_rg, color='r', linestyle='dashed', linewidth=1)
                         median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')

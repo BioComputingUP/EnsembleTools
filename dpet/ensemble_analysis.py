@@ -127,7 +127,7 @@ class EnsembleAnalysis:
         if not os.path.exists(tar_gz_file) and not os.path.exists(pdb_file):
             url = f'https://deposition.proteinensemble.org/api/v1/entries/{ped_id}/ensembles/{ensemble_id}/ensemble-pdb'
             
-            logger.info(f"Downloading entry {code} from PED.")
+            logger.warn(f"Downloading entry {code} from PED.")
             headers = {'accept': '*/*'}
 
             response = self.api_client.perform_get_request(url, headers=headers)
@@ -177,7 +177,7 @@ class EnsembleAnalysis:
         zip_file = os.path.join(self.output_dir, zip_filename)
 
         if not os.path.exists(zip_file):
-            logger.info(f"Downloading entry {code} from Atlas.")
+            logger.warn(f"Downloading entry {code} from ATLAS.")
             url = f"https://www.dsimb.inserm.fr/ATLAS/database/ATLAS/{code}/{code}_protein.zip"
             headers = {'accept': '*/*'}
 
@@ -345,8 +345,7 @@ class EnsembleAnalysis:
         for ensemble in self.ensembles:
             ensemble.extract_features(featurization, *args, **kwargs)
         self.feature_names = list(self.ensembles)[0].names
-        # YO!!!!
-        logger.info(f"Feature names: {self.feature_names}")
+        logger.debug(f"Feature names: {self.feature_names}")
 
 
     def _create_all_labels(self):
