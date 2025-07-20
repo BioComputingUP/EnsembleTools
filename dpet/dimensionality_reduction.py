@@ -304,16 +304,25 @@ class KPCAReduction(DimensionalityReduction):
     ----------
     circular : bool, optional
         Whether to use circular metrics for angular features. Default is False.
+        If True, it will override the `kernel` argument.
     num_dim : int, optional
         Number of dimensions for the reduced space. Default is 10.
+    kernel: str, optional
+        Kernel used for PCA, as in the scikit-learn implementation: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.KernelPCA.html
     gamma : float, optional
         Kernel coefficient. Default is None.
     """
 
-    def __init__(self, circular:bool=False, num_dim:int=10, gamma:float=None) -> None:
+    def __init__(self,
+            circular: bool = False,
+            num_dim: int = 10,
+            kernel: str = "poly",
+            gamma : float = None
+        ) -> None:
         self.circular = circular
         self.num_dim = num_dim
         self.gamma = gamma
+        self.kernel = kernel
 
     def fit(self, data):
         # Use angular features and a custom similarity function.
@@ -323,6 +332,7 @@ class KPCAReduction(DimensionalityReduction):
             pca_in = data
         # Use raw features.
         else:
+            kernel = self.kernel
             pca_in = data
 
         self.pca = KernelPCA(

@@ -50,6 +50,7 @@ class Ensemble():
         self.database = database
         self.chain_id = chain_id
         self.residue_range = residue_range
+        self.trajectory = None
 
     def load_trajectory(self, data_dir: str):  
         """
@@ -429,3 +430,12 @@ class Ensemble():
                     chain_ids.append(chain_id)
 
         return chain_ids
+    
+    def get_size(self) -> int:
+        """Return the number of conformations in an ensemble, if data has been
+        loaded."""
+        if self.trajectory is None:
+            raise ValueError("No ensemble data")
+        else:
+            return len(self.trajectory)
+        

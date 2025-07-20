@@ -16,4 +16,4 @@ outputdir/
 *.tar.gz
 *.whl
 docs/
-notebooks/develop_plots.ipynb
+notebooks/.ipynb_checkpoints/

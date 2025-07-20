@@ -48,6 +48,7 @@ class EnsembleAnalysis:
         self.all_labels = []
         self.ensembles: List[Ensemble] = ensembles
         self.param_feat = None
+        self.reduce_dim_method = None
 
     @property
     def ens_codes(self) -> List[str]:
@@ -365,15 +366,19 @@ class EnsembleAnalysis:
         for ensemble in self.ensembles:
             ensemble.normalize_features(mean, std)
 
-    def _get_concat_features(self, fit_on: List[str]=None):
+    def _get_concat_features(self, fit_on: List[str] = None, get_ensembles: bool = False):
         if fit_on and any(f not in self.ens_codes for f in fit_on):
             raise ValueError("Cannot fit on ensembles that were not provided as input.")
         if fit_on is None:
             fit_on = self.ens_codes
-        concat_features = [ensemble.features for ensemble in self.ensembles if ensemble.code in fit_on]
+        ensembles = [ensemble for ensemble in self.ensembles if ensemble.code in fit_on]
+        concat_features = [ensemble.features for ensemble in ensembles]
         concat_features = np.concatenate(concat_features, axis=0)
         logger.info(f"Concatenated featurized ensemble shape: {concat_features.shape}")
-        return concat_features
+        if not get_ensembles:
+            return concat_features
+        else:
+            return concat_features, ensembles
 
     def reduce_features(self, method: str, fit_on:List[str]=None, *args, **kwargs) -> np.ndarray:
         """
@@ -437,18 +442,17 @@ class EnsembleAnalysis:
             self.reduce_dim_method = method
             self.transformed_data = self.reducer.fit_transform(data=self.extract_features(featurization=self.param_feat))
             return self.transformed_data
-        # Check if all ensemble features have the same size
-        # Check if all ensemble features have the same size
+
         else:
-            
+            # Check if all ensemble features have the same size
             feature_sizes = set(ensemble.features.shape[1] for ensemble in self.ensembles)
             if len(feature_sizes) > 1:
                 raise ValueError("Features from ensembles have different sizes. Cannot concatenate.")
 
-            self.concat_features = self._get_concat_features()
+            self.concat_features, _ensembles = self._get_concat_features(get_ensembles=True)
             self.reducer = DimensionalityReductionFactory.get_reducer(method, *args, **kwargs)
             self.reduce_dim_method = method
-            if method in ("pca","kpca"):
+            if method in ("pca", "kpca"):
                 fit_on_data = self._get_concat_features(fit_on=fit_on)
                 self.reduce_dim_model = self.reducer.fit(data=fit_on_data)
                 for ensemble in self.ensembles:
@@ -457,6 +461,15 @@ class EnsembleAnalysis:
                 self.transformed_data = self.reducer.transform(data=self.concat_features)
             else:
                 self.transformed_data = self.reducer.fit_transform(data=self.concat_features)
+                element_count = 0
+                # Extract the dimensionality reduction features of each ensembles
+                # from the contatenated array, we need to store them in case
+                # users want to analyze them individually.
+                for ensemble in _ensembles:
+                    ens_size = ensemble.get_size()
+                    ensemble.reduce_dim_data = self.transformed_data[element_count:ens_size+element_count]
+                    element_count += ens_size
+                    logger.info(f"Reduced dimensionality ensemble shape: {ensemble.reduce_dim_data.shape}")
             return self.transformed_data
 
     def execute_pipeline(self, featurization_params:Dict, reduce_dim_params:Dict, subsample_size:int=None):

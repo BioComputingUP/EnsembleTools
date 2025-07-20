@@ -409,8 +409,10 @@ class Visualization:
         bestclust = analysis.reducer.best_kmeans.labels_
         
         if ax is None:
+            custom_axes = False
             fig, ax = plt.subplots(1, 4, figsize=(20, 5))
         else:
+            custom_axes = True
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
             ax = np.array(ax).flatten()
@@ -467,15 +469,14 @@ class Visualization:
         legend_handles = [plt.Line2D([0], [0], marker='o', color=label_colors[label], markersize=10) for label in legend_labels]
         fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right', bbox_to_anchor=(1.09, 1.00))
 
-        fig.tight_layout()
+        if not custom_axes:
+            fig.tight_layout()
 
         if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
             fig = px.scatter(x=analysis.reducer.best_tsne[:, 0], y=analysis.reducer.best_tsne[:, 1], color=colors, hover_data={'index':self._index_models()} )
             fig.update_coloraxes(colorbar_title=f'{color_by}')
             fig.show()
-
-            
 
         if save:
             fig.savefig(self.plot_dir + f'/tsnep{int(analysis.reducer.bestP)}_kmeans{int(analysis.reducer.bestK)}_scatter.png', dpi=800)
@@ -524,7 +525,7 @@ class Visualization:
 
         method = self.analysis.reduce_dim_method
         if method in ("dimenfix", "umap") and n_comp <= 2:
-            self._dimenfix_umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly, cmap_label=cmap_label)
+            return self._dimenfix_umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly, cmap_label=cmap_label)
         elif method == "tsne" and n_comp == 2:
             return self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, cmap_label=cmap_label, plotly=plotly)
         elif n_comp == 3 :
@@ -661,9 +662,6 @@ class Visualization:
 
                          ) -> List[plt.Axes]:
 
-
-
-
         from mpl_toolkits.mplot3d import Axes3D
         analysis = self.analysis
 
@@ -722,10 +720,6 @@ class Visualization:
         scatter_cluster = ax3.scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1],analysis.transformed_data[:, 2] ,s=size, c=labels_clust, cmap=cmap, alpha=0.5)
         ax3.set_title('Scatter plot (clustering labels)')
         ax3.view_init(elev=20, azim=45)
-
-
-
-   
 
         # Manage legend for original labels
         legend_labels = list(label_colors.keys())
@@ -791,6 +785,15 @@ class Visualization:
         ax.set_xlabel(f"{reduce_dim_method} dim {dim_x+1}")
         ax.set_ylabel(f"{reduce_dim_method} dim {dim_y+1}")
 
+    def _check_dimred_method(self, method, allowed=None):
+        if method is None:
+            raise ValueError("No dimensionality reduction was performed")
+        if allowed is not None:
+            if not method in allowed:
+                raise ValueError(
+                    f"Analysis is only valid for the following dimensionality reduction methods: {allowed}."
+                )
+
     def pca_2d_landscapes(self,
             save: bool = False,
             dims: List[int] = [0, 1],
@@ -819,9 +822,8 @@ class Visualization:
         """
         
         analysis = self.analysis
-
-        if analysis.reduce_dim_method not in ("pca", "kpca"):
-            raise ValueError("Analysis is only valid for pca or kpca dimensionality reduction.")
+        method_name = analysis.reduce_dim_method
+        self._check_dimred_method(method_name, allowed=("pca", "kpca"))
 
         # 2D scatter plot settings
         dim_x = dims[0]
@@ -847,7 +849,7 @@ class Visualization:
                             ensemble.reduce_dim_data[:, dim_y],
                             label=ensemble.code, marker=marker)
         axes[0].legend(**legend_kwargs)
-        self._set_labels(axes[0], "pca", dim_x, dim_y)
+        self._set_labels(axes[0], method_name, dim_x, dim_y)
 
         # Concatenate all reduced dimensionality data from the dictionary
         all_data = analysis.transformed_data
@@ -866,13 +868,13 @@ class Visualization:
                                 label=ensemble.code, c=f"C{i}",
                                 marker=marker)
             axes[i + 1].legend(**legend_kwargs)
-            self._set_labels(axes[i + 1], "pca", dim_x, dim_y)
+            self._set_labels(axes[i + 1], method_name, dim_x, dim_y)
 
         if ax is None:
             fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'PCA_2d_landscapes_' + analysis.featurization + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, f'{method_name.upper()}_2d_landscapes_' + analysis.featurization + analysis.ens_codes[0]))
 
         return axes
 
@@ -911,9 +913,8 @@ class Visualization:
         """
 
         analysis = self.analysis
-
-        if analysis.reduce_dim_method not in ("pca", "kpca"):
-            raise ValueError("Analysis is only valid for pca and kpca dimensionality reduction.")
+        method_name = analysis.reduce_dim_method
+        self._check_dimred_method(method_name, allowed=("pca", "kpca"))
 
         k = dim
         bins = np.linspace(analysis.transformed_data[:, k].min(),
@@ -921,7 +922,9 @@ class Visualization:
                            n_bins)
 
         if ax is None:
-            fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(4, 2 * len(analysis.ens_codes)), dpi=120)
+            fig, axes = plt.subplots(
+                len(analysis.ens_codes), 1, figsize=(4, 2 * len(analysis.ens_codes)), dpi=dpi
+            )
             if len(analysis.ens_codes) == 1:
                 axes = [axes]
 
@@ -947,14 +950,14 @@ class Visualization:
                         alpha=0.25,
                         histtype="step")
             axes[i].legend(**legend_kwargs)
-            axes[i].set_xlabel(f"Dim {k+1}")
+            axes[i].set_xlabel(f"{method_name} dim {k+1}")
             axes[i].set_ylabel("Density")
 
         if ax is None:
             fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'PCA_hist' + analysis.featurization + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, f'{method_name.upper()}_hist' + analysis.featurization + analysis.ens_codes[0]))
 
         return axes
 
@@ -1063,6 +1066,7 @@ class Visualization:
     def pca_rg_correlation(self,
             save: bool = False,
             ax: Union[None, List[plt.Axes]] = None,
+            dpi: int = 96,
             dim: int = 0,
         ) -> List[plt.Axes]:
         """
@@ -1076,6 +1080,9 @@ class Visualization:
 
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
+        
+        dpi : int, optional
+            For changing the quality and dimension of the output figure. Default is 96.
 
         dim: int, optional
             Index of the principal component to analyze, defaults to 0 (first
@@ -1094,7 +1101,7 @@ class Visualization:
             raise ValueError("Analysis is only valid for pca and kpca dimensionality reduction.")
 
         if ax is None:
-            fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(3, 3 * len(analysis.ens_codes)), dpi=120)
+            fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(3, 3 * len(analysis.ens_codes)), dpi=dpi)
             if len(analysis.ens_codes) == 1:
                 axes = [axes]
         else:
