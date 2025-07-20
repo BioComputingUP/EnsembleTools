@@ -332,6 +332,11 @@ def _get_max_plots_in_grid(min_len, feature):
         raise KeyError(feature)
 
 
+legend_kwargs = {
+    # "loc": 'upper right', "bbox_to_anchor": (1.1, 1.1),
+    "fontsize": 8
+}
+
 class Visualization:
     """
     Visualization class for ensemble analysis.
@@ -790,6 +795,7 @@ class Visualization:
             save: bool = False,
             dims: List[int] = [0, 1],
             ax: Union[None, List[plt.Axes]] = None,
+            dpi: int = 96
         ) -> List[plt.Axes]:
         """
         Plot 2D landscapes when the dimensionality reduction method is "pca" or "kpca".
@@ -803,6 +809,8 @@ class Visualization:
             The default components are the first and second.
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
+        dpi : int, optional
+            For changing the quality and dimension of the output figure. Default is 96.
 
         Returns
         -------
@@ -819,12 +827,13 @@ class Visualization:
         dim_x = dims[0]
         dim_y = dims[1]
         marker = "."
-        legend_kwargs = {"loc": 'upper right', "bbox_to_anchor": (1.1, 1.1), "fontsize": 8}
 
         num_ensembles = len(analysis.ens_codes)
         
         if ax is None:
-            fig, axes = plt.subplots(num_ensembles + 1, figsize=(4, 4 * (num_ensembles + 1)), dpi=120)
+            fig, axes = plt.subplots(
+                num_ensembles + 1, figsize=(4, 4 * (num_ensembles + 1)), dpi=dpi
+            )
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -871,7 +880,8 @@ class Visualization:
             save: bool = False,
             dim: int = 0,
             n_bins: int = 30,
-            ax: Union[None, List[plt.Axes]] = None
+            ax: Union[None, List[plt.Axes]] = None,
+            dpi: int = 96
         ) -> List[plt.Axes]:
         """
         Plot 1D histogram when the dimensionality reduction method is "pca" or "kpca".
@@ -881,15 +891,18 @@ class Visualization:
         save: bool, optional
             If True the plot will be saved in the data directory. Default is False.
 
-        ax: Union[None, List[plt.Axes]], optional
-            A list of Axes objects to plot on. Default is None, which creates new axes.
-
         dim: int, optional
             To select the specific component (dimension) for which you want to visualize the histogram distribution.
             Default is 0 (first principal component in PCA). 
-        
+
         n_bins: int, optional
             Number of bins in the histograms.
+
+        ax: Union[None, List[plt.Axes]], optional
+            A list of Axes objects to plot on. Default is None, which creates new axes.
+        
+        dpi : int, optional
+            For changing the quality and dimension of the output figure. Default is 96.
 
         Returns
         -------
@@ -904,8 +917,8 @@ class Visualization:
 
         k = dim
         bins = np.linspace(analysis.transformed_data[:, k].min(),
-                        analysis.transformed_data[:, k].max(),
-                        n_bins)
+                           analysis.transformed_data[:, k].max(),
+                           n_bins)
 
         if ax is None:
             fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(4, 2 * len(analysis.ens_codes)), dpi=120)
@@ -933,13 +946,13 @@ class Visualization:
                         color="gray",
                         alpha=0.25,
                         histtype="step")
-            axes[i].legend(loc='upper right',
-                        bbox_to_anchor=(1.1, 1.1),
-                        fontsize=8)
+            axes[i].legend(**legend_kwargs)
             axes[i].set_xlabel(f"Dim {k+1}")
             axes[i].set_ylabel("Density")
 
-        fig.tight_layout()
+        if ax is None:
+            fig.tight_layout()
+
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'PCA_hist' + analysis.featurization + analysis.ens_codes[0]))
 
@@ -951,15 +964,17 @@ class Visualization:
             ax: Union[None, List[plt.Axes]] = None,
             dpi: int = 96,
             cmap: str = "RdBu",
-            cmap_range: Union[None, Tuple[float]] = None
+            cmap_range: Union[None, Tuple[float]] = None,
+            scale_loadings: bool = False
         ) -> List[plt.Axes]:
         """
-        Plot the correlation between residues based on PCA weights.
+        Plot the loadings (weights) of each pair of residues for a list of
+        principal components (PCs).
 
         Parameters
         ----------
         sel_dims : List[int], optional
-            A list of indices specifying the PCA dimensions to include in the plot.
+            A list of indices specifying the PC to include in the plot.
         save : bool, optional
             If True, the plot will be saved as an image file. Default is False.
         ax : Union[None, List[plt.Axes]], optional
@@ -972,6 +987,9 @@ class Visualization:
             Range of the colormap. Defaults to 'None', the range will be
             identified automatically. If a tuple, the first and second elements
             are the min. and max. of the range.
+        scale_loadings: bool, optional
+            Scale loadings by explained variance. Some definitions use correlation
+            coefficients as loadings, when input features are standardized.
 
         Returns
         -------
@@ -1009,8 +1027,11 @@ class Visualization:
         for k, sel_dim in enumerate(sel_dims):
             matrix = np.zeros((num_residues, num_residues))
             vals = []
-            loadings = pca_model.components_.T * np.sqrt(pca_model.explained_variance_)
-            loadings = loadings.T
+            if scale_loadings:
+                loadings = pca_model.components_.T * np.sqrt(pca_model.explained_variance_)
+                loadings = loadings.T
+            else:
+                loadings = pca_model.components_
             for i in range(loadings.shape[1]):
                 r1, r2 = analysis.feature_names[i].split("-")
                 # Note: this should be patched for proteins with resSeq values not starting from 1!
