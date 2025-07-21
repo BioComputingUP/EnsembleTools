@@ -441,6 +441,7 @@ class EnsembleAnalysis:
             self.reducer = DimensionalityReductionFactory.get_reducer(method, *args, **kwargs)
             self.reduce_dim_method = method
             self.transformed_data = self.reducer.fit_transform(data=self.extract_features(featurization=self.param_feat))
+            self._assign_concat_features(self.ensembles)
             return self.transformed_data
 
         else:
@@ -461,16 +462,22 @@ class EnsembleAnalysis:
                 self.transformed_data = self.reducer.transform(data=self.concat_features)
             else:
                 self.transformed_data = self.reducer.fit_transform(data=self.concat_features)
-                element_count = 0
-                # Extract the dimensionality reduction features of each ensembles
-                # from the contatenated array, we need to store them in case
-                # users want to analyze them individually.
-                for ensemble in _ensembles:
-                    ens_size = ensemble.get_size()
-                    ensemble.reduce_dim_data = self.transformed_data[element_count:ens_size+element_count]
-                    element_count += ens_size
-                    logger.info(f"Reduced dimensionality ensemble shape: {ensemble.reduce_dim_data.shape}")
+                self._assign_concat_features(_ensembles)
             return self.transformed_data
+    
+    def _assign_concat_features(self, ensembles):
+        """
+        Extract the dimensionality reduction features of each ensembles from the
+        contatenated array, we need to store them in case users want to analyze
+        them individually.
+        """
+        element_count = 0
+        for ensemble in ensembles:
+            ens_size = ensemble.get_size()
+            ensemble.reduce_dim_data = self.transformed_data[element_count:ens_size+element_count]
+            element_count += ens_size
+            logger.info(f"Reduced dimensionality ensemble shape: {ensemble.reduce_dim_data.shape}")
+        
 
     def execute_pipeline(self, featurization_params:Dict, reduce_dim_params:Dict, subsample_size:int=None):
         """

@@ -627,7 +627,7 @@ class Visualization:
                 xi, yi = np.mgrid[min(ensemble_data[:, 0]):max(ensemble_data[:, 0]):100j,
                                 min(ensemble_data[:, 1]):max(ensemble_data[:, 1]):100j]
                 zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
-                ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, label=f'Ensemble {label}', colors=[label_colors[label]])
+                ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, colors=[label_colors[label]])
             ax[3].set_title('Density Plot (Ensemble-wise)')
             # ax[3].legend(title='Ensemble', loc='upper right')
         else:
