@@ -3,6 +3,7 @@ from typing import List, Tuple, Union
 import numpy as np
 from matplotlib.lines import Line2D
 from matplotlib import colors, pyplot as plt
+from matplotlib.colors import LogNorm
 from scipy.stats import gaussian_kde
 from sklearn.cluster import KMeans
 import mdtraj
@@ -575,9 +576,11 @@ class Visualization:
             raise ValueError(f"Method {color_by} not supported.")
 
         if ax is None:
+            custom_axes = False
             fig, ax = plt.subplots(1, 4, figsize=(18, 4))
             axes = ax.flatten()  # Ensure axes is a 1D array
         else:
+            custom_axes = True
             ax_array = np.array(ax).flatten()
             axes = ax_array  # If ax is provided, flatten it to 1D
             fig = axes[0].figure
@@ -639,7 +642,8 @@ class Visualization:
             ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, cmap='Blues')
             ax[3].set_title('Density Plot')
         fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right', bbox_to_anchor=(1.09, 1.0))
-        fig.tight_layout()
+        if not custom_axes:
+            fig.tight_layout()
         if save:
             fig.savefig(self.plot_dir + f'/{analysis.reduce_dim_method}_scatter.png', dpi=800)
         
@@ -833,10 +837,12 @@ class Visualization:
         num_ensembles = len(analysis.ens_codes)
         
         if ax is None:
+            custom_axes = False
             fig, axes = plt.subplots(
                 num_ensembles + 1, figsize=(4, 4 * (num_ensembles + 1)), dpi=dpi
             )
         else:
+            custom_axes = True
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
             axes = np.array(ax).flatten()
@@ -870,7 +876,7 @@ class Visualization:
             axes[i + 1].legend(**legend_kwargs)
             self._set_labels(axes[i + 1], method_name, dim_x, dim_y)
 
-        if ax is None:
+        if not custom_axes:
             fig.tight_layout()
 
         if save:
@@ -1188,6 +1194,8 @@ class Visualization:
             labels.append(ensemble.code)
 
         # Plot setup depending on plot type and multiple_hist_ax setting
+        custom_axes = ax is not None
+
         if not violin_plot and multiple_hist_ax:
             # Create one axis for each histogram
             if ax is None:
@@ -1273,8 +1281,8 @@ class Visualization:
                     # Add legend if needed
                     if legend_handles:
                         ax[i].legend(handles=legend_handles, loc='upper right')
-
-                fig.tight_layout()
+                if not custom_axes:
+                    fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'Global_SASA_dist' + self.analysis.ens_codes[0]))
@@ -1382,7 +1390,10 @@ class Visualization:
             dssp_data_dict[ensemble.code] = mdtraj.compute_dssp(ensemble.trajectory)
         return dssp_data_dict
     
-    def relative_dssp_content(self, dssp_code ='H' ,save: bool = False, ax: plt.Axes = None) -> plt.Axes:
+    def relative_dssp_content(self,
+            dssp_code: str = 'H', save: bool = False, ax: plt.Axes = None,
+            auto_xticks: bool = True
+        ) -> plt.Axes:
         """
         Plot the relative ss content in each ensemble for each residue. 
 
@@ -1395,6 +1406,8 @@ class Visualization:
         dssp_code : str, optional
             The selected dssp code , it could be selected between 'H' for Helix, 'C' for Coil and 'E' for strand. It works based on
             the simplified DSSP codes 
+        auto_xticks: bool, optional
+            If True, use matplotlib default xticks.
         Returns
         -------
         plt.Axes
@@ -1434,21 +1447,19 @@ class Visualization:
             ax.plot(x[mask], relative_ss_content[mask], marker='o', linestyle='dashed', label=protein_name, alpha=0.5)
 
             bottom += relative_ss_content
-        
-        ax.set_xticks([i for i in np.arange(0, len(x) + 1) if i == 0 or i % 5 == 0], labels=[i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
+        if not auto_xticks:
+            ax.set_xticks([i for i in np.arange(0, len(x) + 1) if i == 0 or i % 5 == 0], labels=[i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
         ax.set_xlabel('Residue Index')
         if dssp_code == 'H':
             dssp_name = 'Helix'
-            ax.set_ylabel(f'Relative Content of {dssp_name}')
-            ax.set_title(f'Relative Content of {dssp_code} in Each Residue in the Ensembles')
         elif dssp_code == 'C':
             dssp_name = 'Coil'
-            ax.set_ylabel(f'Relative Content of {dssp_name}')
-            ax.set_title(f'Relative Content of {dssp_code} in Each Residue in the Ensembles')
         elif dssp_code == 'E':
             dssp_name = 'Strand'
-            ax.set_ylabel(f'Relative Content of {dssp_name}')
-            ax.set_title(f'Relative Content of {dssp_code} in Each Residue in the Ensembles')
+        else:
+            raise KeyError(dssp_code)
+        ax.set_ylabel(f'Relative Content of {dssp_name}')
+        ax.set_title(f'Relative Content of {dssp_code}')
         ax.legend()
 
         if save:
@@ -1468,7 +1479,7 @@ class Visualization:
             bins: int = 50,
             hist_range: Tuple = None,
             multiple_hist_ax: bool = False,
-            violin_plot: bool = False,
+            violin_plot: bool = True,
             location: str = 'mean',
             dpi: int = 96,
             save: bool = False,
@@ -1488,7 +1499,7 @@ class Visualization:
         multiple_hist_ax: bool, optional
             If True, it will plot each histogram in a different axis.
         violin_plot : bool, optional
-            If True, a violin plot is visualized. Default is False.
+            If True, a violin plot is visualized. Default is True.
         location: str, optional
             Select between "median" or "mean" or "both" to show in violin plot. Default value is "mean"
         dpi : int, optional
@@ -1519,6 +1530,7 @@ class Visualization:
         n_systems = len(rg_data_dict)
 
         # Plot.
+        custom_axes = ax is not None
         if not violin_plot and multiple_hist_ax:
             # One axis for each histogram.
             if ax is None:
@@ -1595,7 +1607,8 @@ class Visualization:
                     if legend_handles:
                         ax[i].legend(handles=legend_handles, loc='upper right')
 
-                    fig.tight_layout()
+                    if not custom_axes:
+                        fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'rg_comparison_' + self.analysis.ens_codes[0]))
@@ -1623,15 +1636,16 @@ class Visualization:
         return contact_ens_dict
 
     def average_distance_maps(self, 
-                            ticks_fontsize: int = 14,
-                            cbar_fontsize: int = 14,
-                            title_fontsize: int = 14,
-                            dpi: int = 96,
-                            use_ylabel: bool = True,
-                            save: bool = False,
-                            ax: Union[None, List[List[plt.Axes]], List[plt.Axes]] = None) -> List[plt.Axes]:
+            ticks_fontsize: int = 14,
+            cbar_fontsize: int = 14,
+            title_fontsize: int = 14,
+            dpi: int = 96,
+            use_ylabel: bool = True,
+            save: bool = False,
+            ax: Union[None, List[List[plt.Axes]], List[plt.Axes]] = None
+        ) -> List[plt.Axes]:
         """
-        Plot the average distance maps for selected ensembles.
+        Plot the average C-alpha distance maps for selected ensembles.
         
         Parameters
         ----------
@@ -1667,9 +1681,11 @@ class Visualization:
         rows = (num_proteins + cols - 1) // cols  # Calculate number of rows needed
 
         if ax is None:
+            custom_axes = False
             fig, axes = plt.subplots(rows, cols, figsize=(8 * cols, 6 * rows), dpi=dpi)
             axes = axes.flatten()  # Ensure axes is a 1D array
         else:
+            custom_axes = True
             ax_array = np.array(ax).flatten()
             axes = ax_array  # If ax is provided, flatten it to 1D
             fig = axes[0].figure
@@ -1683,7 +1699,7 @@ class Visualization:
             avg_dmap[tril_ids] = np.nan
             
             im = ax.imshow(avg_dmap)
-            ax.set_title(f"Average Distance Map: {protein_name}", fontsize=title_fontsize)
+            ax.set_title(protein_name, fontsize=title_fontsize)
             ax.tick_params(axis='both', which='major', labelsize=ticks_fontsize)
             if not use_ylabel:
                 ax.set_yticks([])
@@ -1698,7 +1714,8 @@ class Visualization:
         for i in range(num_proteins, rows * cols):
             fig.delaxes(axes[i])
 
-        fig.tight_layout()
+        if not custom_axes:
+            fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'avg_dmap_' + self.analysis.ens_codes[0]))
@@ -1765,6 +1782,8 @@ class Visualization:
             labels.append(ensemble.code)
 
         # Plot setup depending on plot type and multiple_hist_ax setting
+        custom_axes = ax is not None
+
         if not violin_plot and multiple_hist_ax:
             # Create one axis for each histogram
             if ax is None:
@@ -1853,8 +1872,8 @@ class Visualization:
 
                     if legend_handles:
                         ax[i].legend(handles=legend_handles, loc='upper right')
-
-                fig.tight_layout()
+                if not custom_axes:
+                    fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'e2e_distances_' + self.analysis.ens_codes[0]))
@@ -1911,6 +1930,8 @@ class Visualization:
             labels.append(ensemble.code)
 
         # Plot setup depending on the type of plot and multiple_hist_ax setting
+        custom_axes = ax is not None
+
         if not violin_plot and multiple_hist_ax:
             # Create one axis for each histogram
             if ax is None:
@@ -1997,7 +2018,8 @@ class Visualization:
                     if legend_handles:
                         ax[i].legend(handles=legend_handles, loc='upper right')
 
-                fig.tight_layout()
+                if not custom_axes:
+                    fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'asphericity_dist_' + self.analysis.ens_codes[0]))
@@ -2052,8 +2074,11 @@ class Visualization:
             prolat = compute_prolateness(ensemble.trajectory)
             prolat_list.append(prolat)
             labels.append(ensemble.code)
+        
 
         # Plot setup depending on the type of plot and multiple_hist_ax setting
+        custom_axes = ax is not None
+
         if not violin_plot and multiple_hist_ax:
             # Create one axis for each histogram
             if ax is None:
@@ -2140,7 +2165,8 @@ class Visualization:
                     if legend_handles:
                         ax[i].legend(handles=legend_handles, loc='upper right')
 
-                fig.tight_layout()
+                if not custom_axes:
+                    fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'prolateness_dist_' + self.analysis.ens_codes[0]))
@@ -2200,14 +2226,14 @@ class Visualization:
         return ax
 
     def contact_prob_maps(self,
-                        log_scale: bool = True,
-                        avoid_zero_count: bool = False,
-                        threshold: float = 0.8,
-                        dpi: int = 96, 
-                        save: bool = False, 
-                        cmap_color: str = 'Blues',
-                        ax: Union[None, List[plt.Axes], np.ndarray] = None) -> Union[List[plt.Axes], np.ndarray]:
-        from matplotlib.colors import LogNorm
+            log_scale: bool = True,
+            avoid_zero_count: bool = False,
+            threshold: float = 0.8,
+            dpi: int = 96, 
+            save: bool = False, 
+            cmap_color: str = 'Blues',
+            ax: Union[None, List[plt.Axes], np.ndarray] = None
+        ) -> Union[List[plt.Axes], np.ndarray]:
         """
         Plot the contact probability map based on the threshold.
 
@@ -2240,9 +2266,11 @@ class Visualization:
         cmap = plt.get_cmap(cmap_color)
         
         if ax is None:
+            custom_axes = False
             fig, axes = plt.subplots(num_rows, num_cols, figsize=(8 * num_cols, 6 * num_rows), dpi=dpi)
             axes = axes.flatten()
         else:
+            custom_axes = True
             ax_array = np.array(ax)
             axes = ax_array.flatten()
             fig = axes[0].figure
@@ -2263,17 +2291,18 @@ class Visualization:
                                norm=LogNorm(vmin=1e-3, vmax=1.0))
             else:
                 im = ax.imshow(matrix_p_map, cmap=cmap)
-            ax.set_title(f"Contact Probability Map: {ensemble.code}", fontsize=14)
+            ax.set_title(ensemble.code, fontsize=14)
 
             cbar = fig.colorbar(im, ax=ax)
-            cbar.set_label('Frequency', fontsize=14)
+            cbar.set_label('Contact frequency', fontsize=14)
             cbar.ax.tick_params(labelsize=14)
 
         # Remove any empty subplots
         for i in range(num_proteins, num_rows * num_cols):
             fig.delaxes(axes[i])
-        
-        fig.tight_layout()
+
+        if not custom_axes:
+            fig.tight_layout()
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'contact_prob_' + self.analysis.ens_codes[0]))
@@ -2333,8 +2362,10 @@ class Visualization:
         ensembles = self.analysis.ensembles
         if two_d_hist:
             if ax is None:
+                custom_axes = False
                 fig, ax = plt.subplots(1, len(ensembles), figsize=(5 * len(ensembles), 5))
             else:
+                custom_axes = True
                 if not isinstance(ax, (list, np.ndarray)):
                     ax = [ax]
                 ax = np.array(ax).flatten()
@@ -2363,7 +2394,8 @@ class Visualization:
 
                 cbar = fig.colorbar(hist[3], ax=axis)
                 cbar.set_label('Density')
-            fig.tight_layout()
+            if not custom_axes:
+                fig.tight_layout()
         else:
             if ax is None:
                 fig, ax = plt.subplots(1, 1)
@@ -2611,9 +2643,11 @@ class Visualization:
         num_proteins = len(self.analysis.ensembles)
         
         if ax is None:
+            custom_axes = False
             fig, axes = plt.subplots(2, num_proteins, figsize=(10, 4 * num_proteins))
             axes = axes.flatten()
         else:
+            custom_axes = True
             ax_array = np.array(ax)
             axes = ax_array.flatten()
             fig = axes[0].figure
@@ -2640,8 +2674,8 @@ class Visualization:
             cbar.set_label("distance [nm]")
             cbar = fig.colorbar(im1, ax=axes[idx + 1], shrink=0.8)
             cbar.set_label("distance [nm]")
-
-            fig.tight_layout()
+            if not custom_axes:
+                fig.tight_layout()
 
             if save:
                 fig.savefig(os.path.join(self.plot_dir, 'dist_ca_com_' + ens.code))  
