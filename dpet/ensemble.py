@@ -52,13 +52,13 @@ class Ensemble():
         self.residue_range = residue_range
         self.trajectory = None
 
-    def load_trajectory(self, data_dir: str):  
+    def load_trajectory(self, data_dir: str = None):
         """
         Load a trajectory for the ensemble.
 
         Parameters
         ----------
-        data_dir : str
+        data_dir : str, optional
             The directory where the trajectory data is located or where generated trajectory files will be saved.
 
         Notes
@@ -100,7 +100,7 @@ class Ensemble():
             self.trajectory[0].save(traj_top)
             
             logger.info(f"Generated trajectory saved to {data_dir}.")
-        elif self.data_path.endswith(('.dcd', '.xtc')) and os.path.exists(self.top_path):
+        elif self.data_path.endswith(('.dcd', '.xtc')):
             logger.info(f"Loading trajectory for {self.code}...")
             self.trajectory = mdtraj.load(self.data_path, top=self.top_path)
         elif os.path.isdir(self.data_path):

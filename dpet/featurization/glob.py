@@ -26,7 +26,7 @@ def compute_asphericity(trajectory: mdtraj.Trajectory):
         asphericity = 1-3*((eigenvalues[0]*eigenvalues[1] + eigenvalues[1]*eigenvalues[-1] + eigenvalues[-1]*eigenvalues[0])/np.power(eigenvalues[0]+eigenvalues[1]+eigenvalues[-1],2))
         asphericities.append(asphericity)
     
-    return asphericities
+    return np.array(asphericities)
 
 def compute_prolateness(trajectory: mdtraj.Trajectory):
     gyration_tensors = mdtraj.compute_gyration_tensor(trajectory)
@@ -44,7 +44,7 @@ def compute_prolateness(trajectory: mdtraj.Trajectory):
         prolateness = (lambda_mid - lambda_min) / lambda_max
         prolateness_values.append(prolateness)
     
-    return prolateness_values
+    return np.array(prolateness_values)
 
 def compute_ensemble_sasa(trajectory: mdtraj.Trajectory):
     sasa = mdtraj.shrake_rupley(trajectory)
