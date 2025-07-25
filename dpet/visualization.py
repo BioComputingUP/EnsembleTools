@@ -1,3 +1,4 @@
+from cProfile import label
 import os
 from typing import List, Tuple, Union
 import numpy as np
@@ -110,7 +111,7 @@ def plot_violins(
         ax: plt.Axes,
         data: List[np.ndarray],
         labels: List[str],
-        location : str = 'mean',
+        summary_stat: str = 'mean',
         title: str = "Histogram",
         xlabel: str = "x",
         color: str = 'blue'
@@ -128,7 +129,7 @@ def plot_violins(
         List of NumPy array storing the data to be plotted.
     labels: List[str]
         List of strings with the labels of the arrays.
-    location: str, optional
+    summary_stat: str, optional
         Select between "median" or "mean" to show in violin plot. Default value is "mean"
     title: str, optional
         Title of the axis object.
@@ -146,19 +147,19 @@ def plot_violins(
     mycolors = ['purple', 'green', 'blue']  # You can customize this list
 
     # Plot the violin plots and customize the colors for medians and means
-    if location == 'mean':
+    if summary_stat == 'mean':
         vp = ax.violinplot(data, showmeans=True, showmedians=False)
         vp['cmeans'].set_color(mycolors[0])  # Set the mean color
         mean_line = Line2D([0], [0], color=mycolors[0], linestyle='-', label='Mean')
         ax.legend(handles=[mean_line], loc='upper right')
 
-    elif location == 'median':
+    elif summary_stat == 'median':
         vp = ax.violinplot(data, showmeans=False, showmedians=True)
         vp['cmedians'].set_color(mycolors[1])  # Set the median color
         median_line = Line2D([0], [0], color=mycolors[1], linestyle='-', label='Median')
         ax.legend(handles=[median_line], loc='upper right')
 
-    elif location == 'both':
+    elif summary_stat == 'both':
         vp = ax.violinplot(data, showmeans=True, showmedians=True)
         vp['cmeans'].set_color(mycolors[0])    # Set the mean color
         vp['cmedians'].set_color(mycolors[1])  # Set the median color
@@ -1143,10 +1144,10 @@ class Visualization:
                 bins: int = 50, 
                 hist_range: Tuple = None, 
                 violin_plot: bool = True, 
-                location: str = 'mean',
+                summary_stat: str = 'mean',
                 save: bool = False, 
                 dpi = 96,
-                color: str = 'blue',
+                color: str = 'lightblue',
                 multiple_hist_ax: bool = False,
                 ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> plt.Axes:
         """
@@ -1161,12 +1162,15 @@ class Visualization:
             which corresponds to using the min a max value across all data.
         violin_plot : bool, optional
             If True, a violin plot is visualized. Default is True.
-        location: str, optional
-            Select between "median" or "mean" or "both" to show in violin plot. Default is "mean".
+        summary_stat: str, optional
+            Specifies whether to display the "mean", "median", or "both" as reference lines on the plots.
+            This applies when violin_plot is True or when multiple_hist_ax is True for histograms.
+        dpi : int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
         save : bool, optional
-            If True, the plot will be saved in the data directory. Default is False.
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
         color : str, optional
-            Color of the violin plot. Default is blue.
+            Color of the violin plot. Default is lightblue.
         multiple_hist_ax : bool, optional
             If True, it will plot each histogram in a different axis.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
@@ -1225,7 +1229,7 @@ class Visualization:
                 ax=ax,
                 data=hist_data,
                 labels=labels,
-                location=location,
+                summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
                 color=color
@@ -1248,9 +1252,14 @@ class Visualization:
                     data=hist_data, bins=bins, range=hist_range
                 )
                 h_args = {"histtype": "step", "density": True}
-
+                y_max = 0
+                for hist_data_i in hist_data:
+                    counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
+                    y_max = max(y_max, counts.max())
+                    
                 for i, (name_i, hist_data_i) in enumerate(zip(labels, hist_data)):
                     ax[i].hist(hist_data_i, bins=_bins, label=name_i, **h_args)
+                    ax[i].set_ylim(0, y_max * 1.1)  # Add a little margin
                     ax[i].set_title(name_i)
                     if i == 0:
                         ax[i].set_ylabel("Density")
@@ -1258,17 +1267,17 @@ class Visualization:
 
                     # Adding mean/median/both lines with legend
                     legend_handles = []
-                    if location == 'mean':
+                    if summary_stat == 'mean':
                         mean_sasa = np.mean(hist_data_i)
                         mean_line = ax[i].axvline(mean_sasa, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
                         legend_handles.append(mean_legend)
-                    if location == 'median':
+                    if summary_stat == 'median':
                         median_sasa = np.median(hist_data_i)
                         median_line = ax[i].axvline(median_sasa, color='r', linestyle='dashed', linewidth=1)
                         median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')
                         legend_handles.append(median_legend)
-                    if location == 'both':
+                    if summary_stat == 'both':
                         mean_sasa = np.mean(hist_data_i)
                         mean_line = ax[i].axvline(mean_sasa, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
@@ -1285,23 +1294,32 @@ class Visualization:
                     fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'Global_SASA_dist' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'Global_SASA_dist' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return ax
 
-    def rg_vs_asphericity(self, save: bool = False, ax: plt.Axes = None, verbose: bool = True) -> plt.Axes:
+    def rg_vs_asphericity(self,
+                           dpi: int = 96,
+                           save: bool = False,
+                           size: int = 4,
+                           ax: plt.Axes = None,
+                           verbose: bool = True) -> plt.Axes:
         """
-        Plot the Rg versus Asphericity and get the pearson correlation coefficient to evaluate 
+        Plots the Rg versus Asphericity and calculates the pearson correlation coefficient to evaluate 
         the correlation between Rg and Asphericity.
 
         Parameters
         ----------
-        save: bool, optional
-            If True, the plot will be saved in the data directory. Default is False.
+        dpi: int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
+        save : bool, optional
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
+        size: int, optional
+            The size of the scatter points. Default is 4.
         ax: plt.Axes, optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
         verbose: bool, optional
-            Verbosity for the output of the method.
+            Verbosity for the output of the method. Showin the Pearson correlation coefficient for each ensemble.
 
         Returns
         -------
@@ -1312,7 +1330,7 @@ class Visualization:
         analysis = self.analysis
         
         if ax is None:
-            fig, ax = plt.subplots()  # Create a new figure if ax is not provided
+            fig, ax = plt.subplots(dpi=dpi)  # Create a new figure if ax is not provided
         else:
             fig = ax.figure  # Use the figure associated with the provided ax
         
@@ -1320,7 +1338,7 @@ class Visualization:
             x = mdtraj.compute_rg(ensemble.trajectory)
             y = compute_asphericity(ensemble.trajectory)
             p = np.corrcoef(x, y)
-            ax.scatter(x, y, s=4, label=ensemble.code)
+            ax.scatter(x, y, s=size, label=ensemble.code)
             msg = f"Pearson coeff for {ensemble.code} = {round(p[0][1], 3)}"
             if verbose:
                 print(msg)
@@ -1328,23 +1346,33 @@ class Visualization:
                 logger.info(msg)
         
         ax.set_ylabel("Asphericity")
-        ax.set_xlabel("Radius of Gyration (Rg) [nm]")
+        ax.set_xlabel( r"Radius of Gyration ($R_g$) [nm]")
+        ax.set_title("Rg vs. Asphericity")
         ax.legend()
         
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'Rg_vs_Asphericity_' + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'Rg_vs_Asphericity_' + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
         
         return ax
   
-    def rg_vs_prolateness(self, save: bool = False, ax: plt.Axes = None, verbose: bool = True) -> plt.Axes:
+    def rg_vs_prolateness(self, 
+                          dpi: int = 96,
+                          size: int = 4,
+                          save: bool = False,
+                          ax: plt.Axes = None, 
+                          verbose: bool = True) -> plt.Axes:
         """
         Plot the Rg versus Prolateness and get the Pearson correlation coefficient to evaluate 
         the correlation between Rg and Prolateness. 
 
         Parameters
         ----------
+        dpi: int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
+        size: int, optional
+            The size of the scatter points. Default is 4.
         save: bool, optional
-            If True, the plot will be saved in the data directory. Default is False.
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
         ax: plt.Axes, optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
         verbose: bool, optional
@@ -1359,7 +1387,7 @@ class Visualization:
         analysis = self.analysis
         
         if ax is None:
-            fig, ax = plt.subplots()  # Create a new figure if ax is not provided
+            fig, ax = plt.subplots(dpi=dpi)  # Create a new figure if ax is not provided
         else:
             fig = ax.figure  # Use the figure associated with the provided ax
 
@@ -1367,7 +1395,7 @@ class Visualization:
             x = mdtraj.compute_rg(ensemble.trajectory)
             y = compute_prolateness(ensemble.trajectory)
             p = np.corrcoef(x, y)
-            ax.scatter(x, y, s=4, label=ensemble.code)
+            ax.scatter(x, y, s=size, label=ensemble.code)
             msg = f"Pearson coeff for {ensemble.code} = {round(p[0][1], 3)}"
             if verbose:
                 print(msg)
@@ -1375,11 +1403,12 @@ class Visualization:
                 logger.info(msg)
 
         ax.set_ylabel("Prolateness")
-        ax.set_xlabel("Radius of Gyration (Rg) [nm]")
+        ax.set_xlabel(r"Radius of Gyration ($R_g$) [nm]")
+        ax.set_title("Rg vs. Prolateness")
         ax.legend()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'Rg_vs_Prolateness_' + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'Rg_vs_Prolateness_' + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
         
         return ax
 
@@ -1391,23 +1420,32 @@ class Visualization:
         return dssp_data_dict
     
     def relative_dssp_content(self,
-            dssp_code: str = 'H', save: bool = False, ax: plt.Axes = None,
-            auto_xticks: bool = True
+            dssp_code: str = 'H', 
+            dpi: int = 96,
+            save: bool = False, ax: plt.Axes = None,
+            auto_xticks: bool = True,
+            xtick_interval: int = 5
         ) -> plt.Axes:
         """
         Plot the relative ss content in each ensemble for each residue. 
 
         Parameters
         ----------
-        save : bool, optional
-            If True, the plot will be saved in the data directory. Default is False.
-        ax : plt.Axes, optional
-            The axes on which to plot. Default is None, which creates a new figure and axes.
         dssp_code : str, optional
             The selected dssp code , it could be selected between 'H' for Helix, 'C' for Coil and 'E' for strand. It works based on
-            the simplified DSSP codes 
+            the simplified DSSP codes
+        dpi : int, optional
+            The DPI (dots per inch) of the output figure. Default is 96. 
+        save : bool, optional
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
+        ax : plt.Axes, optional
+            The axes on which to plot. Default is None, which creates a new figure and axes.
         auto_xticks: bool, optional
             If True, use matplotlib default xticks.
+        xtick_interval: int, optional
+            If `auto_xticks` is False, this parameter defines the interval between displayed residue indices on the x-axis.
+            Residue 1 is always included,followed by every `xtick_interval` residues (e.g., 1, 5, 10, 15 if `xtick_interval`=5).
+
         Returns
         -------
         plt.Axes
@@ -1420,7 +1458,7 @@ class Visualization:
         protein_dssp_data_dict = self._get_protein_dssp_data_dict()
 
         if ax is None:
-            fig, ax = plt.subplots(figsize=(10, 5))
+            fig, ax = plt.subplots(dpi=dpi, figsize=(10, 5))
         else:
             fig = ax.figure
 
@@ -1448,7 +1486,11 @@ class Visualization:
 
             bottom += relative_ss_content
         if not auto_xticks:
-            ax.set_xticks([i for i in np.arange(0, len(x) + 1) if i == 0 or i % 5 == 0], labels=[i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
+
+            tick_labels = [1] + [i for i in range(xtick_interval, len(x) + 1, xtick_interval)]
+            tick_positions = [i - 1 for i in tick_labels]  # convert to 0-based indexing
+            ax.set_xticks(tick_positions, labels=tick_labels)
+        
         ax.set_xlabel('Residue Index')
         if dssp_code == 'H':
             dssp_name = 'Helix'
@@ -1459,11 +1501,11 @@ class Visualization:
         else:
             raise KeyError(dssp_code)
         ax.set_ylabel(f'Relative Content of {dssp_name}')
-        ax.set_title(f'Relative Content of {dssp_code}')
+        ax.set_title(f'{dssp_name} Content per Residue in the Ensemble')
         ax.legend()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'relative_helix_' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'relative_helix_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
         
         return ax
 
@@ -1480,11 +1522,11 @@ class Visualization:
             hist_range: Tuple = None,
             multiple_hist_ax: bool = False,
             violin_plot: bool = True,
-            location: str = 'mean',
+            summary_stat: str = 'mean',
+            color: str = 'lightblue',
             dpi: int = 96,
             save: bool = False,
             ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
-            color: str = 'blue',
         ) -> Union[plt.Axes, List[plt.Axes]]:
         """
         Plot the distribution of the radius of gyration (Rg) within each ensemble.
@@ -1500,8 +1542,11 @@ class Visualization:
             If True, it will plot each histogram in a different axis.
         violin_plot : bool, optional
             If True, a violin plot is visualized. Default is True.
-        location: str, optional
-            Select between "median" or "mean" or "both" to show in violin plot. Default value is "mean"
+        summary_stat: str, optional
+            Specifies whether to display the "mean", "median", or "both" as reference lines on the plots.
+            This applies when violin_plot is True or when multiple_hist_ax is True for histograms.
+        color : str, optional
+            Color of the violin plot. Default is lightblue.
         dpi : int, optional
             The DPI (dots per inch) of the output figure. Default is 96.
         save : bool, optional
@@ -1551,7 +1596,7 @@ class Visualization:
             else:
                 fig = ax.figure
 
-        axis_label = "Radius of Gyration [nm]"
+        axis_label = r"$R_{g} [nm]$"
         title = "Radius of Gyration Distribution"
 
         if violin_plot:
@@ -1560,7 +1605,7 @@ class Visualization:
                 ax=ax,
                 data=hist_data,
                 labels=labels,
-                location=location,
+                summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
                 color=color
@@ -1575,7 +1620,6 @@ class Visualization:
                     range=hist_range,
                     title=title,
                     xlabel=axis_label,
-                    location=location
                 )
             else:
                 _bins = _get_hist_bins(
@@ -1585,20 +1629,24 @@ class Visualization:
 
                 if isinstance(ax, np.ndarray):
                     ax = ax.flatten()
-
+                y_max = 0
+                for hist_data_i in hist_data:
+                    counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
+                    y_max = max(y_max, counts.max())
                 for i, (name_i, rg_i) in enumerate(rg_data_dict.items()):
+                    ax[i].set_ylim(0, y_max * 1.1)  # Add a little margin
                     ax[i].hist(rg_i, bins=_bins, label=name_i, **h_args)
                     ax[i].set_title(name_i)
                     if i == 0:
                         ax[i].set_ylabel("Density")
                     ax[i].set_xlabel(axis_label)
                     legend_handles = []
-                    if location in ('mean', 'both'):
+                    if summary_stat in ('mean', 'both'):
                         mean_rg = np.mean(rg_i)
                         mean_line = ax[i].axvline(mean_rg, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
                         legend_handles.append(mean_legend)
-                    if location in ('median', 'both'):
+                    if summary_stat in ('median', 'both'):
                         median_rg = np.median(rg_i)
                         median_line = ax[i].axvline(median_rg, color='r', linestyle='dashed', linewidth=1)
                         median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')
@@ -1611,7 +1659,7 @@ class Visualization:
                         fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'rg_comparison_' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'rg_comparison_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return ax
 
@@ -1620,6 +1668,7 @@ class Visualization:
         distance_matrix_ens_dict = {}
         for ensemble in ensembles:
             selector = ensemble.atom_selector
+            
             trajectory = ensemble.trajectory
             xyz_ens = trajectory.xyz[:,trajectory.topology.select(selector)]
             distance_matrix_ens_dict[ensemble.code] = get_distance_matrix(xyz_ens)
@@ -1634,102 +1683,15 @@ class Visualization:
             distance_matrix_ens_dict[ensemble.code] = get_distance_matrix(xyz_ens)
             contact_ens_dict[ensemble.code] = get_contact_map(distance_matrix_ens_dict[ensemble.code])
         return contact_ens_dict
-
-    def average_distance_maps(self, 
-            ticks_fontsize: int = 14,
-            cbar_fontsize: int = 14,
-            title_fontsize: int = 14,
-            dpi: int = 96,
-            use_ylabel: bool = True,
-            save: bool = False,
-            ax: Union[None, List[List[plt.Axes]], List[plt.Axes]] = None
-        ) -> List[plt.Axes]:
-        """
-        Plot the average C-alpha distance maps for selected ensembles.
-        
-        Parameters
-        ----------
-        ticks_fontsize : int, optional
-            Font size for tick labels on the plot axes. Default is 14.
-        cbar_fontsize : int, optional
-            Font size for labels on the color bar. Default is 14.
-        title_fontsize : int, optional
-            Font size for titles of individual subplots. Default is 14.
-        dpi : int, optional
-            Dots per inch (resolution) of the output figure. Default is 96.
-        use_ylabel : bool, optional
-            If True, y-axis labels are displayed on the subplots. Default is True.
-        save : bool, optional
-            If True, the plot will be saved as an image file. Default is False.
-        ax : Union[None, List[List[plt.Axes]], List[plt.Axes]], optional
-            A list or 2D list of Axes objects to plot on. Default is None, which creates new axes.
-
-        Returns
-        -------
-        List[plt.Axes]
-            Returns a 1D list of Axes objects representing the subplot grid.
-
-        Notes
-        -----
-        This method plots the average distance maps for selected ensembles, where each distance map
-        represents the average pairwise distances between residues in a protein structure.
-        """
-
-        ens_dict = self._get_distance_matrix_ens_dict()
-        num_proteins = len(ens_dict)
-        cols = 2  # Number of columns for subplots
-        rows = (num_proteins + cols - 1) // cols  # Calculate number of rows needed
-
-        if ax is None:
-            custom_axes = False
-            fig, axes = plt.subplots(rows, cols, figsize=(8 * cols, 6 * rows), dpi=dpi)
-            axes = axes.flatten()  # Ensure axes is a 1D array
-        else:
-            custom_axes = True
-            ax_array = np.array(ax).flatten()
-            axes = ax_array  # If ax is provided, flatten it to 1D
-            fig = axes[0].figure
-
-        for i, (protein_name, ens_data) in enumerate(ens_dict.items()):
-            ax = axes[i]
-            
-            avg_dmap = np.mean(ens_data, axis=0)
-            
-            tril_ids = np.tril_indices(avg_dmap.shape[0], 0)
-            avg_dmap[tril_ids] = np.nan
-            
-            im = ax.imshow(avg_dmap)
-            ax.set_title(protein_name, fontsize=title_fontsize)
-            ax.tick_params(axis='both', which='major', labelsize=ticks_fontsize)
-            if not use_ylabel:
-                ax.set_yticks([])
-            
-            cbar = fig.colorbar(im, ax=ax)
-            cbar.set_label(r"Average $d_{ij}$ [nm]", fontsize=cbar_fontsize)
-            cbar.ax.tick_params(labelsize=cbar_fontsize)
-
-            im.set_clim(0, np.ceil(np.nanmax(avg_dmap.flatten())))  # Find the maximum distance and round it to the next integer to manage the auto range
-        
-        # Remove any empty subplots
-        for i in range(num_proteins, rows * cols):
-            fig.delaxes(axes[i])
-
-        if not custom_axes:
-            fig.tight_layout()
-
-        if save:
-            fig.savefig(os.path.join(self.plot_dir, 'avg_dmap_' + self.analysis.ens_codes[0]))
-
-        return axes    
-    
+     
     def end_to_end_distances(self, rg_norm: bool = False, 
                          bins: int = 50, 
                          hist_range: Tuple = None, 
                          violin_plot: bool = True,
-                         location: str = 'mean',
+                         summary_stat: str = 'mean',
                          dpi = 96,
                          save: bool = False,
-                         color: str = 'blue', 
+                         color: str = 'lightblue', 
                          multiple_hist_ax = False,
                          ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> Union[plt.Axes, List[plt.Axes]]:
         """
@@ -1746,14 +1708,17 @@ class Visualization:
             which corresponds to using the min a max value across all data.
         violin_plot : bool, optional
             If True, a violin plot is visualized. Default is True.
-        location: str, optional
-            Select between "median" or "mean" or "both" to show in violin plot. Default value is "mean"
+        summary_stat: str, optional
+            Specifies whether to display the "mean", "median", or "both" as reference lines on the plots. 
+            This applies when violin_plot is True or when multiple_hist_ax is True for histograms.
+        dpi : int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
         save : bool, optional
-            If True, the plot will be saved as an image file. Default is False.
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
         color: str, optional
-            Change the color of the violin plot
+            Change the color of the violin plot. Default is lightblue.
         multiple_hist_ax: bool, optional
             If True, it will plot each histogram in a different axis.
 
@@ -1806,11 +1771,11 @@ class Visualization:
 
         # Set axis labels and title based on rg_norm
         if not rg_norm:
-            axis_label = "End-to-End Distance [nm]"
+            axis_label = r"$R_{ee} [nm]$"
             title = "End-to-End Distances Distribution"
         else:
-            axis_label = r"End-to-End distance over $\langle$R$_g$$\rangle$"
-            title = r"End-to-End distance over $\langle$R$_g$$\rangle$ distribution"
+            axis_label = r"$R_{ee} / \langle R_g \rangle$"
+            title = r"Normalized End-to-End Distance ($R_{ee} / \langle R_g \rangle$) Distribution"
 
         if violin_plot:
             # Plot the violin plot
@@ -1818,7 +1783,7 @@ class Visualization:
                 ax=ax,
                 data=hist_data,
                 labels=labels,
-                location=location,
+                summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
                 color=color
@@ -1841,26 +1806,30 @@ class Visualization:
                     data=hist_data, bins=bins, range=hist_range
                 )
                 h_args = {"histtype": "step", "density": True}
-
+                y_max = 0
+                for hist_data_i in hist_data:
+                    counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
+                    y_max = max(y_max, counts.max())
                 for i, (name_i, hist_data_i) in enumerate(zip(labels, hist_data)):
                     ax[i].hist(hist_data_i, bins=_bins, label=name_i, **h_args)
+                    ax[i].set_ylim(0, y_max * 1.1)  # Add a little margin
                     ax[i].set_title(name_i)
                     if i == 0:
                         ax[i].set_ylabel("Density")
                     ax[i].set_xlabel(axis_label)
 
                     legend_handles = []
-                    if location == 'mean':
+                    if summary_stat == 'mean':
                         mean_dist = np.mean(hist_data_i)
                         mean_line = ax[i].axvline(mean_dist, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
                         legend_handles.append(mean_legend)
-                    if location == 'median':
+                    if summary_stat == 'median':
                         median_dist = np.median(hist_data_i)
                         median_line = ax[i].axvline(median_dist, color='r', linestyle='dashed', linewidth=1)
                         median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')
                         legend_handles.append(median_legend)
-                    if location == 'both':
+                    if summary_stat == 'both':
                         mean_dist = np.mean(hist_data_i)
                         mean_line = ax[i].axvline(mean_dist, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
@@ -1876,7 +1845,7 @@ class Visualization:
                     fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'e2e_distances_' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'e2e_distances_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return ax
 
@@ -1884,9 +1853,10 @@ class Visualization:
                     bins: int = 50,
                     hist_range: Tuple = None,
                     violin_plot: bool = True,
-                    location: str = 'mean',
+                    summary_stat: str = 'mean',
+                    dpi: int = 96,
                     save: bool = False,
-                    color: str = 'blue',
+                    color: str = 'lightblue',
                     multiple_hist_ax: bool = False,
                     ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> plt.Axes:
         """
@@ -1898,16 +1868,19 @@ class Visualization:
         bins : int, optional
             The number of bins for the histogram. Default is 50.
         hist_range: Tuple, optional
-            A tuple with a min and max value for the histogram. Default is None,
+            A tuple with a min and max value for the histogram range. Default is None,
             which corresponds to using the min a max value across all data.
         violin_plot : bool, optional
             If True, a violin plot is visualized. Default is True.
-        location : str, optional
-            Select between "median" or "mean" or "both" to show in violin plot. Default value is "mean".
+        summary_stat : str, optional
+            Specifies whether to display the "mean", "median", or "both" as reference lines on the plots. 
+            This applies when violin_plot is True or when multiple_hist_ax is True for histograms.
+        dpi: int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
         save : bool, optional
-            If True, the plot will be saved as an image file. Default is False.
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
         color : str, optional
-            Color of the violin plot. Default is blue.
+            Color of the violin plot. Default is lightblue.
         multiple_hist_ax : bool, optional
             If True, each histogram will be plotted on separate axes. Default is False.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
@@ -1938,7 +1911,7 @@ class Visualization:
                 fig, ax = plt.subplots(
                     1, len(ensembles), 
                     figsize=(3 * len(ensembles), 3),
-                    dpi=96
+                    dpi=dpi
                 )
             else:
                 if not isinstance(ax, (list, np.ndarray)):
@@ -1948,7 +1921,7 @@ class Visualization:
         else:
             # Single axis for all histograms or violin plot
             if ax is None:
-                fig, ax = plt.subplots(dpi=96)
+                fig, ax = plt.subplots(dpi=dpi)
             else:
                 fig = ax.figure
 
@@ -1961,7 +1934,7 @@ class Visualization:
                 ax=ax,
                 data=asph_list,
                 labels=labels,
-                location=location,
+                summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
                 color=color
@@ -1984,9 +1957,13 @@ class Visualization:
                     data=asph_list, bins=bins, range=hist_range
                 )
                 h_args = {"histtype": "step", "density": True}
-
+                y_max = 0
+                for hist_data_i in _bins:
+                    counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
+                    y_max = max(y_max, counts.max())
                 for i, (name_i, asph_data_i) in enumerate(zip(labels, asph_list)):
                     ax[i].hist(asph_data_i, bins=_bins, label=name_i, **h_args)
+                    ax[i].set_ylim(0, y_max * 1.1)  # Add a little margin
                     ax[i].set_title(name_i)
                     if i == 0:
                         ax[i].set_ylabel("Density")
@@ -1994,17 +1971,17 @@ class Visualization:
 
                     # Adding mean/median/both lines with legend
                     legend_handles = []
-                    if location == 'mean':
+                    if summary_stat == 'mean':
                         mean_asph = np.mean(asph_data_i)
                         mean_line = ax[i].axvline(mean_asph, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
                         legend_handles.append(mean_legend)
-                    if location == 'median':
+                    if summary_stat == 'median':
                         median_asph = np.median(asph_data_i)
                         median_line = ax[i].axvline(median_asph, color='r', linestyle='dashed', linewidth=1)
                         median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')
                         legend_handles.append(median_legend)
-                    if location == 'both':
+                    if summary_stat == 'both':
                         mean_asph = np.mean(asph_data_i)
                         mean_line = ax[i].axvline(mean_asph, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
@@ -2022,7 +1999,7 @@ class Visualization:
                     fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'asphericity_dist_' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'asphericity_dist_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return ax
 
@@ -2030,9 +2007,10 @@ class Visualization:
                 bins: int = 50,
                 hist_range: Tuple = None,
                 violin_plot: bool = True,
-                location: str = 'mean',
+                summary_stat: str = 'mean',
+                dpi: int = 96,
                 save: bool = False,
-                color: str = 'blue',
+                color: str = 'lightblue',
                 multiple_hist_ax: bool = False,
                 ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> plt.Axes:
         """
@@ -2048,12 +2026,13 @@ class Visualization:
             which corresponds to using the min a max value across all data.
         violin_plot : bool, optional
             If True, a violin plot is visualized. Default is True.
-        location : str, optional
-            Select between "median", "mean", or "both" to show in violin plot. Default is "mean".
+        summary_stat : str, optional
+            Specifies whether to display the "mean", "median", or "both" as reference lines on the plots.
+            This applies when violin_plot is True or when multiple_hist_ax is True for histograms.
         save : bool, optional
-            If True, the plot will be saved as an image file. Default is False.
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
         color : str, optional
-            Color of the violin plot. Default is blue.
+            Color of the violin plot. Default is lightblue.
         multiple_hist_ax : bool, optional
             If True, each histogram will be plotted on separate axes. Default is False.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
@@ -2085,7 +2064,7 @@ class Visualization:
                 fig, ax = plt.subplots(
                     1, len(ensembles), 
                     figsize=(3 * len(ensembles), 3),
-                    dpi=96
+                    dpi= dpi
                 )
             else:
                 if not isinstance(ax, (list, np.ndarray)):
@@ -2108,7 +2087,7 @@ class Visualization:
                 ax=ax,
                 data=prolat_list,
                 labels=labels,
-                location=location,
+                summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
                 color=color
@@ -2131,9 +2110,13 @@ class Visualization:
                     data=prolat_list, bins=bins, range=hist_range
                 )
                 h_args = {"histtype": "step", "density": True}
-
+                y_max = 0
+                for hist_data_i in _bins:
+                    counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
+                    y_max = max(y_max, counts.max())
                 for i, (name_i, prolat_data_i) in enumerate(zip(labels, prolat_list)):
                     ax[i].hist(prolat_data_i, bins=_bins, label=name_i, **h_args)
+                    ax[i].set_ylim(0, y_max * 1.1)  # Add a little margin
                     ax[i].set_title(name_i)
                     if i == 0:
                         ax[i].set_ylabel("Density")
@@ -2141,17 +2124,17 @@ class Visualization:
 
                     # Adding mean/median/both lines with legend
                     legend_handles = []
-                    if location == 'mean':
+                    if summary_stat == 'mean':
                         mean_prolat = np.mean(prolat_data_i)
                         mean_line = ax[i].axvline(mean_prolat, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
                         legend_handles.append(mean_legend)
-                    if location == 'median':
+                    if summary_stat == 'median':
                         median_prolat = np.median(prolat_data_i)
                         median_line = ax[i].axvline(median_prolat, color='r', linestyle='dashed', linewidth=1)
                         median_legend = Line2D([0], [0], color='r', linestyle='dashed', linewidth=1, label='Median')
                         legend_handles.append(median_legend)
-                    if location == 'both':
+                    if summary_stat == 'both':
                         mean_prolat = np.mean(prolat_data_i)
                         mean_line = ax[i].axvline(mean_prolat, color='k', linestyle='dashed', linewidth=1)
                         mean_legend = Line2D([0], [0], color='k', linestyle='dashed', linewidth=1, label='Mean')
@@ -2169,13 +2152,14 @@ class Visualization:
                     fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'prolateness_dist_' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'prolateness_dist_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return ax
 
     def alpha_angles(self, bins: int = 50, save: bool = False, ax: plt.Axes = None) -> plt.Axes:
         """
-        Plot the distribution of alpha angles.
+        Alpha angles: Angles between four consecutive Cα atoms along the protein backbone.
+        This method calculates the alpha angles for each ensemble in the analysis and plots their distribution
 
         Parameters
         ----------
@@ -2230,8 +2214,8 @@ class Visualization:
             avoid_zero_count: bool = False,
             threshold: float = 0.8,
             dpi: int = 96, 
+            color: str = 'Blues',
             save: bool = False, 
-            cmap_color: str = 'Blues',
             ax: Union[None, List[plt.Axes], np.ndarray] = None
         ) -> Union[List[plt.Axes], np.ndarray]:
         """
@@ -2246,11 +2230,14 @@ class Visualization:
         threshold : float, optional
             Determining the threshold for calculating the contact frequencies. Default is 0.8 [nm].
         dpi : int, optional
-            For changing the quality and dimension of the output figure. Default is 96.
+            The DPI (dots per inch) of the output figure. Default is 96.
+        color : str, optional
+            The colormap to use for the contact probability map. Default is 'Blues'.
         save : bool, optional
-            If True, the plot will be saved as an image file. Default is False.
-        cmap_color : str, optional
-            Select a matplotlib colormap for the plot. Default is "Blues".
+             If True, the plot will be saved as an image file in the specified directory. Default is False.
+        ax : Union[None, List[plt.Axes], np.ndarray], optional
+            The axes on which to plot. If None, new axes will be created. Default is None.
+
 
         Returns
         -------
@@ -2260,21 +2247,20 @@ class Visualization:
 
         ensembles = self.analysis.ensembles
         num_proteins = len(ensembles)
-        num_cols = 2
-        num_rows = (num_proteins + num_cols - 1) // num_cols
+        num_cols = num_proteins
+        num_rows = 1
 
-        cmap = plt.get_cmap(cmap_color)
-        
+        cmap = plt.get_cmap(color)
+
         if ax is None:
             custom_axes = False
-            fig, axes = plt.subplots(num_rows, num_cols, figsize=(8 * num_cols, 6 * num_rows), dpi=dpi)
-            axes = axes.flatten()
+            fig, axes = plt.subplots(num_rows, num_cols, figsize=(6 * num_cols, 5), dpi=dpi)
+            axes = np.atleast_1d(axes).flatten()
         else:
             custom_axes = True
             ax_array = np.array(ax)
             axes = ax_array.flatten()
             fig = axes[0].figure
-
         for i, ensemble in enumerate(ensembles):
             ax = axes[i]
             
@@ -2292,20 +2278,17 @@ class Visualization:
             else:
                 im = ax.imshow(matrix_p_map, cmap=cmap)
             ax.set_title(ensemble.code, fontsize=14)
-
+            ax.set_xlabel('j')
+            ax.set_ylabel('i')
             cbar = fig.colorbar(im, ax=ax)
             cbar.set_label('Contact frequency', fontsize=14)
             cbar.ax.tick_params(labelsize=14)
-
-        # Remove any empty subplots
-        for i in range(num_proteins, num_rows * num_cols):
-            fig.delaxes(axes[i])
 
         if not custom_axes:
             fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'contact_prob_' + self.analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'contact_prob_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return axes
 
@@ -2599,88 +2582,226 @@ class Visualization:
 
         return ax
 
-    def ca_com_distances(self, 
-                         min_sep: int = 2, 
-                         max_sep: Union[int, None] = None, 
-                         get_names: bool = True, 
-                         inverse: bool  = False,
-                         save: bool = False,
-                         ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None
-                        ) -> List[plt.Axes]:
+    def distance_maps(
+        self, 
+        min_sep: int = 2, 
+        max_sep: Union[int, None] = None, 
+        distance_type: str = "both",
+        get_names: bool = True, 
+        inverse: bool  = False,
+        dpi: int = 96,
+        save: bool = False,
+        ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
+        
+    ) -> List[plt.Axes]:
         """
-        Plot the distance maps comparing the center of mass (COM) and alpha-carbon (CA) distances within each ensemble.
+        Plot CA and/or COM distance maps for one or more protein ensembles.
 
-        Parameters:
-        -----------
-        min_sep : int, optional
-            Minimum separation distance between atoms to consider. Default is 2.
+        Parameters
+        ----------
+        min_sep : int, default=2
+            Minimum sequence separation between residues to consider.
         max_sep : int or None, optional
-            Maximum separation distance between atoms to consider. Default is None, which means no maximum separation.
-        get_names : bool, optional
-            Whether to get the residue names for the features. Default is True.
-        inverse : bool, optional
-            Whether to compute the inverse distances. Default is False.
-        figsize : tuple, optional
-            Figure size in inches (width, height). Default is (6, 2.5).
-        save : bool, optional
-            If True, save the plot as an image file. Default is False.
-
-        Returns:
-        --------
-        List[plt.Axes]
-            A list containing Axes objects corresponding to the plots for CA and COM distances.
-
-        Notes:
-        ------
-        This method plots the average distance maps for the center of mass (COM) and alpha-carbon (CA) distances
-        within each ensemble. It computes the distance matrices for COM and CA atoms and then calculates their
-        mean values to generate the distance maps. The plots include color bars indicating the distance range.
+            Maximum sequence separation. If None, no upper limit is applied.
+        distance_type : {'ca', 'com', 'both'}, default='both'
+            Specifies which type of distance map(s) to plot.
+        get_names : bool, default=True
+            Whether to return feature names from featurization (used internally).
+        inverse : bool, default=False
+            If True, compute and plot 1/distance instead of distance.
+        dpi : int, default=96
+            The DPI (dots per inch) of the output figure.
+        save : bool, default=False
+            If True, the plot will be saved as an image file in the specified directory.
+        ax : matplotlib Axes or array-like, optional
+            Axes on which to plot. If None, a new figure and axes will be created.
+       
+        Returns
+        -------
+        List[matplotlib.axes.Axes]
+            List of axes objects used for plotting.
         """
 
-        if self.analysis.exists_coarse_grained():
+        distance_type = distance_type.lower()
+
+        if distance_type in {"com", "both"} and self.analysis.exists_coarse_grained():
             raise ValueError("This analysis is not possible with coarse-grained models.")
-        
+
+        if distance_type not in {"ca", "com", "both"}:
+            raise ValueError("`distance_type` must be one of {'CA', 'COM', 'both'}")
+
+        if distance_type not in {"ca", "com", "both"}:
+            raise ValueError("`distance_type` must be one of {'CA', 'COM', 'both'}")
+
         num_proteins = len(self.analysis.ensembles)
-        
+
+        # ---- layout -------------------------------------------------------------
+        if distance_type == "both":
+            nrows, ncols = 2, num_proteins
+        else:
+            nrows, ncols = 1, num_proteins
+
         if ax is None:
             custom_axes = False
-            fig, axes = plt.subplots(2, num_proteins, figsize=(10, 4 * num_proteins))
-            axes = axes.flatten()
+            fig, axes = plt.subplots(
+                nrows, ncols,
+                figsize=(4 * ncols, 4 * nrows),
+                dpi=dpi,
+                squeeze=False   # <--- ensures 2D array
+            )
         else:
             custom_axes = True
-            ax_array = np.array(ax)
-            axes = ax_array.flatten()
-            fig = axes[0].figure
+            axes = np.atleast_1d(ax)
+            expected = 2 * num_proteins if distance_type == "both" else num_proteins
+            if axes.size != expected:
+                raise ValueError(f"`ax` must contain {expected} axes for show='{distance_type}' and {num_proteins} proteins.")
+            axes = np.asarray(axes).reshape(nrows, ncols)
+            fig = axes.flat[0].figure
+        # ------------------------------------------------------------------------
+
+        plotted_axes: List[plt.Axes] = []
+        def set_labels(ax: plt.Axes):
+            ax.set_xlabel("j")
+            ax.set_ylabel("i")
+
+
+        def maybe_inverse(dmap: np.ndarray, apply: bool) -> np.ndarray:
+            if not apply:
+                return dmap
+            with np.errstate(divide='ignore', invalid='ignore'):
+                inv = np.where(dmap != 0, 1.0 / dmap, 0.0)
+            return inv
 
         for i, ens in enumerate(self.analysis.ensembles):
-            idx = i * 2
             traj = ens.trajectory
-            feat, names = featurize_com_dist(traj=traj, min_sep=min_sep,max_sep=max_sep,inverse=inverse ,get_names=get_names)  # Compute (N, *) feature arrays.
+            feat, names = featurize_com_dist(
+                traj=traj, min_sep=min_sep, max_sep=max_sep, inverse=inverse, get_names=get_names
+            )
             logger.info(f"# Ensemble: {ens.code}")
             logger.info(f"features: {feat.shape}")
 
-            com_dmap = calc_ca_dmap(traj=traj)
-            com_dmap_mean = com_dmap.mean(axis=0)
-            ca_dmap = calc_ca_dmap(traj=traj)
-            ca_dmap_mean = ca_dmap.mean(axis=0)
+            if distance_type in {"ca", "both"}:
+                ca_dmap = calc_ca_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
+                ca_dmap_mean = maybe_inverse(ca_dmap.mean(axis=0), inverse)
+                row = 0  # always the first row
+                col = i
+                ax_ca = axes[row, col]
+                im0 = ax_ca.imshow(ca_dmap_mean)
+                ax_ca.set_title(f"{ens.code} CA")
+                set_labels(ax_ca)
+                cbar = fig.colorbar(im0, ax=ax_ca, shrink=0.8)
+                label = "1 / distance [1/nm]" if inverse else "distance [nm]"
+                cbar.set_label(label)
+                plotted_axes.append(ax_ca)
 
-            logger.info(f"distance matrix: {com_dmap_mean.shape}")
+            if distance_type in {"com", "both"}:
+                com_dmap = calc_com_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
+                com_dmap_mean = maybe_inverse(com_dmap.mean(axis=0), inverse)
+                row = 0 if distance_type != "both" else 1  # second row only when 'both'
+                col = i
+                ax_com = axes[row, col]
+                im1 = ax_com.imshow(com_dmap_mean)
+                ax_com.set_title(f"{ens.code} COM")
+                set_labels(ax_com)
+                cbar = fig.colorbar(im1, ax=ax_com, shrink=0.8)
+                label = "1 / distance [1/nm]" if inverse else "distance [nm]"
+                cbar.set_label(label)
+                plotted_axes.append(ax_com)
+
+        if not custom_axes:
+            fig.tight_layout(pad=1.5)
+
+        if save:
+            # Save once (whole panel) or one file per protein; here I keep the whole panel.
+            filename = f"dist_{distance_type.lower()}.png"
+            fig.savefig(os.path.join(self.plot_dir, filename), dpi=dpi, bbox_inches="tight")
+
+        return plotted_axes
+
+    # # def ca_com_distances(self, 
+    #                      min_sep: int = 2, 
+    #                      max_sep: Union[int, None] = None, 
+    #                      get_names: bool = True, 
+    #                      inverse: bool  = False,
+    #                      save: bool = False,
+    #                      ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None
+    #                     ) -> List[plt.Axes]:
+    #     """
+    #     Plot the distance maps comparing the center of mass (COM) and carbon_alpha (CA) distances within each ensemble.
+
+    #     Parameters:
+    #     -----------
+    #     min_sep : int, optional
+    #         Minimum separation distance between atoms to consider. Default is 2.
+    #     max_sep : int or None, optional
+    #         Maximum separation distance between atoms to consider. Default is None, which means no maximum separation.
+    #     get_names : bool, optional
+    #         Whether to get the residue names for the features. Default is True.
+    #     inverse : bool, optional
+    #         Whether to compute the inverse distances. Default is False.
+    #     figsize : tuple, optional
+    #         Figure size in inches (width, height). Default is (6, 2.5).
+    #     save : bool, optional
+    #         If True, save the plot as an image file. Default is False.
+
+    #     Returns:
+    #     --------
+    #     List[plt.Axes]
+    #         A list containing Axes objects corresponding to the plots for CA and COM distances.
+
+    #     Notes:
+    #     ------
+    #     This method plots the average distance maps for the center of mass (COM) and alpha-carbon (CA) distances
+    #     within each ensemble. It computes the distance matrices for COM and CA atoms and then calculates their
+    #     mean values to generate the distance maps. The plots include color bars indicating the distance range.
+    #     """
+
+    #     if self.analysis.exists_coarse_grained():
+    #         raise ValueError("This analysis is not possible with coarse-grained models.")
+        
+    #     num_proteins = len(self.analysis.ensembles)
+        
+    #     if ax is None:
+    #         custom_axes = False
+    #         fig, axes = plt.subplots(2, num_proteins, figsize=(10, 4 * num_proteins))
+    #         axes = axes.flatten()
+    #     else:
+    #         custom_axes = True
+    #         ax_array = np.array(ax)
+    #         axes = ax_array.flatten()
+    #         fig = axes[0].figure
+
+    #     for i, ens in enumerate(self.analysis.ensembles):
+    #         idx = i * 2
+    #         traj = ens.trajectory
+    #         feat, names = featurize_com_dist(traj=traj, min_sep=min_sep,max_sep=max_sep,inverse=inverse ,get_names=get_names) 
+    #         print(feat.shape) 
+    #         print(names)# Compute (N, *) feature arrays.
+    #         logger.info(f"# Ensemble: {ens.code}")
+    #         logger.info(f"features: {feat.shape}")
+
+    #         com_dmap = calc_ca_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
+    #         com_dmap_mean = com_dmap.mean(axis=0)
+    #         ca_dmap = calc_ca_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
+    #         ca_dmap_mean = ca_dmap.mean(axis=0)
+
+    #         logger.info(f"distance matrix: {com_dmap_mean.shape}")
             
-            im0 = axes[idx].imshow(ca_dmap_mean)
-            axes[idx].set_title(f"{ens.code} CA")
-            im1 = axes[idx + 1].imshow(com_dmap_mean)
-            axes[idx + 1].set_title(f"{ens.code} COM")
-            cbar = fig.colorbar(im0, ax=axes[idx], shrink=0.8)
-            cbar.set_label("distance [nm]")
-            cbar = fig.colorbar(im1, ax=axes[idx + 1], shrink=0.8)
-            cbar.set_label("distance [nm]")
-            if not custom_axes:
-                fig.tight_layout()
+    #         im0 = axes[idx].imshow(ca_dmap_mean)
+    #         axes[idx].set_title(f"{ens.code} CA")
+    #         im1 = axes[idx + 1].imshow(com_dmap_mean)
+    #         axes[idx + 1].set_title(f"{ens.code} COM")
+    #         cbar = fig.colorbar(im0, ax=axes[idx], shrink=0.8)
+    #         cbar.set_label("distance [nm]")
+    #         cbar = fig.colorbar(im1, ax=axes[idx + 1], shrink=0.8)
+    #         cbar.set_label("distance [nm]")
+    #         if not custom_axes:
+    #             fig.tight_layout()
 
-            if save:
-                fig.savefig(os.path.join(self.plot_dir, 'dist_ca_com_' + ens.code))  
+    #         if save:
+    #             fig.savefig(os.path.join(self.plot_dir, 'dist_ca_com_' + ens.code))  
 
-        return axes
+    #     return axes
 
     def _check_grid_input(self):
         ensembles = self.analysis.ensembles
@@ -2705,7 +2826,7 @@ class Visualization:
         ) -> plt.Axes:
         """
         Plot a grid if histograms for distance or angular features. Can only be
-        be used when analyzing ensembles of proteins with same number of
+        used when analyzing ensembles of proteins with same number of
         residues. The function will create a new matplotlib figure for histogram
         grid.
 

@@ -11,15 +11,32 @@ from dpet.featurization.utils import get_max_sep
 
 ca_selector = "protein and name CA"
 
-def _calc_dmap(traj: mdtraj.Trajectory):
+def _calc_dmap(traj: mdtraj.Trajectory, 
+               min_sep: int = 1, 
+               max_sep: Union[int, None] = None) -> np.ndarray:
     ca_ids = traj.topology.select(ca_selector)
-    ca_xyz = traj.xyz[:, ca_ids]
+    ca_xyz = traj.xyz[:, ca_ids]  # shape: (n_frames, n_res, 3)
+    n_res = ca_xyz.shape[1]
+
+    # Compute full pairwise distance map
     dmap = np.sqrt(
-        np.sum(np.square(ca_xyz[:, None, :, :] - ca_xyz[:, :, None, :]), axis=3)
-    )
+        np.sum((ca_xyz[:, :, None, :] - ca_xyz[:, None, :, :]) ** 2, axis=3)
+    )  # shape: (n_frames, n_res, n_res)
+
+    # Compute sequence separation mask
+    seq_sep = np.abs(np.arange(n_res)[:, None] - np.arange(n_res)[None, :])
+    mask = seq_sep >= min_sep
+    if max_sep is not None:
+        mask &= seq_sep <= max_sep
+
+    # Apply mask: set distances outside the range to NaN
+    dmap[:, ~mask] = np.nan
+
     return dmap
 
-def calc_ca_dmap(traj: mdtraj.Trajectory) -> np.ndarray:
+def calc_ca_dmap(traj: mdtraj.Trajectory,
+                 min_sep: int = 1,
+                 max_sep: Union[int, None] = None) -> np.ndarray:
     """
     Calculate the (N, L, L) distance maps between C-alpha atoms for visualization.
 
@@ -37,9 +54,11 @@ def calc_ca_dmap(traj: mdtraj.Trajectory) -> np.ndarray:
     -----
     This function calculates the distance maps between C-alpha atoms for visualization purposes.
     """
-    return _calc_dmap(traj=traj)
+    return _calc_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
 
-def calc_com_dmap(traj: mdtraj.Trajectory) -> np.ndarray:
+def calc_com_dmap(traj: mdtraj.Trajectory,
+                  min_sep: int = 1,
+                  max_sep: Union[int, None] = None) -> np.ndarray:
     """
     Calculate the (N, L, L) distance maps between center of mass (COM) atoms for visualization.
 
@@ -58,7 +77,7 @@ def calc_com_dmap(traj: mdtraj.Trajectory) -> np.ndarray:
     This function calculates the distance maps between center of mass (COM) atoms for visualization purposes.
     """
     traj = slice_traj_to_com(traj)
-    return _calc_dmap(traj=traj)
+    return _calc_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
 
 
 #---------------------------------------------------------------------
