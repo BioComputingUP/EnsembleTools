@@ -2309,12 +2309,16 @@ class Visualization:
         return pair_ids
     
     def ramachandran_plots(
-            self,
-            two_d_hist: bool = True,
-            linespaces: Tuple = (-180, 180, 80),
-            save: bool = False,
-            ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None
-    ) -> Union[List[plt.Axes], plt.Axes]:
+        self,
+        two_d_hist: bool = True,
+        linespaces: Tuple[int, int, int] = (-180, 180, 80),
+        dpi: int = 96,
+        color: str = 'viridis',
+        log_scale: bool = True,
+        save: bool = False,
+        ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None
+     ) -> Union[List[plt.Axes], plt.Axes]:
+
         """
         Ramachandran plot. If two_d_hist=True it returns a 2D histogram 
         for each ensemble. If two_d_hist=False it returns a simple scatter plot 
@@ -2326,8 +2330,14 @@ class Visualization:
             If True, it returns a 2D histogram for each ensemble. Default is True.
         linespaces : tuple, optional
             You can customize the bins for 2D histogram. Default is (-180, 180, 80).
+        log_scale : bool, optional
+            If True, the histogram will be plotted on a logarithmic scale. Default is True.
         save : bool, optional
-            If True, the plot will be saved as an image file. Default is False.
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
+        color : str, optional   
+            The colormap to use for the 2D histogram. Default is 'viridis'.
+        dpi : int, optional 
+            The DPI (dots per inch) of the output figure. Default is 96.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The axes on which to plot. If None, new axes will be created. Default is None.
 
@@ -2338,10 +2348,9 @@ class Visualization:
             If two_d_hist=False, returns a single Axes object representing the scatter plot for all ensembles.
 
         """
-
         if self.analysis.exists_coarse_grained():
             raise ValueError("This analysis is not possible with coarse-grained models.")
-        
+
         ensembles = self.analysis.ensembles
         if two_d_hist:
             if ax is None:
@@ -2353,30 +2362,31 @@ class Visualization:
                     ax = [ax]
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
-            # Ensure ax is always a list
-            if not isinstance(ax, np.ndarray):
-                ax = [ax]
+
+            if len(ax) < len(ensembles):
+                raise ValueError(f"Not enough axes provided: expected {len(ensembles)}, got {len(ax)}.")
+
             rama_linspace = np.linspace(linespaces[0], linespaces[1], linespaces[2])
-            for ens, axis in zip(ensembles, ax):
-                phi_flat = np.degrees(mdtraj.compute_phi(ens.trajectory)[1])[:,:-1]
-                psi_flat = np.degrees(mdtraj.compute_psi(ens.trajectory)[1])[:,1: ]
+            for ensemble, ax_i in zip(ensembles, ax):
+                phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])[:, :-1]
+                psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])[:, 1:]
 
-
-                hist = axis.hist2d(
-                    phi_flat.ravel(),
-                    psi_flat.ravel(),
-                    cmap="viridis",
-                    bins=(rama_linspace, rama_linspace), 
-                    norm=colors.LogNorm(),
+                hist2d = ax_i.hist2d(
+                    phi_angles.ravel(),
+                    psi_angles.ravel(),
+                    cmap=color,
+                    bins=(rama_linspace, rama_linspace),
+                    norm=colors.LogNorm() if log_scale else None,
                     density=True
                 )
 
-                axis.set_title(f'Ramachandran Plot for Ensemble {ens.code}')
-                axis.set_xlabel('Phi (ϕ) Angle (degrees)')
-                axis.set_ylabel('Psi (ψ) Angle (degrees)')
+                ax_i.set_title(f'Ramachandran Plot for Ensemble {ensemble.code}')
+                ax_i.set_xlabel('Phi (ϕ) Angle (degrees)')
+                ax_i.set_ylabel('Psi (ψ) Angle (degrees)')
 
-                cbar = fig.colorbar(hist[3], ax=axis)
-                cbar.set_label('Density')
+                colorbar = fig.colorbar(hist2d[3], ax=ax_i)
+                colorbar.set_label('Density')
+
             if not custom_axes:
                 fig.tight_layout()
         else:
@@ -2384,24 +2394,27 @@ class Visualization:
                 fig, ax = plt.subplots(1, 1)
             else:
                 fig = ax.figure
-            for ens in ensembles:
-                phi = np.degrees(mdtraj.compute_phi(ens.trajectory)[1])
-                psi = np.degrees(mdtraj.compute_psi(ens.trajectory)[1])
-                ax.scatter(phi, psi, s=1, label=ens.code)
+            for ensemble in ensembles:
+                phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])
+                psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])
+                ax.scatter(phi_angles, psi_angles, s=1, label=ensemble.code)
             ax.set_xlabel('Phi (ϕ) Angle (degrees)')
             ax.set_ylabel('Psi (ψ) Angle (degrees)')
             ax.legend()
 
+        fig.tight_layout(pad=3.0)
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'ramachandran_' + self.analysis.ens_codes[0]))  
+            fig.savefig(os.path.join(self.plot_dir, 'ramachandran_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
 
         return ax
 
-    def ss_flexibility(self, 
-                                pointer: List[int] = None, 
-                                figsize: Tuple[int, int] = (15, 5), 
-                                save: bool = False,
-                                ax: Union[None, plt.Axes] = None) -> plt.Axes:
+    def site_specific_flexibility(self, 
+                        pointer: List[int] = None, 
+                        xtick_interval: int = 5,
+                        dpi: int = 96,
+                        figsize: Tuple[int, int] = (15, 5), 
+                        save: bool = False,
+                        ax: Union[None, plt.Axes] = None) -> plt.Axes:
         """
         Generate a plot of the site-specific flexibility parameter.
         
@@ -2414,10 +2427,14 @@ class Visualization:
         ----------
         pointer: List[int], optional
             A list of desired residues. Vertical dashed lines will be added to point to these residues. Default is None.
+        xtick_interval: int, optional
+            The interval for the x-axis ticks. Default is 5.
         figsize: Tuple[int, int], optional
             The size of the figure. Default is (15, 5).
+        dpi: int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
         save : bool, optional
-            If True, save the plot as an image file. Default is False.
+            If True, the plot will be saved as an image file. Default is False.
         ax : Union[None, plt.Axes], optional
             The matplotlib Axes object on which to plot. If None, a new Axes object will be created. Default is None.
             
@@ -2435,7 +2452,7 @@ class Visualization:
         f = ss_measure_disorder(features_dict)
         
         if ax is None:
-            fig, ax = plt.subplots(1, 1, figsize=figsize)
+            fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
         else:
             fig = ax.figure
 
@@ -2443,7 +2460,12 @@ class Visualization:
             x = np.arange(1, len(values) + 1)
             ax.plot(x, values, marker='o', linestyle='-', label=key)
         
-        ax.set_xticks([i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
+        ticks = [1]
+        next_tick = xtick_interval
+        while next_tick <= len(x):
+            ticks.append(next_tick)
+            next_tick += xtick_interval
+        ax.set_xticks(ticks)
         ax.set_title("Site-specific Flexibility parameter plot")
         ax.set_xlabel("Residue Index")
         ax.set_ylabel("Site-specific Flexibility parameter")
@@ -2454,11 +2476,11 @@ class Visualization:
                 ax.axvline(x=res, color='blue', linestyle='--', alpha=0.3, linewidth=1)
         
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'ss_flexibility_' + self.analysis.ens_codes[0]))  
+            fig.savefig(os.path.join(self.plot_dir, 'ss_flexibility_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')  
 
         return ax
 
-    def ss_order(self, 
+    def site_specific_order(self, 
                         pointer: List[int] = None, 
                         figsize: Tuple[int, int] = (15, 5), 
                         save: bool = False, 
@@ -2589,6 +2611,7 @@ class Visualization:
         distance_type: str = "both",
         get_names: bool = True, 
         inverse: bool  = False,
+        color: str = "plasma",
         dpi: int = 96,
         save: bool = False,
         ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
@@ -2609,6 +2632,8 @@ class Visualization:
             Whether to return feature names from featurization (used internally).
         inverse : bool, default=False
             If True, compute and plot 1/distance instead of distance.
+        color : str, default='plasma'
+            Colormap to use for the distance maps.
         dpi : int, default=96
             The DPI (dots per inch) of the output figure.
         save : bool, default=False
@@ -2686,7 +2711,7 @@ class Visualization:
                 row = 0  # always the first row
                 col = i
                 ax_ca = axes[row, col]
-                im0 = ax_ca.imshow(ca_dmap_mean)
+                im0 = ax_ca.imshow(ca_dmap_mean, cmap=color)
                 ax_ca.set_title(f"{ens.code} CA")
                 set_labels(ax_ca)
                 cbar = fig.colorbar(im0, ax=ax_ca, shrink=0.8)
@@ -2700,7 +2725,7 @@ class Visualization:
                 row = 0 if distance_type != "both" else 1  # second row only when 'both'
                 col = i
                 ax_com = axes[row, col]
-                im1 = ax_com.imshow(com_dmap_mean)
+                im1 = ax_com.imshow(com_dmap_mean, cmap=color)
                 ax_com.set_title(f"{ens.code} COM")
                 set_labels(ax_com)
                 cbar = fig.colorbar(im1, ax=ax_com, shrink=0.8)
@@ -2717,91 +2742,6 @@ class Visualization:
             fig.savefig(os.path.join(self.plot_dir, filename), dpi=dpi, bbox_inches="tight")
 
         return plotted_axes
-
-    # # def ca_com_distances(self, 
-    #                      min_sep: int = 2, 
-    #                      max_sep: Union[int, None] = None, 
-    #                      get_names: bool = True, 
-    #                      inverse: bool  = False,
-    #                      save: bool = False,
-    #                      ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None
-    #                     ) -> List[plt.Axes]:
-    #     """
-    #     Plot the distance maps comparing the center of mass (COM) and carbon_alpha (CA) distances within each ensemble.
-
-    #     Parameters:
-    #     -----------
-    #     min_sep : int, optional
-    #         Minimum separation distance between atoms to consider. Default is 2.
-    #     max_sep : int or None, optional
-    #         Maximum separation distance between atoms to consider. Default is None, which means no maximum separation.
-    #     get_names : bool, optional
-    #         Whether to get the residue names for the features. Default is True.
-    #     inverse : bool, optional
-    #         Whether to compute the inverse distances. Default is False.
-    #     figsize : tuple, optional
-    #         Figure size in inches (width, height). Default is (6, 2.5).
-    #     save : bool, optional
-    #         If True, save the plot as an image file. Default is False.
-
-    #     Returns:
-    #     --------
-    #     List[plt.Axes]
-    #         A list containing Axes objects corresponding to the plots for CA and COM distances.
-
-    #     Notes:
-    #     ------
-    #     This method plots the average distance maps for the center of mass (COM) and alpha-carbon (CA) distances
-    #     within each ensemble. It computes the distance matrices for COM and CA atoms and then calculates their
-    #     mean values to generate the distance maps. The plots include color bars indicating the distance range.
-    #     """
-
-    #     if self.analysis.exists_coarse_grained():
-    #         raise ValueError("This analysis is not possible with coarse-grained models.")
-        
-    #     num_proteins = len(self.analysis.ensembles)
-        
-    #     if ax is None:
-    #         custom_axes = False
-    #         fig, axes = plt.subplots(2, num_proteins, figsize=(10, 4 * num_proteins))
-    #         axes = axes.flatten()
-    #     else:
-    #         custom_axes = True
-    #         ax_array = np.array(ax)
-    #         axes = ax_array.flatten()
-    #         fig = axes[0].figure
-
-    #     for i, ens in enumerate(self.analysis.ensembles):
-    #         idx = i * 2
-    #         traj = ens.trajectory
-    #         feat, names = featurize_com_dist(traj=traj, min_sep=min_sep,max_sep=max_sep,inverse=inverse ,get_names=get_names) 
-    #         print(feat.shape) 
-    #         print(names)# Compute (N, *) feature arrays.
-    #         logger.info(f"# Ensemble: {ens.code}")
-    #         logger.info(f"features: {feat.shape}")
-
-    #         com_dmap = calc_ca_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
-    #         com_dmap_mean = com_dmap.mean(axis=0)
-    #         ca_dmap = calc_ca_dmap(traj=traj, min_sep=min_sep, max_sep=max_sep)
-    #         ca_dmap_mean = ca_dmap.mean(axis=0)
-
-    #         logger.info(f"distance matrix: {com_dmap_mean.shape}")
-            
-    #         im0 = axes[idx].imshow(ca_dmap_mean)
-    #         axes[idx].set_title(f"{ens.code} CA")
-    #         im1 = axes[idx + 1].imshow(com_dmap_mean)
-    #         axes[idx + 1].set_title(f"{ens.code} COM")
-    #         cbar = fig.colorbar(im0, ax=axes[idx], shrink=0.8)
-    #         cbar.set_label("distance [nm]")
-    #         cbar = fig.colorbar(im1, ax=axes[idx + 1], shrink=0.8)
-    #         cbar.set_label("distance [nm]")
-    #         if not custom_axes:
-    #             fig.tight_layout()
-
-    #         if save:
-    #             fig.savefig(os.path.join(self.plot_dir, 'dist_ca_com_' + ens.code))  
-
-    #     return axes
 
     def _check_grid_input(self):
         ensembles = self.analysis.ensembles
