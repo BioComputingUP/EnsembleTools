@@ -144,28 +144,29 @@ def plot_violins(
     from matplotlib.lines import Line2D
 
     # Define the list of colors you want to provide
-    mycolors = ['purple', 'green', 'blue']  # You can customize this list
+    mycolors = ['royalblue', 'darkorange', 'limegreen']  # You can customize this list
 
     # Plot the violin plots and customize the colors for medians and means
     if summary_stat == 'mean':
         vp = ax.violinplot(data, showmeans=True, showmedians=False)
-        vp['cmeans'].set_color(mycolors[0])  # Set the mean color
-        mean_line = Line2D([0], [0], color=mycolors[0], linestyle='-', label='Mean')
-        ax.legend(handles=[mean_line], loc='upper right')
+        vp['cmeans'].set_color('black')  # Set the mean color
+        mean_line = Line2D([0], [0], color='black', linestyle='-', label='Mean')
+        ax.legend(handles=[mean_line], loc='upper right', fontsize=15)
+         # these are the positions
 
     elif summary_stat == 'median':
         vp = ax.violinplot(data, showmeans=False, showmedians=True)
-        vp['cmedians'].set_color(mycolors[1])  # Set the median color
-        median_line = Line2D([0], [0], color=mycolors[1], linestyle='-', label='Median')
+        vp['cmedians'].set_color('black')  # Set the median color
+        median_line = Line2D([0], [0], color='black', linestyle='-', label='Median')
         ax.legend(handles=[median_line], loc='upper right')
 
     elif summary_stat == 'both':
         vp = ax.violinplot(data, showmeans=True, showmedians=True)
-        vp['cmeans'].set_color(mycolors[0])    # Set the mean color
-        vp['cmedians'].set_color(mycolors[1])  # Set the median color
-        mean_line = Line2D([0], [0], color=mycolors[0], linestyle='-', label='Mean')
-        median_line = Line2D([0], [0], color=mycolors[1], linestyle='-', label='Median')
-        ax.legend(handles=[mean_line, median_line], loc='upper right')
+        vp['cmeans'].set_color('black')    # Set the mean color
+        vp['cmedians'].set_color('black')  # Set the median color
+        mean_line = Line2D([0], [0], color='black', linestyle='-', label='Mean')
+        median_line = Line2D([0], [0], color='black', linestyle='-', label='Median')
+        ax.legend(handles=[mean_line, median_line], loc='upper right', fontsize=22)
 
     
     for pc in vp['bodies']:
@@ -173,10 +174,22 @@ def plot_violins(
         pc.set_edgecolor('black')  # Set edge color to black for better visibility
         pc.set_alpha(0.7)  # Set transparency level
 
+    
+    for i, pc in enumerate(vp['bodies']):
+        pc.set_facecolor(mycolors[i % len(mycolors)])  # Cycle through colors if fewer than data sets
+        pc.set_edgecolor(mycolors[i % len(mycolors)])  # Set edge color to match the body color
+        pc.set_alpha(0.9)
+
+    vp['cbars'].set_color('white')       # Vertical bar connecting min and max
+    vp['cmins'].set_color('black')       # Horizontal line at the bottom
+    vp['cmaxes'].set_color('black')      # Horizontal line at the top
+
     ax.set_xticks(ticks=[y + 1 for y in range(len(labels))])
-    ax.set_xticklabels(labels=labels, rotation= 45, ha="center")
-    ax.set_ylabel(xlabel)
-    ax.set_title(title)
+    ax.set_xticklabels(labels=['I', 'II', 'III'], rotation= 0, ha="center")
+    ax.tick_params(axis='both', labelsize=22)
+
+    ax.set_ylabel(xlabel, fontsize=22)
+    ax.set_title(title, fontsize=22, weight='bold')
     return ax
 
 def plot_comparison_matrix(
@@ -363,12 +376,13 @@ class Visualization:
     def _tsne_scatter(
             self,
             color_by: str = "rg",
-            kde_by_ensemble: bool = False,
-            save: bool = False,
+            kde_by_ensemble: bool = True,
             ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None,
             size: int = 10,
             plotly = False,
             cmap_label: str = 'viridis',
+            dpi: int = 96,
+            save: bool = False
     ) -> List[plt.Axes]:
         """
         Plot the results of t-SNE analysis. 
@@ -379,16 +393,21 @@ class Visualization:
         Parameters
         ----------
         color_by: str, optional
-            The feature extraction method used for coloring points in the scatter plot. Options are "rg", "prolateness", "asphericity", "sasa", and "end_to_end". Default is "rg".
-        
+            The feature extraction method used for coloring points in the scatter plot.
+            Options are "rg", "prolateness", "asphericity", "sasa", and "end_to_end". Default is "rg".
         kde_by_ensemble: bool, optional
-            If True, the KDE plot will be generated for each ensemble separately. If False, a single KDE plot will be generated for the concatenated ensembles. Default is False.
-        
+            If True, the KDE plot will be generated for each ensemble separately. 
+            If False, a single KDE plot will be generated for the concatenated ensembles. Default is True.
         save: bool, optional
             If True, the plot will be saved in the data directory. Default is False.
-        
         ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The axes on which to plot. If None, new axes will be created. Default is None.
+        size: int, optional 
+            The size of the points in the scatter plots. Default is 10.
+        plotly: bool, optional 
+            If True, the plot will be generated using Plotly. Default is False.
+        cmap_label: str, optional 
+            The colormap to use for the feature-colored labels. Default is 'viridis'.
 
         Returns
         -------
@@ -412,7 +431,8 @@ class Visualization:
         
         if ax is None:
             custom_axes = False
-            fig, ax = plt.subplots(1, 4, figsize=(20, 5))
+            fig, ax = plt.subplots(1, 4, figsize=(20, 5), dpi=dpi)
+          
         else:
             custom_axes = True
             if not isinstance(ax, (list, np.ndarray)):
@@ -429,12 +449,18 @@ class Visualization:
 
         # Scatter plot with original labels
         scatter_labeled = ax[0].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], c=point_colors, s=size, alpha=0.5)
-        ax[0].set_title('Scatter Plot (original labels)')
+        ax[0].set_title('Scatter Plot (Ensemble labels)', fontsize=15)
+        ax[0].set_xlabel('t-SNE 1', fontsize=15)
+        ax[0].set_ylabel('t-SNE 2', fontsize=15)
+        ax[0].tick_params(axis='both', which='major', labelsize=14)
 
         # Scatter plot with clustering labels
         cmap = plt.get_cmap('jet', analysis.reducer.bestK)
         scatter_cluster = ax[1].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], s=size, c=bestclust.astype(float), cmap=cmap, alpha=0.5)
-        ax[1].set_title('Scatter Plot (clustering labels)')
+        ax[1].set_title('Scatter Plot (Clustering labels)', fontsize=15)
+        ax[1].set_xlabel('t-SNE 1', fontsize=15)
+        ax[1].set_ylabel('t-SNE 2', fontsize=15)
+        ax[1].tick_params(axis='both', which='major', labelsize=14)
 
         feature_values = []
         for values in analysis.get_features(color_by).values():
@@ -444,7 +470,16 @@ class Visualization:
         
         feature_labeled = ax[2].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], cmap=cmap_label, c=colors, s=size, alpha=0.5)
         cbar = plt.colorbar(feature_labeled, ax=ax[2])
-        ax[2].set_title(f'Scatter Plot ({color_by} labels)')
+        if color_by in ('rg', 'end_to_end'):
+            cbar.set_label(f'{color_by} [nm]', fontsize=15)
+        elif color_by in ('prolateness', 'asphericity'):
+            cbar.set_label(f'{color_by}', fontsize=15)
+        elif color_by == 'sasa':
+            cbar.set_label('SASA [nm^2]', fontsize=15)
+        ax[2].set_title(f'Scatter Plot ({color_by} labels)', fontsize=15)
+        ax[2].set_xlabel('t-SNE 1', fontsize=15)
+        ax[2].set_ylabel('t-SNE 2', fontsize=15)
+        ax[2].tick_params(axis='both', which='major', labelsize=14)
 
         if kde_by_ensemble:
             # KDE plot for each ensemble
@@ -455,7 +490,10 @@ class Visualization:
                                 min(ensemble_data[:, 1]):max(ensemble_data[:, 1]):100j]
                 zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
                 ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, colors=[label_colors[label]], linewidths=3)
-            ax[3].set_title('Density Plot (Ensemble-wise)')
+            ax[3].set_title('Density Plot (Ensemble-wise)', fontsize=15)
+            ax[3].set_xlabel('t-SNE 1', fontsize=15)
+            ax[3].set_ylabel('t-SNE 2', fontsize=15)
+            ax[3].tick_params(axis='both', which='major', labelsize=14)
             # ax[3].legend(title='Ensemble', loc='upper right')
         else:
             # Single KDE plot for concatenated ensembles
@@ -464,24 +502,37 @@ class Visualization:
                             min(analysis.reducer.best_tsne[:, 1]):max(analysis.reducer.best_tsne[:, 1]):100j]
             zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
             ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, cmap='Blues')
-            ax[3].set_title('Density Plot')
+            ax[3].set_title('Density Plot', fontsize=15)
+            ax[3].set_xlabel('t-SNE 1', fontsize=15)
+            ax[3].set_ylabel('t-SNE 2', fontsize=15)
+            ax[3].tick_params(axis='both', which='major', labelsize=14)
 
         # Manage legend for the original labels
         legend_labels = list(label_colors.keys())
         legend_handles = [plt.Line2D([0], [0], marker='o', color=label_colors[label], markersize=10) for label in legend_labels]
-        fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right', bbox_to_anchor=(1.09, 1.00))
+        fig.legend(legend_handles, legend_labels, title='Ensemble Labels', loc='upper right', bbox_to_anchor=(1.09, 1.00))
 
         if not custom_axes:
-            fig.tight_layout()
+            fig.tight_layout(pad=1.5)
 
         if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
-            fig = px.scatter(x=analysis.reducer.best_tsne[:, 0], y=analysis.reducer.best_tsne[:, 1], color=colors, hover_data={'index':self._index_models()} )
-            fig.update_coloraxes(colorbar_title=f'{color_by}')
-            fig.show()
+            fig_plotly = px.scatter(x=analysis.reducer.best_tsne[:, 0], 
+                            y=analysis.reducer.best_tsne[:, 1],
+                            color=colors, hover_data={'index':self._index_models()},
+                            labels={'x': 't-SNE 1', 'y': 't-SNE 2'})
+            if color_by in ('rg', 'end_to_end'):
+                fig_plotly.update_coloraxes(colorbar_title=f'{color_by} [nm]')
+            elif color_by in ('prolateness', 'asphericity'):
+                fig_plotly.update_coloraxes(colorbar_title=f'{color_by}')
+            elif color_by == 'sasa':
+                fig_plotly.update_coloraxes(colorbar_title='SASA [nm^2]')
+            fig_plotly.show()
 
         if save:
-            fig.savefig(self.plot_dir + f'/tsnep{int(analysis.reducer.bestP)}_kmeans{int(analysis.reducer.bestK)}_scatter.png', dpi=800)
+            fig.savefig(os.path.join(self.plot_dir, f'tsne_scatter_{color_by}.png'), dpi=dpi, bbox_inches='tight')
+            msg = f"t-SNE scatter plot saved to {os.path.join(self.plot_dir, f'tsne_scatter_{color_by}.png')}"
+            logger.info(msg)
 
         return ax
     
@@ -490,28 +541,36 @@ class Visualization:
                                          save: bool = False, 
                                          ax: Union[None, List[plt.Axes]] = None,
                                          kde_by_ensemble: bool = False,
+                                         dpi: int = 96,
                                          size: int = 10,
                                          plotly = False,
                                          cmap_label: str = 'viridis',
-                                         n_comp = 2) -> List[plt.Axes]:
+                                         n_components: int = 2) -> List[plt.Axes]:
         """
         Plot the results of dimensionality reduction using the method specified in the analysis.
 
         Parameters
         ----------
         color_by : str, optional
-            The feature extraction method used for coloring points in the scatter plot. 
-            Options are "rg", "prolateness", "asphericity", "sasa", and "end_to_end". Default is "rg".
-
+            The feature extraction method used for coloring points in the scatter plot. Options are "rg", "prolateness", "asphericity", "sasa", and "end_to_end". Default is "rg".
         save : bool, optional
             If True, the plot will be saved in the data directory. Default is False.
-
         ax : Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
-
         kde_by_ensemble : bool, optional
             If True, the KDE plot will be generated for each ensemble separately. 
             If False, a single KDE plot will be generated for the concatenated ensembles. Default is False.
+        dpi : int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
+        size : int, optional
+            The size of the points in the scatter plot. Default is 10.
+        plotly : bool, optional
+            If True, the plot will be generated using Plotly. Default is False.
+        cmap_label : str, optional
+            The colormap to use for the feature-colored labels. Default is 'viridis'.
+        n_components : int, optional
+            The number of components for dimensionality reduction.
+            
 
         Returns
         -------
@@ -526,18 +585,19 @@ class Visualization:
         """
 
         method = self.analysis.reduce_dim_method
-        if method in ("dimenfix", "umap") and n_comp <= 2:
-            return self._dimenfix_umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly, cmap_label=cmap_label)
-        elif method == "tsne" and n_comp == 2:
-            return self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, cmap_label=cmap_label, plotly=plotly)
-        elif n_comp == 3 :
+        if method in ("dimenfix", "umap") and n_components <= 2:
+            return self._umap_scatter(color_by=color_by, save=save, ax=ax, kde_by_ensemble=kde_by_ensemble, size=size, plotly=plotly, cmap_label=cmap_label)
+        elif method == "tsne" and n_components == 2:
+            return self._tsne_scatter(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, cmap_label=cmap_label,dpi=dpi, plotly=plotly)
+        elif n_components == 3 :
             self._scatter_3d(color_by=color_by, kde_by_ensemble=kde_by_ensemble, save=save, ax=ax, size=size, plotly=plotly, cmap_label=cmap_label)
         else:
             raise NotImplementedError(f"Scatter plot for method '{method}' is not implemented. Please select between 'tsne', 'dimenfix', and 'umap'.")
 
-    def _dimenfix_umap_scatter(self, 
+    def _umap_scatter(self, 
                          color_by: str = "rg", 
-                         save: bool = False, 
+                         save: bool = False,
+                         dpi: int = 96, 
                          ax: Union[None, List[plt.Axes]] = None,
                          kde_by_ensemble: bool = False,
                          size: int = 10,
@@ -578,7 +638,7 @@ class Visualization:
 
         if ax is None:
             custom_axes = False
-            fig, ax = plt.subplots(1, 4, figsize=(18, 4))
+            fig, ax = plt.subplots(1, 4, figsize=(18, 4), dpi=dpi)
             axes = ax.flatten()  # Ensure axes is a 1D array
         else:
             custom_axes = True
@@ -596,7 +656,10 @@ class Visualization:
         # Scatter plot with original labels
         
         scatter_labeled = axes[0].scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1], c=point_colors, s=size, alpha=0.5)
-        axes[0].set_title('Scatter Plot (original labels)')
+        axes[0].set_title('Scatter Plot (Ensemble labels)', fontsize=15)
+        axes[0].set_xlabel('UMAP 1', fontsize=15)
+        axes[0].set_ylabel('UMAP 2', fontsize=15)
+        axes[0].tick_params(axis='both', which='major', labelsize=14)
 
 
         # Scatter plot with different labels
@@ -604,19 +667,33 @@ class Visualization:
         for values in analysis.get_features(color_by).values():
             feature_values.extend(values)
         colors = np.array(feature_values)
+
         
         rg_labeled = axes[2].scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1], c=colors, s=size, alpha=0.5, cmap=cmap_label)
         cbar = plt.colorbar(rg_labeled, ax=axes[2])
-        axes[2].set_title(f'Scatter Plot ({color_by} labels)')
+        axes[2].set_title(f'Scatter Plot ({color_by} labels)', fontsize=15)
+        if color_by in ('rg', 'end_to_end'):
+            cbar.set_label(f'{color_by} [nm]', fontsize=15)
+        elif color_by in ('prolateness', 'asphericity'):
+            cbar.set_label(f'{color_by}', fontsize=15)
+        elif color_by == 'sasa':
+            cbar.set_label('SASA [nm^2]', fontsize=15)
+        axes[2].set_xlabel('UMAP 1', fontsize=15)
+        axes[2].set_ylabel('UMAP 2', fontsize=15)
+        axes[2].tick_params(axis='both', which='major', labelsize=14)
 
         
 
         # Scatter plot with clustering labels
         best_k = max(analysis.reducer.sil_scores, key=lambda x: x[2])[1]
+        print('best_k is ', best_k)
         kmeans = KMeans(n_clusters=best_k,n_init=10 ,random_state=42)
         labels = kmeans.fit_predict(analysis.transformed_data)
         scatter_cluster = axes[1].scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1], s=size, c=labels, cmap='viridis')
-        axes[1].set_title('Scatter Plot (clustering labels)')
+        axes[1].set_title('Scatter Plot (clustering labels)', fontsize=15)
+        axes[1].set_xlabel('UMAP 1', fontsize=15)
+        axes[1].set_ylabel('UMAP 2', fontsize=15)
+        axes[1].tick_params(axis='both', which='major', labelsize=14)
 
         # Manage legend for original labels
         legend_labels = list(label_colors.keys())
@@ -632,7 +709,7 @@ class Visualization:
                                 min(ensemble_data[:, 1]):max(ensemble_data[:, 1]):100j]
                 zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
                 ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, colors=[label_colors[label]])
-            ax[3].set_title('Density Plot (Ensemble-wise)')
+            ax[3].set_title('Density Plot (Ensemble-wise)', fontsize=15)
             # ax[3].legend(title='Ensemble', loc='upper right')
         else:
             # Single KDE plot for concatenated ensembles
@@ -641,45 +718,68 @@ class Visualization:
                             min(analysis.transformed_data[:, 1]):max(analysis.transformed_data[:, 1]):100j]
             zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
             ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, cmap='Blues')
-            ax[3].set_title('Density Plot')
-        fig.legend(legend_handles, legend_labels, title='Original Labels', loc='upper right', bbox_to_anchor=(1.09, 1.0))
+            ax[3].set_title('Density Plot', fontsize=15)
+        ax[3].set_xlabel('UMAP 1', fontsize=15)
+        ax[3].set_ylabel('UMAP 2', fontsize=15)
+        ax[3].tick_params(axis='both', which='major', labelsize=14)
+        fig.legend(legend_handles, legend_labels, title='Ensemble Labels', loc='upper right', bbox_to_anchor=(1.09, 1.0))
         if not custom_axes:
             fig.tight_layout()
         if save:
-            fig.savefig(self.plot_dir + f'/{analysis.reduce_dim_method}_scatter.png', dpi=800)
+            fig.savefig(self.plot_dir + f'/{analysis.reduce_dim_method}_scatter.png', dpi=dpi, bbox_inches='tight')
+            msg = f"UMAP scatter plot saved to {self.plot_dir + f'/{analysis.reduce_dim_method}_scatter.png'}"
+            logger.info(msg)
         
         if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
-            fig = px.scatter(x=analysis.transformed_data[:, 0], y=analysis.transformed_data[:, 1], color=colors, hover_data={'index':self._index_models()} )
-            fig.update_coloraxes(colorbar_title=f'{color_by}')
-            fig.show()
+            fig_plotly = px.scatter(x=analysis.transformed_data[:, 0],
+                            y=analysis.transformed_data[:, 1],
+                            color=colors,
+                            hover_data={'index':self._index_models()},
+                            labels={'x': 'UMAP 1', 'y': 'UMAP 2'})
+            if color_by in ('rg', 'end_to_end'):
+                fig_plotly.update_coloraxes(colorbar_title=f'{color_by} [nm]')
+            elif color_by in ('prolateness', 'asphericity'):
+                fig_plotly.update_coloraxes(colorbar_title=f'{color_by}')
+            elif color_by == 'sasa':
+                fig_plotly.update_coloraxes(colorbar_title='SASA [nm^2]')
+            fig_plotly.show()
 
         return axes
     
     def _scatter_3d(self, 
-                         color_by: str = "rg", 
-                         save: bool = False, 
-                         ax: Union[None, List[plt.Axes]] = None,
-                         kde_by_ensemble: bool = False,
-                         size: int = 10,
-                         plotly=False,
-                         cmap_label: str = 'viridis'
+                    color_by: str = "rg", 
+                    save: bool = False, 
+                    ax: Union[None, List[plt.Axes]] = None,
+                    size: int = 10,
+                    kde_by_ensemble: bool = False,
+                    plotly=False,
+                    cmap_label: str = 'viridis', 
+                    dpi: int = 96
+                    ) -> List[plt.Axes]:
+        if color_by in ('rg', 'end_to_end'):
+            colorbar_title = f'{color_by} [nm]'
+        elif color_by in ('prolateness', 'asphericity'):
+            colorbar_title = f'{color_by}'
+        elif color_by == 'sasa':
+            colorbar_title = 'SASA [nm^2]'
 
-                         ) -> List[plt.Axes]:
-
+        import plotly.graph_objects as go
         from mpl_toolkits.mplot3d import Axes3D
         analysis = self.analysis
 
         if analysis.reduce_dim_method not in ("dimenfix", "umap"):
+            ax_label = 't-SNE'
             bestclust = analysis.reducer.best_kmeans.labels_
             cmap = plt.get_cmap('Set1', analysis.reducer.bestK)
             labels_clust = bestclust.astype(float)
 
         else:
-            bestclust = max(analysis.reducer.sil_scores, key=lambda x: x[1])[0]
-            kmeans = KMeans(n_clusters=bestclust, random_state=42)
+            ax_label = 'UMAP'
+            best_k = max(analysis.reducer.sil_scores, key=lambda x: x[2])[1]
+            kmeans = KMeans(n_clusters=best_k, random_state=42)
             labels_clust = kmeans.fit_predict(analysis.transformed_data)
-            cmap = 'viridis'
+            
             
             
         
@@ -687,7 +787,8 @@ class Visualization:
             raise ValueError(f"Method {color_by} not supported.")
 
         if ax is None:
-            fig = plt.figure( figsize=(13, 6))
+            fig = plt.figure( figsize=(18, 6), dpi=dpi)
+            
             # axes = ax.flatten()  # Ensure axes is a 1D array
         else:
             ax_array = np.array(ax).flatten()
@@ -705,7 +806,10 @@ class Visualization:
         ax1 = fig.add_subplot(131, projection='3d')
         scatter_labeled = ax1.scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1], analysis.transformed_data[:, 2],c=point_colors, s=size, alpha=0.5)
         ax1.set_title('Scatter plot (original labels)')
-        ax1.view_init(elev=20, azim=45)
+        ax1.view_init(elev=30, azim=135)
+        ax1.set_xlabel(f'{ax_label} 1')
+        ax1.set_ylabel(f'{ax_label} 2')
+        ax1.set_zlabel(f'{ax_label} 3')
 
         # Scatter plot with different labels
         feature_values = []
@@ -714,17 +818,36 @@ class Visualization:
         colors = np.array(feature_values)
 
 
-        ax2 = fig.add_subplot(132, projection='3d')
+        ax2 = fig.add_subplot(133, projection='3d')
         rg_labeled = ax2.scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1],analysis.transformed_data[:, 2] ,c=colors, s=size, alpha=0.5, cmap=cmap_label)
-        cbar = plt.colorbar(rg_labeled, ax=ax2, fraction=0.075)
+        cbar = plt.colorbar(rg_labeled, ax=ax2, fraction=0.075, shrink=0.6)
+        cbar.set_label(f'{colorbar_title}', fontsize=15)
         ax2.set_title(f'Scatter plot ({color_by} labels)')
-        ax2.view_init(elev=20, azim=45)
+        ax2.view_init(elev=30, azim=45)
+        ax2.set_xlabel(f'{ax_label} 1')
+        ax2.set_ylabel(f'{ax_label} 2')
+        ax2.set_zlabel(f'{ax_label} 3')
 
         # Scatter plot with clustering labels
-        ax3 = fig.add_subplot(133, projection='3d')
-        scatter_cluster = ax3.scatter(analysis.transformed_data[:, 0], analysis.transformed_data[:, 1],analysis.transformed_data[:, 2] ,s=size, c=labels_clust, cmap=cmap, alpha=0.5)
+        ax3 = fig.add_subplot(132, projection='3d')
+        n_clusters = len(np.unique(labels_clust))
+        cluster_cmap = plt.get_cmap('Set1', n_clusters)
+        colors_discrete = cluster_cmap(labels_clust.astype(int))
+
+        scatter_cluster = ax3.scatter(
+            analysis.transformed_data[:, 0],
+            analysis.transformed_data[:, 1],
+            analysis.transformed_data[:, 2],
+            s=size,
+            c=colors_discrete,
+            alpha=0.5
+        )
+
         ax3.set_title('Scatter plot (clustering labels)')
-        ax3.view_init(elev=20, azim=45)
+        ax3.view_init(elev=30, azim=135)
+        ax3.set_xlabel(f'{ax_label} 1')
+        ax3.set_ylabel(f'{ax_label} 2')
+        ax3.set_zlabel(f'{ax_label} 3')
 
         # Manage legend for original labels
         legend_labels = list(label_colors.keys())
@@ -733,11 +856,128 @@ class Visualization:
 
         if plotly:
             # df = pd.DataFrame({'x':analysis.reducer.best_tsne[:, 0], 'y': analysis.reducer.best_tsne[:, 1], 'index': range(len(analysis.reducer.best_tsne[:, 0]))})
-            fig = px.scatter(x=analysis.transformed_data[:, 0], y=analysis.transformed_data[:, 1], color=colors, hover_data={'index':self._index_models()} )
-            fig.update_coloraxes(colorbar_title=f'{color_by}')
-            fig.show()
+            # fig = px.scatter(x=analysis.transformed_data[:, 0], y=analysis.transformed_data[:, 1], color=colors, hover_data={'index':self._index_models()} )
+            import plotly.colors as pc
+            from plotly.subplots import make_subplots
+            import plotly.graph_objects as go
+            n_clusters = len(np.unique(labels_clust))
+            color_list = pc.qualitative.Set1  # or Set2, Dark2, Pastel, etc.
 
-        plt.show()
+            # Extend color list if not enough colors
+            if n_clusters > len(color_list):
+                color_list = (color_list * ((n_clusters // len(color_list)) + 1))[:n_clusters]
+
+            # Map cluster ID to color
+            label_color_map = {i: color_list[i] for i in range(n_clusters)}
+            labels_colors_discrete = [label_color_map[i] for i in labels_clust]
+         
+
+            fig_plotly = make_subplots(
+                rows=1, cols=3,
+                specs=[[{'type': 'scene'}, {'type': 'scene'} , {'type': 'scene'}]],
+                subplot_titles=('Ensemble Labels', 'Clustering Labels' , f'{color_by} Labels')
+            )
+            fig_plotly.update_layout(
+                scene=dict(domain=dict(x=[0.0, 0.32])),
+                scene2=dict(domain=dict(x=[0.34, 0.66])),
+                scene3=dict(domain=dict(x=[0.68, 1.0]))
+)
+            # Plot 1: Ensemble Labels
+            fig_plotly.add_trace(
+                go.Scatter3d(
+                    x=analysis.transformed_data[:, 0],
+                    y=analysis.transformed_data[:, 1],
+                    z=analysis.transformed_data[:, 2],
+                    mode='markers',
+                    marker=dict(
+                        size=5,
+                        color=point_colors,
+                        opacity=0.5,
+                                             
+                    ),
+                    hovertext=self._index_models(),
+                   
+                ),
+                row=1, col=1
+            )
+
+            # Plot 2: Clustering Labels
+            fig_plotly.add_trace(
+                go.Scatter3d(
+                    x=analysis.transformed_data[:, 0],
+                    y=analysis.transformed_data[:, 1],
+                    z=analysis.transformed_data[:, 2],
+                    mode='markers',
+                    marker=dict(
+                        size=5,
+                        color=labels_colors_discrete,
+                        opacity=0.5,
+                
+                    ),
+                    hovertext=self._index_models(),
+                   
+                ),
+                row=1, col=2
+            )
+
+            # Plot 3: Feature Colored Labels
+            fig_plotly.add_trace(
+                go.Scatter3d(
+                    x=analysis.transformed_data[:, 0],
+                    y=analysis.transformed_data[:, 1],
+                    z=analysis.transformed_data[:, 2],
+                    mode='markers',
+                    marker=dict(
+                        size=5,
+                        color=colors,
+                        colorscale=cmap_label,
+                        opacity=0.5,
+                        colorbar=dict(
+                            title=f'{colorbar_title}',
+                            x=1.0,
+                            len=0.8,
+                            y=0.5)
+                    ),
+                    hovertext=self._index_models(),
+                    
+                ),
+                row=1, col=3
+            ),
+
+            # Axis labels for both 3D plots
+            fig_plotly.update_layout(
+                scene=dict(
+                    xaxis_title=f'{ax_label} 1',
+                    yaxis_title=f'{ax_label} 2',
+                    zaxis_title=f'{ax_label} 3'
+                ),
+                scene2=dict(
+                    xaxis_title=f'{ax_label} 1',
+                    yaxis_title=f'{ax_label} 2',
+                    zaxis_title=f'{ax_label} 3'
+                ),
+                scene3=dict(
+                    xaxis_title=f'{ax_label} 1',
+                    yaxis_title=f'{ax_label} 2',
+                    zaxis_title=f'{ax_label} 3'
+                ),
+                
+                margin=dict(l=0, r=0, t=50, b=0),
+                showlegend=False
+            )
+
+            fig_plotly.show()
+
+
+        plt.subplots_adjust(wspace=0.5, hspace=0.2)  # Adjust spacing manually
+        fig.show()
+        if save:
+            fig.savefig(os.path.join(self.plot_dir, 'tSNE_landscape'), dpi=dpi, bbox_inches='tight')
+            msg = f"3D scatter plot saved to {os.path.join(self.plot_dir, 'tSNE_landscape.png')}"
+            logger.info(msg)
+
+        return [ax1, ax2, ax3]
+
 
     def pca_cumulative_explained_variance(
             self, save: bool = False, ax: Union[None, plt.Axes] = None
@@ -1221,7 +1461,7 @@ class Visualization:
                 fig = ax.figure
 
         axis_label = r"SASA (nm$^2$)"
-        title = "Global SASA Distribution"
+        title = ""
 
         if violin_plot:
             # Plot the violin plot
@@ -1293,9 +1533,10 @@ class Visualization:
                 if not custom_axes:
                     fig.tight_layout()
 
-        if save:
-            fig.savefig(os.path.join(self.plot_dir, 'Global_SASA_dist' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+        if save:            
+            fig.savefig(os.path.join(self.plot_dir, 'Global_SASA_dist_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
+            msg= f"Global SASA distribution plot saved to {self.plot_dir}/Global_SASA_dist_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def rg_vs_asphericity(self,
@@ -1352,7 +1593,8 @@ class Visualization:
         
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'Rg_vs_Asphericity_' + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-        
+            msg = f"Rg vs. Asphericity plot saved to {self.plot_dir}/Rg_vs_Asphericity_{analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
   
     def rg_vs_prolateness(self, 
@@ -1370,7 +1612,7 @@ class Visualization:
         dpi: int, optional
             The DPI (dots per inch) of the output figure. Default is 96.
         size: int, optional
-            The size of the scatter points. Default is 4.
+            The size of the scatter marker points. Default is 4.
         save: bool, optional
             If True, the plot will be saved as an image file in the specified directory. Default is False.
         ax: plt.Axes, optional
@@ -1409,7 +1651,8 @@ class Visualization:
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'Rg_vs_Prolateness_' + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-        
+            msg = f"Rg vs. Prolateness plot saved to {self.plot_dir}/Rg_vs_Prolateness_{analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def _get_protein_dssp_data_dict(self):
@@ -1422,9 +1665,11 @@ class Visualization:
     def relative_dssp_content(self,
             dssp_code: str = 'H', 
             dpi: int = 96,
-            save: bool = False, ax: plt.Axes = None,
-            auto_xticks: bool = True,
-            xtick_interval: int = 5
+            auto_xticks: bool = False,
+            xtick_interval: int = 5,
+            figsize: Tuple[float, float] = (10, 5),
+            save: bool = False,
+            ax: plt.Axes = None,
         ) -> plt.Axes:
         """
         Plot the relative ss content in each ensemble for each residue. 
@@ -1436,15 +1681,19 @@ class Visualization:
             the simplified DSSP codes
         dpi : int, optional
             The DPI (dots per inch) of the output figure. Default is 96. 
-        save : bool, optional
-            If True, the plot will be saved as an image file in the specified directory. Default is False.
-        ax : plt.Axes, optional
-            The axes on which to plot. Default is None, which creates a new figure and axes.
         auto_xticks: bool, optional
             If True, use matplotlib default xticks.
         xtick_interval: int, optional
             If `auto_xticks` is False, this parameter defines the interval between displayed residue indices on the x-axis.
             Residue 1 is always included,followed by every `xtick_interval` residues (e.g., 1, 5, 10, 15 if `xtick_interval`=5).
+        figsize : Tuple[float, float], optional
+            The size of the figure in inches. Default is (10, 5).
+        save : bool, optional
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
+        ax : plt.Axes, optional
+            The axes on which to plot. Default is None, which creates a new figure and axes.
+
+
 
         Returns
         -------
@@ -1458,7 +1707,7 @@ class Visualization:
         protein_dssp_data_dict = self._get_protein_dssp_data_dict()
 
         if ax is None:
-            fig, ax = plt.subplots(dpi=dpi, figsize=(10, 5))
+            fig, ax = plt.subplots(dpi=dpi, figsize=figsize)
         else:
             fig = ax.figure
 
@@ -1491,7 +1740,7 @@ class Visualization:
             tick_positions = [i - 1 for i in tick_labels]  # convert to 0-based indexing
             ax.set_xticks(tick_positions, labels=tick_labels)
         
-        ax.set_xlabel('Residue Index')
+        ax.set_xlabel('Residue Index', fontsize=22)
         if dssp_code == 'H':
             dssp_name = 'Helix'
         elif dssp_code == 'C':
@@ -1500,13 +1749,15 @@ class Visualization:
             dssp_name = 'Strand'
         else:
             raise KeyError(dssp_code)
-        ax.set_ylabel(f'Relative Content of {dssp_name}')
-        ax.set_title(f'{dssp_name} Content per Residue in the Ensemble')
-        ax.legend()
-
+        ax.set_ylabel(f'Relative Content of {dssp_name}', fontsize=22)
+        ax.tick_params(axis='both', labelsize=22)
+        # ax.set_title(f'{dssp_name} Content per Residue in the Ensemble', fontsize=22, weight='bold')
+        # ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
+        ax.legend(fontsize=15)
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'relative_helix_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-        
+            msg = f"Relative Helix content plot saved to {self.plot_dir}/relative_helix_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def _get_rg_data_dict(self):
@@ -1597,7 +1848,7 @@ class Visualization:
                 fig = ax.figure
 
         axis_label = r"$R_{g} [nm]$"
-        title = "Radius of Gyration Distribution"
+        title = ""
 
         if violin_plot:
             
@@ -1660,7 +1911,8 @@ class Visualization:
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'rg_comparison_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+            msg = f"Rg distribution plot saved to {self.plot_dir}/rg_comparison_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def _get_distance_matrix_ens_dict(self):
@@ -1772,7 +2024,7 @@ class Visualization:
         # Set axis labels and title based on rg_norm
         if not rg_norm:
             axis_label = r"$R_{ee} [nm]$"
-            title = "End-to-End Distances Distribution"
+            title = ""
         else:
             axis_label = r"$R_{ee} / \langle R_g \rangle$"
             title = r"Normalized End-to-End Distance ($R_{ee} / \langle R_g \rangle$) Distribution"
@@ -1846,7 +2098,8 @@ class Visualization:
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'e2e_distances_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+            msg = f"End-to-End distances distribution plot saved to {self.plot_dir}/e2e_distances_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def asphericity(self, 
@@ -1926,7 +2179,7 @@ class Visualization:
                 fig = ax.figure
 
         axis_label = "Asphericity"
-        title = "Asphericity Distribution"
+        title = ""
 
         if violin_plot:
             # Plot the violin plot
@@ -2000,7 +2253,8 @@ class Visualization:
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'asphericity_dist_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+            msg = f"Asphericity distribution plot saved to {self.plot_dir}/asphericity_dist_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def prolateness(self,
@@ -2153,7 +2407,8 @@ class Visualization:
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'prolateness_dist_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+            msg = f"Prolateness distribution plot saved to {self.plot_dir}/prolateness_dist_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def alpha_angles(self, bins: int = 50, save: bool = False, ax: plt.Axes = None) -> plt.Axes:
@@ -2289,7 +2544,8 @@ class Visualization:
 
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'contact_prob_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+            msg = f"Contact probability map saved to {self.plot_dir}/contact_prob_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return axes
 
     def _pair_ids(self, min_sep=2,max_sep = None ):
@@ -2311,7 +2567,7 @@ class Visualization:
     def ramachandran_plots(
         self,
         two_d_hist: bool = True,
-        linespaces: Tuple[int, int, int] = (-180, 180, 80),
+        bins: Tuple[int, int, int] = (-180, 180, 80),
         dpi: int = 96,
         color: str = 'viridis',
         log_scale: bool = True,
@@ -2328,16 +2584,16 @@ class Visualization:
         ----------
         two_d_hist : bool, optional
             If True, it returns a 2D histogram for each ensemble. Default is True.
-        linespaces : tuple, optional
+        bins : tuple, optional
             You can customize the bins for 2D histogram. Default is (-180, 180, 80).
         log_scale : bool, optional
             If True, the histogram will be plotted on a logarithmic scale. Default is True.
-        save : bool, optional
-            If True, the plot will be saved as an image file in the specified directory. Default is False.
         color : str, optional   
             The colormap to use for the 2D histogram. Default is 'viridis'.
         dpi : int, optional 
             The DPI (dots per inch) of the output figure. Default is 96.
+        save : bool, optional
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The axes on which to plot. If None, new axes will be created. Default is None.
 
@@ -2366,7 +2622,7 @@ class Visualization:
             if len(ax) < len(ensembles):
                 raise ValueError(f"Not enough axes provided: expected {len(ensembles)}, got {len(ax)}.")
 
-            rama_linspace = np.linspace(linespaces[0], linespaces[1], linespaces[2])
+            rama_linspace = np.linspace(bins[0], bins[1], bins[2])
             for ensemble, ax_i in zip(ensembles, ax):
                 phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])[:, :-1]
                 psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])[:, 1:]
@@ -2380,12 +2636,13 @@ class Visualization:
                     density=True
                 )
 
-                ax_i.set_title(f'Ramachandran Plot for Ensemble {ensemble.code}')
-                ax_i.set_xlabel('Phi (ϕ) Angle (degrees)')
-                ax_i.set_ylabel('Psi (ψ) Angle (degrees)')
+                ax_i.set_title(f'{ensemble.code}', fontsize=22)
+                ax_i.set_xlabel(r'$\phi$ (°)', fontsize=22)
+                ax_i.set_ylabel(r'$\psi$ (°)', fontsize=22)
+                ax_i.tick_params(axis='both', which='major', labelsize=22)
 
                 colorbar = fig.colorbar(hist2d[3], ax=ax_i)
-                colorbar.set_label('Density')
+                # colorbar.set_label('Density', fontsize=15)
 
             if not custom_axes:
                 fig.tight_layout()
@@ -2398,18 +2655,22 @@ class Visualization:
                 phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])
                 psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])
                 ax.scatter(phi_angles, psi_angles, s=1, label=ensemble.code)
-            ax.set_xlabel('Phi (ϕ) Angle (degrees)')
-            ax.set_ylabel('Psi (ψ) Angle (degrees)')
-            ax.legend()
+            ax.set_xlabel('Phi (ϕ) Angle (degrees)', fontsize=22)
+            ax.set_ylabel('Psi (ψ) Angle (degrees)', fontsize=22)
+            ax.tick_params(axis='both', which='major', labelsize=22)
+            ax.set_title('Ramachandran Plot', fontsize=22)
+            ax.legend(fontsize=22)
 
         fig.tight_layout(pad=3.0)
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'ramachandran_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-
+            msg = f"Ramachandran plot saved to {self.plot_dir}/ramachandran_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def site_specific_flexibility(self, 
                         pointer: List[int] = None, 
+                        auto_xticks: bool = False,
                         xtick_interval: int = 5,
                         dpi: int = 96,
                         figsize: Tuple[int, int] = (15, 5), 
@@ -2421,14 +2682,17 @@ class Visualization:
         This plot shows the site-specific measure of disorder, which is sensitive to local flexibility based on 
         the circular variance of the Ramachandran angles φ and ψ for each residue in the ensemble.
         The score ranges from 0 for identical dihedral angles for all conformers at the residue i to 1 for a 
-        uniform distribution of dihedral angles at the residue i.
-        
+        uniform distribution of dihedral angles at the residue i. (For more information about this method look at here https://onlinelibrary.wiley.com/doi/full/10.1002/pro.4906)
+
         Parameters
         ----------
         pointer: List[int], optional
             A list of desired residues. Vertical dashed lines will be added to point to these residues. Default is None.
+        auto_xticks: bool, optional
+            If True, use matplotlib default xticks.
         xtick_interval: int, optional
-            The interval for the x-axis ticks. Default is 5.
+            If `auto_xticks` is False, this parameter defines the interval between displayed residue indices on the x-axis.
+            Always start with 1, followed by every `xtick_interval` residues (e.g., 1, 5, 10, 15, ... if `xtick_interval`=5).
         figsize: Tuple[int, int], optional
             The size of the figure. Default is (15, 5).
         dpi: int, optional
@@ -2450,7 +2714,6 @@ class Visualization:
         features_dict = self.analysis.get_features(featurization='phi_psi')
         
         f = ss_measure_disorder(features_dict)
-        
         if ax is None:
             fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
         else:
@@ -2460,41 +2723,56 @@ class Visualization:
             x = np.arange(1, len(values) + 1)
             ax.plot(x, values, marker='o', linestyle='-', label=key)
         
-        ticks = [1]
-        next_tick = xtick_interval
-        while next_tick <= len(x):
-            ticks.append(next_tick)
-            next_tick += xtick_interval
-        ax.set_xticks(ticks)
-        ax.set_title("Site-specific Flexibility parameter plot")
-        ax.set_xlabel("Residue Index")
-        ax.set_ylabel("Site-specific Flexibility parameter")
-        ax.legend()
-        
+        if not auto_xticks:
+            ticks = [1]
+            next_tick = xtick_interval
+            while next_tick <= len(x):
+                ticks.append(next_tick)
+                next_tick += xtick_interval
+            ax.set_xticks(ticks)
+        # ax.set_title("Site-specific Flexibility parameter plot", fontsize=22, weight='bold')
+        ax.set_xlabel("Residue Index", fontsize=22)
+        ax.set_ylabel("Site-specific Flexibility parameter", fontsize=22)
+        ax.tick_params(axis='both', which='major', labelsize=22)
+        # ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
+        ax.legend(fontsize=15)
+
         if pointer is not None:
             for res in pointer:
                 ax.axvline(x=res, color='blue', linestyle='--', alpha=0.3, linewidth=1)
         
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'ss_flexibility_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')  
-
+            msg = f"Site-specific flexibility plot saved to {self.plot_dir}/ss_flexibility_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def site_specific_order(self, 
-                        pointer: List[int] = None, 
-                        figsize: Tuple[int, int] = (15, 5), 
+                        pointer: List[int] = None,  
+                        auto_xticks: bool = True,
+                        xtick_interval: int = 5,
+                        dpi: int = 96,
+                        figsize: Tuple[int, int] = (15, 5),
                         save: bool = False, 
                         ax: Union[None, plt.Axes] = None) -> plt.Axes:
         """
         Generate a plot of the site-specific order parameter.
-        
-        This plot shows the site-specific order parameter, which abstracts from local chain flexibility.
-        The parameter is still site-specific, as orientation correlations in IDRs and IDPs decrease with increasing sequence distance.
-        
+        The function computes and plots per-residue order parameters that quantify how consistently each residue's backbone orientation 
+        is aligned with the rest of the chain across all conformers in an ensemble.
+        The result is a per-residue value between 0 and 1: values near 1 indicate high orientational order (rigid or structured regions), 
+        while values near 0 reflect disorder (flexible or unstructured regions). This measure captures long-range orientational correlations
+        in the backbone and is particularly useful for detecting weakly ordered segments in intrinsically disordered proteins.
+        (For more information about this method look at here https://onlinelibrary.wiley.com/doi/full/10.1002/pro.4906)
+
         Parameters
         ----------
         pointer: List[int], optional
             A list of desired residues. Vertical dashed lines will be added to point to these residues. Default is None.
+        auto_xticks: bool, optional
+            If True, use matplotlib default xticks.
+        xtick_interval: int, optional
+            If `auto_xticks` is False, this parameter defines the interval between displayed residue indices on the x-axis.
+            Always start with 1, followed by every `xtick_interval` residues (e.g., 1, 5, 10, 15, ... if `xtick_interval`=5).
         figsize: Tuple[int, int], optional
             The size of the figure. Default is (15, 5).
         save : bool, optional
@@ -2517,41 +2795,69 @@ class Visualization:
         dict_order_parameter = site_specific_order_parameter(dict_ca_xyz)
         
         if ax is None:
-            fig, ax = plt.subplots(1, 1, figsize=figsize)
+            fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
         else:
             fig = ax.figure
 
         for key, values in dict_order_parameter.items():
             x = np.arange(1, len(values) + 1)
             ax.plot(x, values, label=key, marker= 'o', linestyle='-')
-        
-        ax.set_xticks([i for i in np.arange(1, len(x) + 1) if i == 1 or i % 5 == 0])
+
+        if not auto_xticks:
+            ticks = [1]
+            next_tick = xtick_interval
+            while next_tick <= len(x):
+                ticks.append(next_tick)
+                next_tick += xtick_interval
+            ax.set_xticks(ticks)
         ax.set_title("Site-specific Order Parameter")
         ax.set_xlabel("Residue Index")
         ax.set_ylabel("Order parameter")
-        ax.legend()
+        ax.legend( loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
         
         if pointer is not None:
             for res in pointer:
                 ax.axvline(x=res, color='blue', linestyle='--', alpha=0.3, linewidth=1)
         
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'ss_order_' + self.analysis.ens_codes[0]))  
-        
+            fig.savefig(os.path.join(self.plot_dir, 'ss_order_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')  
+            msg = f"Site-specific order parameter plot saved to {self.plot_dir}/ss_order_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
-    def per_residue_mean_sasa(self, 
-                            figsize: Tuple[int, int] = (15, 5), 
+    def per_residue_mean_sasa(self,
+                            probe_radius: float = 0.14,
+                            n_sphere_points: int = 960, 
+                            figsize: Tuple[int, int] = (15, 5),
+                            dpi: int = 96,
+                            size: int = 3,
+                            auto_xticks: bool = True,
+                            xtick_interval: int = 5,
                             pointer: List[int] = None, 
                             save: bool = False, 
                             ax: Union[None, plt.Axes] = None) -> plt.Axes:
         """
         Plot the average solvent-accessible surface area (SASA) for each residue among all conformations in an ensemble.
-
+        This function uses the Shrake–Rupley algorithm as implemented in MDTraj (`mdtraj.shrake_rupley`) to compute
+        the solvent-accessible surface area.
+        
         Parameters
         ----------
+        probe_radius: float, optional
+            The radius of the probe sphere used in the Shrake–Rupley algorithm. Default is 0.14 nm.
+        n_sphere_points: int, optional
+            The number of points representing the surface of each atom, higher values leads to more accuracy. Default is 960.
         figsize: Tuple[int, int], optional
             Tuple specifying the size of the figure. Default is (15, 5).
+        dpi: int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
+        size: int, optional
+            The size of the marker points. Default is 3.
+        auto_xticks: bool, optional
+            If True, use matplotlib default xticks. Default is True.
+        xtick_interval: int, optional
+            If `auto_xticks` is False, this parameter defines the interval between displayed residue indices
+            on the x-axis. Always start with 1, followed by every `xtick_interval` residues (e.g., 1, 5, 10, 15, ... if `xtick_interval`=5).
         pointer: List[int], optional
             List of desired residues to highlight with vertical dashed lines. Default is None.
         save : bool, optional
@@ -2563,13 +2869,12 @@ class Visualization:
         -------
         plt.Axes
             Axes object containing the plot.
-
         """
 
         analysis = self.analysis
 
         if ax is None:
-            fig, ax = plt.subplots(1, 1, figsize=figsize)
+            fig, ax = plt.subplots(1, 1, figsize=figsize, dpi=dpi)
         else:
             fig = ax.figure
 
@@ -2579,20 +2884,29 @@ class Visualization:
         
         for i, ens in enumerate(analysis.ensembles):
             color = colors[i % len(colors)]
-            res_based_sasa = mdtraj.shrake_rupley(ens.trajectory, mode='residue')
+            res_based_sasa = mdtraj.shrake_rupley(ens.trajectory, mode='residue', probe_radius=probe_radius,
+                                                  n_sphere_points=n_sphere_points)
             sasa_mean = np.mean(res_based_sasa, axis=0)
             sasa_std = np.std(res_based_sasa, axis=0)        
 
-            ax.plot(np.arange(1, len(sasa_mean) + 1), sasa_mean, '-o', color=color, label=ens.code)
+            ax.plot(np.arange(1, len(sasa_mean) + 1), sasa_mean, '-o',markersize=size, color=color, label=ens.code)
             # ax.fill_between(np.arange(1, len(sasa_mean) + 1), sasa_mean - sasa_std, sasa_mean + sasa_std, alpha=0.3, color=colors[i % len(colors)])
-            ax.plot(np.arange(1, len(sasa_mean) + 1), sasa_mean + sasa_std, '--', color=color, alpha=0.5)
+            ax.plot(np.arange(1, len(sasa_mean) + 1), sasa_mean + sasa_std, '--', color=color, alpha=0.5, label=f'{ens.code} (mean ± SD)')
             ax.plot(np.arange(1, len(sasa_mean) + 1), sasa_mean - sasa_std, '--', color=color, alpha=0.5)
+        
+        # Set x-ticks
+        if not auto_xticks:
+            ticks = [1]
+            next_tick = xtick_interval
+            while next_tick <= len(sasa_mean):
+                ticks.append(next_tick)
+                next_tick += xtick_interval
+            ax.set_xticks(ticks)
 
-        ax.set_xticks([i for i in np.arange(1, len(sasa_mean) + 1) if i == 1 or i % 5 == 0])
         ax.set_xlabel('Residue Index')
-        ax.set_ylabel('Mean SASA')
+        ax.set_ylabel('Mean SASA [nm²]')
         ax.set_title('Mean SASA for Each Residue in Ensembles')
-        ax.legend()
+        ax.legend( loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
         # ax.grid(True)
         
         if pointer is not None:
@@ -2600,8 +2914,9 @@ class Visualization:
                 ax.axvline(x=res, color='blue', linestyle='--', alpha=0.3, linewidth=1)
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'local_sasa_' + self.analysis.ens_codes[0]))  
-
+            fig.savefig(os.path.join(self.plot_dir, 'local_sasa_' + self.analysis.ens_codes[0]), bbox_inches='tight', dpi=dpi)  
+            msg = f"Local SASA plot saved to {self.plot_dir}/local_sasa_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
 
     def distance_maps(
@@ -2740,7 +3055,8 @@ class Visualization:
             # Save once (whole panel) or one file per protein; here I keep the whole panel.
             filename = f"dist_{distance_type.lower()}.png"
             fig.savefig(os.path.join(self.plot_dir, filename), dpi=dpi, bbox_inches="tight")
-
+            msg = f"Distance maps saved to {self.plot_dir}/{filename}"
+            logger.info(msg)
         return plotted_axes
 
     def _check_grid_input(self):
@@ -2762,7 +3078,8 @@ class Visualization:
             subplot_width: int = 2.0,
             subplot_height: int = 2.2,
             bins: Union[str, int] = None,
-            dpi: int = 90
+            dpi: int = 90,
+            save: bool = False
         ) -> plt.Axes:
         """
         Plot a grid if histograms for distance or angular features. Can only be
@@ -2798,7 +3115,9 @@ class Visualization:
         bins: Union[str, int], optional
             Number of bins in all the histograms.
         dpi: int, optional
-            DPI of the figure.
+            The DPI (dots per inch) of the output figure. Default is 96.
+        save: bool, optional
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
 
         Returns
         -------
@@ -2978,9 +3297,12 @@ class Visualization:
             bbox_to_anchor=(1.02, 1),
             bbox_transform=ax[0, n_cols-1].transAxes
         )
-        
-        return ax
 
+        if save:
+            plt.savefig(os.path.join(self.plot_dir, 'hist_grid_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches="tight")
+            msg = f"Saved histogram grid to {self.plot_dir}/hist_grid_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
+        return ax
 
     def plot_rama_grid(self,
             ids: Union[np.ndarray, List[list]] = None,
@@ -2988,7 +3310,8 @@ class Visualization:
             n_cols: int = 3,
             subplot_width: int = 2.0,
             subplot_height: int = 2.2,
-            dpi: int = 90
+            dpi: int = 90, 
+            save: bool = False
         ) -> plt.Axes:
         """
         Plot a grid if Ramachandran plots for different residues. Can only be
@@ -3015,7 +3338,10 @@ class Visualization:
         subplot_height: int, optional
             See the subplot_width argument.
         dpi: int, optional
-            DPI of the figure.
+            The DPI (dots per inch) of the output figure. Default is 96.
+        save : bool, optional
+            If True, the plot will be saved as an image file in the specified directory. Default is False.
+
 
         Returns
         -------
@@ -3139,8 +3465,11 @@ class Visualization:
             bbox_transform=ax[0, n_cols-1].transAxes
         )
         
+        if save:
+            plt.savefig(os.path.join(self.plot_dir, 'rama_grid_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches="tight")
+            msg = f"Saved Ramachandran grid to {self.plot_dir}/rama_grid_{self.analysis.ens_codes[0]}.png"
+            logger.info(msg)
         return ax
-
 
     def comparison_matrix(self,
             score: str,

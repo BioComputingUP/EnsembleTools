@@ -208,7 +208,7 @@ class UMAPReduction(DimensionalityReduction):
     num_dim : int, optional
         Number of dimensions for the reduced space. Default is 2.
     n_neighbors : List[int], optional
-        Number of neighbors to consider for each point in the input data. Default is [20, 30, 40].
+        Number of neighbors to consider for each point in the input data. Default is [15].
     min_dist : float, optional
         The minimum distance between embedded points. Default is 0.1.
     metric : str, optional
@@ -220,7 +220,7 @@ class UMAPReduction(DimensionalityReduction):
     """
 
     def __init__(self,
-            num_dim:int=2,
+            n_components:int=2,
             n_neighbors:List[int]=[15],
             circular=False,
             min_dist:float=0.1,
@@ -228,7 +228,7 @@ class UMAPReduction(DimensionalityReduction):
             range_n_clusters:List[int] = range(2,10,1),
             random_state:int=None
         ):
-        self.num_dim = num_dim
+        self.n_components = n_components
         self.n_neighbors = n_neighbors
         self.min_dist = min_dist
         self.metric = unit_vector_distance if circular else metric
@@ -252,7 +252,7 @@ class UMAPReduction(DimensionalityReduction):
             umap_model = UMAP(
                 n_neighbors=n_neighbor,
                 min_dist=self.min_dist,
-                n_components=self.num_dim,
+                n_components=self.n_components,
                 metric=self.metric,
                 random_state=self.random_state
             )

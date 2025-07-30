@@ -416,6 +416,21 @@ class EnsembleAnalysis:
                 Range of cluster values. Default is range(2, 10, 1).
             - random_state: int, optional
                 Random seed for sklearn.
+        - umap:
+            - n_neighbors : List[int], optional
+                List of number of neighbors. Default is [15].
+            - min_dist : float, optional
+                Minimum distance between points in the embedded space. Default is 0.1.
+            - circular : bool, optional
+                Whether to use circular metrics. Default is False.
+            - n_components : int, optional
+                Number of dimensions of the embedded space. Default is 2.
+            - metric : str, optional
+                Metric to use. Default is "euclidean".
+            - random_state: int, optional
+                Random seed for sklearn.    
+            - range_n_clusters : List[int], optional
+                Range of cluster values. Default is range(2, 10, 1).
 
         - kpca:
             - circular : bool, optional
