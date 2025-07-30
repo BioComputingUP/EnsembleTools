@@ -144,29 +144,28 @@ def plot_violins(
     from matplotlib.lines import Line2D
 
     # Define the list of colors you want to provide
-    mycolors = ['royalblue', 'darkorange', 'limegreen']  # You can customize this list
+    mycolors = ['purple', 'green', 'blue']  # You can customize this list
 
     # Plot the violin plots and customize the colors for medians and means
     if summary_stat == 'mean':
         vp = ax.violinplot(data, showmeans=True, showmedians=False)
-        vp['cmeans'].set_color('black')  # Set the mean color
-        mean_line = Line2D([0], [0], color='black', linestyle='-', label='Mean')
-        ax.legend(handles=[mean_line], loc='upper right', fontsize=15)
-         # these are the positions
+        vp['cmeans'].set_color(mycolors[0])  # Set the mean color
+        mean_line = Line2D([0], [0], color=mycolors[0], linestyle='-', label='Mean')
+        ax.legend(handles=[mean_line], loc='upper right')
 
     elif summary_stat == 'median':
         vp = ax.violinplot(data, showmeans=False, showmedians=True)
-        vp['cmedians'].set_color('black')  # Set the median color
-        median_line = Line2D([0], [0], color='black', linestyle='-', label='Median')
+        vp['cmedians'].set_color(mycolors[1])  # Set the median color
+        median_line = Line2D([0], [0], color=mycolors[1], linestyle='-', label='Median')
         ax.legend(handles=[median_line], loc='upper right')
 
     elif summary_stat == 'both':
         vp = ax.violinplot(data, showmeans=True, showmedians=True)
-        vp['cmeans'].set_color('black')    # Set the mean color
-        vp['cmedians'].set_color('black')  # Set the median color
-        mean_line = Line2D([0], [0], color='black', linestyle='-', label='Mean')
-        median_line = Line2D([0], [0], color='black', linestyle='-', label='Median')
-        ax.legend(handles=[mean_line, median_line], loc='upper right', fontsize=22)
+        vp['cmeans'].set_color(mycolors[0])    # Set the mean color
+        vp['cmedians'].set_color(mycolors[1])  # Set the median color
+        mean_line = Line2D([0], [0], color=mycolors[0], linestyle='-', label='Mean')
+        median_line = Line2D([0], [0], color=mycolors[1], linestyle='-', label='Median')
+        ax.legend(handles=[mean_line, median_line], loc='upper right')
 
     
     for pc in vp['bodies']:
@@ -174,22 +173,10 @@ def plot_violins(
         pc.set_edgecolor('black')  # Set edge color to black for better visibility
         pc.set_alpha(0.7)  # Set transparency level
 
-    
-    for i, pc in enumerate(vp['bodies']):
-        pc.set_facecolor(mycolors[i % len(mycolors)])  # Cycle through colors if fewer than data sets
-        pc.set_edgecolor(mycolors[i % len(mycolors)])  # Set edge color to match the body color
-        pc.set_alpha(0.9)
-
-    vp['cbars'].set_color('white')       # Vertical bar connecting min and max
-    vp['cmins'].set_color('black')       # Horizontal line at the bottom
-    vp['cmaxes'].set_color('black')      # Horizontal line at the top
-
     ax.set_xticks(ticks=[y + 1 for y in range(len(labels))])
-    ax.set_xticklabels(labels=['I', 'II', 'III'], rotation= 0, ha="center")
-    ax.tick_params(axis='both', labelsize=22)
-
-    ax.set_ylabel(xlabel, fontsize=22)
-    ax.set_title(title, fontsize=22, weight='bold')
+    ax.set_xticklabels(labels=labels, rotation= 45, ha="center")
+    ax.set_ylabel(xlabel)
+    ax.set_title(title)
     return ax
 
 def plot_comparison_matrix(
@@ -1707,7 +1694,7 @@ class Visualization:
         protein_dssp_data_dict = self._get_protein_dssp_data_dict()
 
         if ax is None:
-            fig, ax = plt.subplots(dpi=dpi, figsize=figsize)
+            fig, ax = plt.subplots(dpi=dpi, figsize=(10, 5))
         else:
             fig = ax.figure
 
@@ -1740,7 +1727,7 @@ class Visualization:
             tick_positions = [i - 1 for i in tick_labels]  # convert to 0-based indexing
             ax.set_xticks(tick_positions, labels=tick_labels)
         
-        ax.set_xlabel('Residue Index', fontsize=22)
+        ax.set_xlabel('Residue Index')
         if dssp_code == 'H':
             dssp_name = 'Helix'
         elif dssp_code == 'C':
@@ -1749,15 +1736,13 @@ class Visualization:
             dssp_name = 'Strand'
         else:
             raise KeyError(dssp_code)
-        ax.set_ylabel(f'Relative Content of {dssp_name}', fontsize=22)
-        ax.tick_params(axis='both', labelsize=22)
-        # ax.set_title(f'{dssp_name} Content per Residue in the Ensemble', fontsize=22, weight='bold')
-        # ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
-        ax.legend(fontsize=15)
+        ax.set_ylabel(f'Relative Content of {dssp_name}')
+        ax.set_title(f'{dssp_name} Content per Residue in the Ensemble')
+        ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1))# put the legend outside of the plot
+
         if save:
             fig.savefig(os.path.join(self.plot_dir, 'relative_helix_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
-            msg = f"Relative Helix content plot saved to {self.plot_dir}/relative_helix_{self.analysis.ens_codes[0]}.png"
-            logger.info(msg)
+        
         return ax
 
     def _get_rg_data_dict(self):
@@ -2636,13 +2621,13 @@ class Visualization:
                     density=True
                 )
 
-                ax_i.set_title(f'{ensemble.code}', fontsize=22)
-                ax_i.set_xlabel(r'$\phi$ (°)', fontsize=22)
-                ax_i.set_ylabel(r'$\psi$ (°)', fontsize=22)
-                ax_i.tick_params(axis='both', which='major', labelsize=22)
+                ax_i.set_title(f'{ensemble.code}', fontsize=12)
+                ax_i.set_xlabel(r'$\phi$ (°)', fontsize=12)
+                ax_i.set_ylabel(r'$\psi$ (°)', fontsize=12)
+                ax_i.tick_params(axis='both', which='major', labelsize=12)
 
                 colorbar = fig.colorbar(hist2d[3], ax=ax_i)
-                # colorbar.set_label('Density', fontsize=15)
+                colorbar.set_label('Density', fontsize=12)
 
             if not custom_axes:
                 fig.tight_layout()
@@ -2655,11 +2640,11 @@ class Visualization:
                 phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])
                 psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])
                 ax.scatter(phi_angles, psi_angles, s=1, label=ensemble.code)
-            ax.set_xlabel('Phi (ϕ) Angle (degrees)', fontsize=22)
-            ax.set_ylabel('Psi (ψ) Angle (degrees)', fontsize=22)
-            ax.tick_params(axis='both', which='major', labelsize=22)
-            ax.set_title('Ramachandran Plot', fontsize=22)
-            ax.legend(fontsize=22)
+            ax.set_xlabel('Phi (ϕ) Angle (degrees)', fontsize=12)
+            ax.set_ylabel('Psi (ψ) Angle (degrees)', fontsize=12)
+            ax.tick_params(axis='both', which='major', labelsize=12)
+            ax.set_title('Ramachandran Plot', fontsize=12)
+            ax.legend(fontsize=12)
 
         fig.tight_layout(pad=3.0)
         if save:
@@ -2731,11 +2716,11 @@ class Visualization:
                 next_tick += xtick_interval
             ax.set_xticks(ticks)
         # ax.set_title("Site-specific Flexibility parameter plot", fontsize=22, weight='bold')
-        ax.set_xlabel("Residue Index", fontsize=22)
-        ax.set_ylabel("Site-specific Flexibility parameter", fontsize=22)
-        ax.tick_params(axis='both', which='major', labelsize=22)
-        # ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
-        ax.legend(fontsize=15)
+        ax.set_xlabel("Residue Index", fontsize=12)
+        ax.set_ylabel("Site-specific Flexibility parameter", fontsize=12)
+        ax.tick_params(axis='both', which='major', labelsize=12)
+        ax.legend(loc='upper left', bbox_to_anchor=(1.02, 1.0), borderaxespad=0)
+        # ax.legend(fontsize=12)
 
         if pointer is not None:
             for res in pointer:
@@ -2745,6 +2730,7 @@ class Visualization:
             fig.savefig(os.path.join(self.plot_dir, 'ss_flexibility_' + self.analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')  
             msg = f"Site-specific flexibility plot saved to {self.plot_dir}/ss_flexibility_{self.analysis.ens_codes[0]}.png"
             logger.info(msg)
+        fig.tight_layout()
         return ax
 
     def site_specific_order(self, 
