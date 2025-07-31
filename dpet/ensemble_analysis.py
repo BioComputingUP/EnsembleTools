@@ -318,6 +318,7 @@ class EnsembleAnalysis:
             j_traj = self._join_ensemble_traj()
             rmsd_matrix = rmsd(j_traj)
             self._create_all_labels()
+            self.featurization = featurization
             return rmsd_matrix
             
         else:
@@ -398,7 +399,7 @@ class EnsembleAnalysis:
         The following optional parameters apply based on the selected reduction method:
 
         - pca:
-            - num_dim : int, optional
+            - n_components : int, optional
                 Number of components to keep. Default is 10.
 
         - tsne:
@@ -435,7 +436,7 @@ class EnsembleAnalysis:
         - kpca:
             - circular : bool, optional
                 Whether to use circular metrics. Default is False.
-            - num_dim : int, optional
+            - n_components : int, optional
                 Number of components to keep. Default is 10.
             - gamma : float, optional
                 Kernel coefficient. Default is None.
@@ -456,6 +457,7 @@ class EnsembleAnalysis:
             self.reducer = DimensionalityReductionFactory.get_reducer(method, *args, **kwargs)
             self.reduce_dim_method = method
             self.transformed_data = self.reducer.fit_transform(data=self.extract_features(featurization=self.param_feat))
+            self.reduce_dim_model = self.reducer.fit(data=self.transformed_data)
             self._assign_concat_features(self.ensembles)
             return self.transformed_data
 

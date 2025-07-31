@@ -114,7 +114,8 @@ def plot_violins(
         summary_stat: str = 'mean',
         title: str = "Histogram",
         xlabel: str = "x",
-        color: str = 'blue'
+        color: str = 'blue',
+        x_ticks_rotation: int = 45
       
 
     ):
@@ -174,7 +175,7 @@ def plot_violins(
         pc.set_alpha(0.7)  # Set transparency level
 
     ax.set_xticks(ticks=[y + 1 for y in range(len(labels))])
-    ax.set_xticklabels(labels=labels, rotation= 45, ha="center")
+    ax.set_xticklabels(labels=labels, rotation=x_ticks_rotation, ha="center")
     ax.set_ylabel(xlabel)
     ax.set_title(title)
     return ax
@@ -967,7 +968,10 @@ class Visualization:
 
 
     def pca_cumulative_explained_variance(
-            self, save: bool = False, ax: Union[None, plt.Axes] = None
+            self,
+            save: bool = False,
+            dpi: int = 96 ,
+            ax: Union[None, plt.Axes] = None
         ) -> plt.Axes:
         """
         Plot the cumulative variance. Only applicable when the
@@ -977,7 +981,8 @@ class Visualization:
         ----------
         save: bool, optional
             If True, the plot will be saved in the data directory. Default is False.
-
+        dpi: int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
         ax: Union[None, plt.Axes], optional
             An Axes object to plot on. Default is None, which creates a new axes.
 
@@ -994,7 +999,7 @@ class Visualization:
             raise ValueError("Analysis is only valid for pca dimensionality reduction.")
         
         if ax is None:
-            fig, ax = plt.subplots()
+            fig, ax = plt.subplots(dpi=dpi)
         else:
             fig = ax.figure
 
@@ -1009,8 +1014,9 @@ class Visualization:
         ax.text(0.5, 0.9, f"First three: {first_three_variance:.2f}%", transform=ax.transAxes, ha='center')
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'PCA_variance' + analysis.featurization + analysis.ens_codes[0]))
-
+            fig.savefig(os.path.join(self.plot_dir, 'PCA_variance' + analysis.featurization + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
+            msg = f"PCA cumulative explained variance plot saved to {os.path.join(self.plot_dir, 'PCA_variance' + analysis.featurization + analysis.ens_codes[0] + '.png')}"
+            logger.info(msg)
         return ax, cumvar
 
     def _set_labels(self, ax, reduce_dim_method, dim_x, dim_y):
@@ -1028,7 +1034,7 @@ class Visualization:
 
     def pca_2d_landscapes(self,
             save: bool = False,
-            dims: List[int] = [0, 1],
+            sel_components: List[int] = [0, 1],
             ax: Union[None, List[plt.Axes]] = None,
             dpi: int = 96
         ) -> List[plt.Axes]:
@@ -1039,8 +1045,8 @@ class Visualization:
         ----------
         save: bool, optional
             If True the plot will be saved in the data directory. Default is False.
-        dims: List[int], optional
-            Indices of the principal components to analyze, starting from 0.
+        sel_components: List[int], optional
+            Indices of the selected principal components to analyze, starting from 0.
             The default components are the first and second.
         ax: Union[None, List[plt.Axes]], optional
             A list of Axes objects to plot on. Default is None, which creates new axes.
@@ -1058,8 +1064,8 @@ class Visualization:
         self._check_dimred_method(method_name, allowed=("pca", "kpca"))
 
         # 2D scatter plot settings
-        dim_x = dims[0]
-        dim_y = dims[1]
+        dim_x = sel_components[0]
+        dim_y = sel_components[1]
         marker = "."
 
         num_ensembles = len(analysis.ens_codes)
@@ -1108,14 +1114,17 @@ class Visualization:
             fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, f'{method_name.upper()}_2d_landscapes_' + analysis.featurization + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, f'{method_name.upper()}_2d_landscapes_' + analysis.featurization + 
+                        analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
+            msg = f"{method_name.upper()} 2D landscapes saved to {os.path.join(self.plot_dir, f'{method_name.upper()}_2d_landscapes_' + analysis.featurization + analysis.ens_codes[0] + '.png')}"
+            logger.info(msg)
 
         return axes
 
     def pca_1d_histograms(self,
             save: bool = False,
-            dim: int = 0,
-            n_bins: int = 30,
+            sel_components: int = 0,
+            bins: int = 30,
             ax: Union[None, List[plt.Axes]] = None,
             dpi: int = 96
         ) -> List[plt.Axes]:
@@ -1150,10 +1159,10 @@ class Visualization:
         method_name = analysis.reduce_dim_method
         self._check_dimred_method(method_name, allowed=("pca", "kpca"))
 
-        k = dim
+        k = sel_components
         bins = np.linspace(analysis.transformed_data[:, k].min(),
                            analysis.transformed_data[:, k].max(),
-                           n_bins)
+                           bins)
 
         if ax is None:
             fig, axes = plt.subplots(
@@ -1191,12 +1200,15 @@ class Visualization:
             fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, f'{method_name.upper()}_hist' + analysis.featurization + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, f'{method_name.upper()}_hist' + 
+                        analysis.featurization + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
+            msg = f"{method_name.upper()} 1D histograms saved to {os.path.join(self.plot_dir, f'{method_name.upper()}_hist' + analysis.featurization + analysis.ens_codes[0] + '.png')}"
+            logger.info(msg)
 
         return axes
 
     def pca_residue_correlation(self,
-            sel_dims: List[int] = [0, 1, 2],
+            sel_components: List[int] = [0, 1, 2],
             save: bool = False,
             ax: Union[None, List[plt.Axes]] = None,
             dpi: int = 96,
@@ -1210,7 +1222,7 @@ class Visualization:
 
         Parameters
         ----------
-        sel_dims : List[int], optional
+        sel_components : List[int], optional
             A list of indices specifying the PC to include in the plot.
         save : bool, optional
             If True, the plot will be saved as an image file. Default is False.
@@ -1251,7 +1263,7 @@ class Visualization:
 
         fig_r = 0.8
         if ax is None:
-            fig, axes = plt.subplots(1, len(sel_dims), dpi=dpi, figsize=(15*fig_r, 4*fig_r))
+            fig, axes = plt.subplots(1, len(sel_components), dpi=dpi, figsize=(15*fig_r, 4*fig_r))
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -1261,7 +1273,7 @@ class Visualization:
         # Get the number of residues from one of the trajectories
         num_residues = next(iter(analysis.trajectories.values())).topology.n_residues
         pca_model = analysis.reduce_dim_model
-        for k, sel_dim in enumerate(sel_dims):
+        for k, sel_component in enumerate(sel_components):
             matrix = np.zeros((num_residues, num_residues))
             vals = []
             if scale_loadings:
@@ -1272,7 +1284,7 @@ class Visualization:
             for i in range(loadings.shape[1]):
                 r1, r2 = analysis.feature_names[i].split("-")
                 # Note: this should be patched for proteins with resSeq values not starting from 1!
-                v_ij = loadings[sel_dim,i]
+                v_ij = loadings[sel_component,i]
                 matrix[int(r1[3:])-1, int(r2[3:])-1] = v_ij
                 matrix[int(r2[3:])-1, int(r1[3:])-1] = v_ij
                 vals.append(v_ij)
@@ -1285,7 +1297,7 @@ class Visualization:
             im = axes[k].imshow(matrix, cmap=cmap, norm=norm)  # RdBu, PiYG
             axes[k].set_xlabel("Residue j")
             axes[k].set_ylabel("Residue i")
-            axes[k].set_title(r"Loading of $d_{ij}$" + f" for PCA dim {sel_dim+1}")
+            axes[k].set_title(r"Loading of $d_{ij}$" + f" for PCA dim {sel_component+1}")
             cbar = fig.colorbar(
                 im, ax=axes[k],
                 label="PCA loading"
@@ -1293,7 +1305,9 @@ class Visualization:
         if ax is None:
             fig.tight_layout()
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'PCA_correlation' + analysis.featurization + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'PCA_correlation' + analysis.featurization + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
+            msg = f"PCA residue correlation plot saved to {os.path.join(self.plot_dir, 'PCA_correlation' + analysis.featurization + analysis.ens_codes[0] + '.png')}"
+            logger.info(msg)
 
         return axes
 
@@ -1301,7 +1315,7 @@ class Visualization:
             save: bool = False,
             ax: Union[None, List[plt.Axes]] = None,
             dpi: int = 96,
-            dim: int = 0,
+            sel_components: int = 0,
         ) -> List[plt.Axes]:
         """
         Examine and plot the correlation between PC dimension 1 and the amount of Rg.
@@ -1318,8 +1332,8 @@ class Visualization:
         dpi : int, optional
             For changing the quality and dimension of the output figure. Default is 96.
 
-        dim: int, optional
-            Index of the principal component to analyze, defaults to 0 (first
+        sel_components: int, optional
+            Index of the selected principal component to analyze, defaults to 0 (first
             principal component).
 
         Returns
@@ -1348,14 +1362,14 @@ class Visualization:
         data = {}
         for i, ensemble in enumerate(analysis.ensembles):
             rg_i = mdtraj.compute_rg(ensemble.trajectory)
-            axes[i].scatter(ensemble.reduce_dim_data[:, dim],
+            axes[i].scatter(ensemble.reduce_dim_data[:, sel_components],
                             rg_i, label=ensemble.code,
                             color=f"C{i}")
             axes[i].legend(fontsize=8)
-            axes[i].set_xlabel(f"Dim {dim + 1}")
+            axes[i].set_xlabel(f"Dim {sel_components + 1}")
             axes[i].set_ylabel(r"$R_g$ [nm]")
             data[ensemble.code] = {
-                "pc": ensemble.reduce_dim_data[:, dim],
+                "pc": ensemble.reduce_dim_data[:, sel_components],
                 "rg": rg_i
             }
 
@@ -1363,7 +1377,9 @@ class Visualization:
             fig.tight_layout()
 
         if save:
-            fig.savefig(os.path.join(self.plot_dir, 'PCA_RG' + analysis.ens_codes[0]))
+            fig.savefig(os.path.join(self.plot_dir, 'PCA_RG' + analysis.ens_codes[0]), dpi=dpi, bbox_inches='tight')
+            msg = f"PCA Rg correlation plot saved to {os.path.join(self.plot_dir, 'PCA_RG' + analysis.ens_codes[0] + '.png')}"
+            logger.info(msg)
 
         return axes, data
     
@@ -1376,6 +1392,7 @@ class Visualization:
                 dpi = 96,
                 color: str = 'lightblue',
                 multiple_hist_ax: bool = False,
+                x_ticks_rotation: int = 45,
                 ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> plt.Axes:
         """
         Plot the distribution of SASA for each conformation within the ensembles.
@@ -1400,6 +1417,8 @@ class Visualization:
             Color of the violin plot. Default is lightblue.
         multiple_hist_ax : bool, optional
             If True, it will plot each histogram in a different axis.
+        x_ticks_rotation : int, optional
+            The rotation angle of the x-axis tick labels for the violin plot. Default is 45.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The matplotlib Axes object on which to plot. If None, a new Axes object will be created. Default is None.
 
@@ -1459,7 +1478,8 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color
+                color=color,
+                x_ticks_rotation=x_ticks_rotation
             )
         else:
             if not multiple_hist_ax:
@@ -1758,6 +1778,7 @@ class Visualization:
             hist_range: Tuple = None,
             multiple_hist_ax: bool = False,
             violin_plot: bool = True,
+            x_ticks_rotation: int = 45,
             summary_stat: str = 'mean',
             color: str = 'lightblue',
             dpi: int = 96,
@@ -1778,6 +1799,8 @@ class Visualization:
             If True, it will plot each histogram in a different axis.
         violin_plot : bool, optional
             If True, a violin plot is visualized. Default is True.
+        x_ticks_rotation : int, optional
+            The rotation angle of the x-axis tick labels for the violin plot. Default is 45
         summary_stat: str, optional
             Specifies whether to display the "mean", "median", or "both" as reference lines on the plots.
             This applies when violin_plot is True or when multiple_hist_ax is True for histograms.
@@ -1844,7 +1867,8 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color
+                color=color,
+                x_ticks_rotation=x_ticks_rotation
             )
         else:
             if not multiple_hist_ax:
@@ -1930,6 +1954,7 @@ class Visualization:
                          save: bool = False,
                          color: str = 'lightblue', 
                          multiple_hist_ax = False,
+                         x_ticks_rotation: int = 45,
                          ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> Union[plt.Axes, List[plt.Axes]]:
         """
         Plot end-to-end distance distributions.
@@ -1958,6 +1983,8 @@ class Visualization:
             Change the color of the violin plot. Default is lightblue.
         multiple_hist_ax: bool, optional
             If True, it will plot each histogram in a different axis.
+        x_ticks_rotation: int, optional
+            The rotation angle of the x-axis tick labels for the violin plot. Default is 45
 
         Returns
         -------
@@ -2023,7 +2050,8 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color
+                color=color,
+                x_ticks_rotation=x_ticks_rotation
             )
         else:
             if not multiple_hist_ax:
@@ -2096,6 +2124,7 @@ class Visualization:
                     save: bool = False,
                     color: str = 'lightblue',
                     multiple_hist_ax: bool = False,
+                    x_ticks_rotation: int = 45,
                     ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> plt.Axes:
         """
         Plot asphericity distribution in each ensemble.
@@ -2121,6 +2150,8 @@ class Visualization:
             Color of the violin plot. Default is lightblue.
         multiple_hist_ax : bool, optional
             If True, each histogram will be plotted on separate axes. Default is False.
+        x_ticks_rotation : int, optional
+            The rotation angle of the x-axis tick labels for the violin plot. Default is 45
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
 
@@ -2187,7 +2218,8 @@ class Visualization:
                     bins=bins,
                     range=hist_range,
                     title=title,
-                    xlabel=axis_label
+                    xlabel=axis_label,
+                    x_ticks_rotation=x_ticks_rotation
                 )
             else:
                 # Plot separate histograms for each ensemble on separate axes
@@ -2251,6 +2283,7 @@ class Visualization:
                 save: bool = False,
                 color: str = 'lightblue',
                 multiple_hist_ax: bool = False,
+                x_ticks_rotation: int = 45,
                 ax: Union[None, plt.Axes, np.ndarray, List[plt.Axes]] = None) -> plt.Axes:
         """
         Plot prolateness distribution in each ensemble.
@@ -2274,6 +2307,10 @@ class Visualization:
             Color of the violin plot. Default is lightblue.
         multiple_hist_ax : bool, optional
             If True, each histogram will be plotted on separate axes. Default is False.
+        x_ticks_rotation : int, optional
+            The rotation angle of the x-axis tick labels for the violin plot. Default is 45
+        dpi : int, optional
+            The DPI (dots per inch) of the output figure. Default is 96.
         ax : Union[None, plt.Axes, np.ndarray, List[plt.Axes]], optional
             The axes on which to plot. Default is None, which creates a new figure and axes.
 
@@ -2341,7 +2378,8 @@ class Visualization:
                     bins=bins,
                     range=hist_range,
                     title=title,
-                    xlabel=axis_label
+                    xlabel=axis_label,
+                    x_ticks_rotation=x_ticks_rotation
                 )
             else:
                 # Plot separate histograms for each ensemble on separate axes

@@ -79,11 +79,11 @@ class PCAReduction(DimensionalityReduction):
         Number of components to keep. Default is 10.
     """
 
-    def __init__(self, num_dim: int = 10):
-        self.num_dim = num_dim
+    def __init__(self, n_components: int = 10):
+        self.n_components = n_components
 
     def fit(self, data:np.ndarray):
-        self.pca = PCA(n_components=self.num_dim)
+        self.pca = PCA(n_components=self.n_components)
         self.pca.fit(data)
         return self.pca
     
@@ -92,7 +92,7 @@ class PCAReduction(DimensionalityReduction):
         return reduce_dim_data
     
     def fit_transform(self, data:np.ndarray) -> np.ndarray:
-        self.pca = PCA(n_components=self.num_dim)
+        self.pca = PCA(n_components=self.n_components)
         transformed = self.pca.fit_transform(data)
         return transformed
 
@@ -146,7 +146,9 @@ class TSNEReduction(DimensionalityReduction):
             raise TypeError()
 
     def fit(self, data:np.ndarray):
-        return super().fit(data)
+        self.best_tsne = self.fit_transform(data)
+        return self
+        # return super().fit(data)
     
     def transform(self, data:np.ndarray) -> np.ndarray:
         return super().transform(data)
@@ -241,7 +243,8 @@ class UMAPReduction(DimensionalityReduction):
         self.random_state = random_state
     
     def fit(self, data):
-        return super().fit(data)
+        self.best_embedding = self.fit_transform(data)
+        return self
     
     def transform(self, data) -> np.ndarray:
         return super().transform(data)
@@ -315,12 +318,12 @@ class KPCAReduction(DimensionalityReduction):
 
     def __init__(self,
             circular: bool = False,
-            num_dim: int = 10,
+            n_components: int = 10,
             kernel: str = "poly",
             gamma : float = None
         ) -> None:
         self.circular = circular
-        self.num_dim = num_dim
+        self.n_components = n_components
         self.gamma = gamma
         self.kernel = kernel
 
@@ -336,7 +339,7 @@ class KPCAReduction(DimensionalityReduction):
             pca_in = data
 
         self.pca = KernelPCA(
-            n_components=self.num_dim,
+            n_components=self.n_components,
             kernel=kernel,
             gamma=self.gamma  # Ignored if using circular.
         )
