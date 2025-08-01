@@ -439,28 +439,28 @@ class Visualization:
                 ax = [ax]
             ax = np.array(ax).flatten()
             fig = ax[0].figure
-            
+        manual_colors = ['blue', 'darkorange', 'green']   
         # Create a consistent colormap for the original labels
         unique_labels = np.unique(analysis.all_labels)
-        cmap = plt.get_cmap('Set1')
-        colors = cmap(np.linspace(0, 1, len(unique_labels)))
-        label_colors = {label: color for label, color in zip(unique_labels, colors)}
+        # cmap = plt.get_cmap('Set1')
+        # colors = cmap(np.linspace(0, 1, len(unique_labels)))
+        label_colors = {label: color for label, color in zip(unique_labels, manual_colors)}
         point_colors = [label_colors[label] for label in analysis.all_labels]
 
         # Scatter plot with original labels
-        scatter_labeled = ax[0].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], c=point_colors, s=size, alpha=0.5)
-        ax[0].set_title('Scatter Plot (Ensemble labels)', fontsize=15)
-        ax[0].set_xlabel('t-SNE 1', fontsize=15)
-        ax[0].set_ylabel('t-SNE 2', fontsize=15)
-        ax[0].tick_params(axis='both', which='major', labelsize=14)
+        scatter_labeled = ax[2].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], c=point_colors, s=size, alpha=0.5)
+        # ax[2].set_title('Scatter Plot (Ensemble labels)', fontsize=15)
+        # ax[2].set_xlabel('t-SNE 1', fontsize=15)
+        # ax[2].set_ylabel('t-SNE 2', fontsize=15)
+        ax[2].tick_params(axis='both', which='major', labelsize=19)
 
         # Scatter plot with clustering labels
-        cmap = plt.get_cmap('jet', analysis.reducer.bestK)
+        cmap = plt.get_cmap('gist_rainbow', analysis.reducer.bestK)
         scatter_cluster = ax[1].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], s=size, c=bestclust.astype(float), cmap=cmap, alpha=0.5)
-        ax[1].set_title('Scatter Plot (Clustering labels)', fontsize=15)
-        ax[1].set_xlabel('t-SNE 1', fontsize=15)
-        ax[1].set_ylabel('t-SNE 2', fontsize=15)
-        ax[1].tick_params(axis='both', which='major', labelsize=14)
+        # ax[1].set_title('Scatter Plot (Clustering labels)', fontsize=15)
+        # ax[1].set_xlabel('t-SNE 1', fontsize=15)
+        # ax[1].set_ylabel('t-SNE 2', fontsize=15)
+        ax[1].tick_params(axis='both', which='major', labelsize=19)
 
         feature_values = []
         for values in analysis.get_features(color_by).values():
@@ -468,18 +468,19 @@ class Visualization:
         colors = np.array(feature_values)
         # Scatter plot with different labels
         
-        feature_labeled = ax[2].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], cmap=cmap_label, c=colors, s=size, alpha=0.5)
-        cbar = plt.colorbar(feature_labeled, ax=ax[2])
+        feature_labeled = ax[0].scatter(analysis.reducer.best_tsne[:, 0], analysis.reducer.best_tsne[:, 1], cmap=cmap_label, c=colors, s=size, alpha=0.5)
+        cbar = plt.colorbar(feature_labeled, ax=ax[0])
         if color_by in ('rg', 'end_to_end'):
-            cbar.set_label(f'{color_by} [nm]', fontsize=15)
+            cbar.set_label(f'{color_by} [nm]', fontsize=18)
+            cbar.ax.tick_params(labelsize=15)
         elif color_by in ('prolateness', 'asphericity'):
-            cbar.set_label(f'{color_by}', fontsize=15)
+            cbar.set_label(f'{color_by}', fontsize=18)
         elif color_by == 'sasa':
-            cbar.set_label('SASA [nm^2]', fontsize=15)
-        ax[2].set_title(f'Scatter Plot ({color_by} labels)', fontsize=15)
-        ax[2].set_xlabel('t-SNE 1', fontsize=15)
-        ax[2].set_ylabel('t-SNE 2', fontsize=15)
-        ax[2].tick_params(axis='both', which='major', labelsize=14)
+            cbar.set_label('SASA [nm^2]', fontsize=18)
+        # ax[0].set_title(f'Scatter Plot ({color_by} labels)', fontsize=15)
+        # ax[0].set_xlabel('t-SNE 1', fontsize=15)
+        # ax[0].set_ylabel('t-SNE 2', fontsize=15)
+        ax[0].tick_params(axis='both', which='major', labelsize=19)
 
         if kde_by_ensemble:
             # KDE plot for each ensemble
@@ -490,10 +491,10 @@ class Visualization:
                                 min(ensemble_data[:, 1]):max(ensemble_data[:, 1]):100j]
                 zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
                 ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, alpha=0.5, colors=[label_colors[label]], linewidths=3)
-            ax[3].set_title('Density Plot (Ensemble-wise)', fontsize=15)
-            ax[3].set_xlabel('t-SNE 1', fontsize=15)
-            ax[3].set_ylabel('t-SNE 2', fontsize=15)
-            ax[3].tick_params(axis='both', which='major', labelsize=14)
+            # ax[3].set_title('Density Plot (Ensemble-wise)', fontsize=15)
+            # ax[3].set_xlabel('t-SNE 1', fontsize=15)
+            # ax[3].set_ylabel('t-SNE 2', fontsize=15)
+            ax[3].tick_params(axis='both', which='major', labelsize=19)
             # ax[3].legend(title='Ensemble', loc='upper right')
         else:
             # Single KDE plot for concatenated ensembles
@@ -502,15 +503,15 @@ class Visualization:
                             min(analysis.reducer.best_tsne[:, 1]):max(analysis.reducer.best_tsne[:, 1]):100j]
             zi = kde(np.vstack([xi.flatten(), yi.flatten()]))
             ax[3].contour(xi, yi, zi.reshape(xi.shape), levels=5, cmap='Blues')
-            ax[3].set_title('Density Plot', fontsize=15)
-            ax[3].set_xlabel('t-SNE 1', fontsize=15)
-            ax[3].set_ylabel('t-SNE 2', fontsize=15)
-            ax[3].tick_params(axis='both', which='major', labelsize=14)
+            # ax[3].set_title('Density Plot', fontsize=15)
+            # ax[3].set_xlabel('t-SNE 1', fontsize=15)
+            # ax[3].set_ylabel('t-SNE 2', fontsize=15)
+            ax[3].tick_params(axis='both', which='major', labelsize=22)
 
         # Manage legend for the original labels
         legend_labels = list(label_colors.keys())
         legend_handles = [plt.Line2D([0], [0], marker='o', color=label_colors[label], markersize=10) for label in legend_labels]
-        fig.legend(legend_handles, legend_labels, title='Ensemble Labels', loc='upper right', bbox_to_anchor=(1.09, 1.00))
+        # fig.legend(legend_handles, legend_labels, title='Ensemble Labels', loc='upper right', bbox_to_anchor=(1.09, 1.00))
 
         if not custom_axes:
             fig.tight_layout(pad=1.5)
