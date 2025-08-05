@@ -274,11 +274,11 @@ def plot_comparison_matrix(
     cax = divider.append_axes("right", size="5%", pad=0.05)  # size and padding can be adjusted
     cbar = ax.figure.colorbar(im, cax=cax)
     cbar.set_label(cbar_label, fontsize=10)  # adjust font size here
-    cbar.ax.tick_params(labelsize=8) 
+    cbar.ax.tick_params(labelsize=12) 
     ax.set_title(title)
     ax.set_xticks(np.arange(len(codes)))
     ax.set_yticks(np.arange(len(codes)))
-    ax.set_xticklabels(codes, rotation=45, ha='right', rotation_mode='anchor')
+    ax.set_xticklabels(codes)
     ax.set_yticklabels(codes)
 
     threshold = 0.75
@@ -3580,7 +3580,7 @@ class Visualization:
         plot_comparison_matrix(
             ax=ax,
             comparison_out=comparison_out,
-            codes=codes,
+            codes=['I', 'II', 'III'],
             confidence_level=confidence_level,
             significance_level=significance_level,
             cmap=cmap,
