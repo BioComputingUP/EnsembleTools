@@ -7,14 +7,14 @@ import numpy as np
 import zipfile
 import pandas as pd
 import mdtraj
-from dpet.featurization.distances import rmsd
-from dpet.data.api_client import APIClient
-from dpet.ensemble import Ensemble
-from dpet.data.io_utils import setup_data_dir, extract_tar_gz
-from dpet.dimensionality_reduction import DimensionalityReductionFactory
-from dpet.featurization.ensemble_level import ensemble_features
-from dpet.comparison import all_vs_all_comparison
-from dpet.utils import logger
+from idpet.featurization.distances import rmsd
+from idpet.data.api_client import APIClient
+from idpet.ensemble import Ensemble
+from idpet.data.io_utils import setup_data_dir, extract_tar_gz
+from idpet.dimensionality_reduction import DimensionalityReductionFactory
+from idpet.featurization.ensemble_level import ensemble_features
+from idpet.comparison import all_vs_all_comparison
+from idpet.utils import logger
 
 
 class EnsembleAnalysis:

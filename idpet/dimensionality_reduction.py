@@ -7,7 +7,7 @@ from sklearn.manifold import TSNE
 import numpy as np
 from sklearn.metrics import silhouette_score
 from umap import UMAP
-from dpet.utils import logger
+from idpet.utils import logger
 
 
 class DimensionalityReduction(ABC):

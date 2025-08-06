@@ -1,7 +1,7 @@
 from typing import Dict, List, Tuple, Union
 import numpy as np
 import mdtraj
-from dpet.featurization.utils import get_triu_indices
+from idpet.featurization.utils import get_triu_indices
 
 #------------------------------------------
 # Commonly used protein structure angles. -

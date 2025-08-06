@@ -4,12 +4,12 @@ from typing import List, Sequence, Tuple, Union
 import mdtraj
 import numpy as np
 
-from dpet.featurization.angles import featurize_a_angle, featurize_phi_psi, featurize_tr_angle
-from dpet.featurization.distances import featurize_ca_dist
-from dpet.featurization.glob import compute_asphericity, compute_end_to_end_distances, compute_ensemble_sasa, compute_prolateness
-from dpet.featurization.ensemble_level import calc_flory_scaling_exponent
-from dpet.data.io_utils import setup_data_dir
-from dpet.utils import logger
+from idpet.featurization.angles import featurize_a_angle, featurize_phi_psi, featurize_tr_angle
+from idpet.featurization.distances import featurize_ca_dist
+from idpet.featurization.glob import compute_asphericity, compute_end_to_end_distances, compute_ensemble_sasa, compute_prolateness
+from idpet.featurization.ensemble_level import calc_flory_scaling_exponent
+from idpet.data.io_utils import setup_data_dir
+from idpet.utils import logger
 
 
 class Ensemble():
