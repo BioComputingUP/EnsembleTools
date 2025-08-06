@@ -18,7 +18,8 @@
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
-    <link rel="search" title="Search" href="search.html" /> 
+    <link rel="search" title="Search" href="search.html" />
+    <link rel="prev" title="dpet.data package" href="dpet.data.html" /> 
 </head>
 
 <body class="wy-body-for-nav"> 
@@ -40,50 +41,37 @@
   </form>
 </div>
         </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
-              <!-- Local TOC -->
-              <div class="local-toc"><ul>
-<li><a class="reference internal" href="#">dpet.featurization package</a><ul>
-<li><a class="reference internal" href="#submodules">Submodules</a></li>
-<li><a class="reference internal" href="#module-dpet.featurization.angles">dpet.featurization.angles module</a><ul>
-<li><a class="reference internal" href="#dpet.featurization.angles.featurize_a_angle"><code class="docutils literal notranslate"><span class="pre">featurize_a_angle()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.angles.featurize_phi_psi"><code class="docutils literal notranslate"><span class="pre">featurize_phi_psi()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.angles.featurize_tr_angle"><code class="docutils literal notranslate"><span class="pre">featurize_tr_angle()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.angles.featurize_tr_omega"><code class="docutils literal notranslate"><span class="pre">featurize_tr_omega()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.angles.featurize_tr_phi"><code class="docutils literal notranslate"><span class="pre">featurize_tr_phi()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.angles.get_angles"><code class="docutils literal notranslate"><span class="pre">get_angles()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.angles.get_dihedrals"><code class="docutils literal notranslate"><span class="pre">get_dihedrals()</span></code></a></li>
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="demo.html">Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1 current"><a class="reference internal" href="modules.html">dpet</a><ul class="current">
+<li class="toctree-l2 current"><a class="reference internal" href="dpet.html">dpet package</a><ul class="current">
+<li class="toctree-l3 current"><a class="reference internal" href="dpet.html#subpackages">Subpackages</a><ul class="current">
+<li class="toctree-l4"><a class="reference internal" href="dpet.data.html">dpet.data package</a></li>
+<li class="toctree-l4 current"><a class="current reference internal" href="#">dpet.featurization package</a></li>
 </ul>
 </li>
-<li><a class="reference internal" href="#module-dpet.featurization.distances">dpet.featurization.distances module</a><ul>
-<li><a class="reference internal" href="#dpet.featurization.distances.calc_ca_dmap"><code class="docutils literal notranslate"><span class="pre">calc_ca_dmap()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.distances.calc_com_dmap"><code class="docutils literal notranslate"><span class="pre">calc_com_dmap()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.distances.featurize_ca_dist"><code class="docutils literal notranslate"><span class="pre">featurize_ca_dist()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.distances.featurize_com_dist"><code class="docutils literal notranslate"><span class="pre">featurize_com_dist()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.distances.rmsd"><code class="docutils literal notranslate"><span class="pre">rmsd()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dpet.featurization.ensemble_level">dpet.featurization.ensemble_level module</a><ul>
-<li><a class="reference internal" href="#dpet.featurization.ensemble_level.calc_flory_scaling_exponent"><code class="docutils literal notranslate"><span class="pre">calc_flory_scaling_exponent()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.ensemble_level.calc_flory_scaling_exponent_cg"><code class="docutils literal notranslate"><span class="pre">calc_flory_scaling_exponent_cg()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dpet.featurization.glob">dpet.featurization.glob module</a><ul>
-<li><a class="reference internal" href="#dpet.featurization.glob.compute_asphericity"><code class="docutils literal notranslate"><span class="pre">compute_asphericity()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.glob.compute_end_to_end_distances"><code class="docutils literal notranslate"><span class="pre">compute_end_to_end_distances()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.glob.compute_ensemble_sasa"><code class="docutils literal notranslate"><span class="pre">compute_ensemble_sasa()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.glob.compute_prolateness"><code class="docutils literal notranslate"><span class="pre">compute_prolateness()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dpet.featurization.utils">dpet.featurization.utils module</a><ul>
-<li><a class="reference internal" href="#dpet.featurization.utils.get_max_sep"><code class="docutils literal notranslate"><span class="pre">get_max_sep()</span></code></a></li>
-<li><a class="reference internal" href="#dpet.featurization.utils.get_triu_indices"><code class="docutils literal notranslate"><span class="pre">get_triu_indices()</span></code></a></li>
-</ul>
-</li>
-<li><a class="reference internal" href="#module-dpet.featurization">Module contents</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#submodules">Submodules</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.comparison">dpet.comparison module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.coord">dpet.coord module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.dimensionality_reduction">dpet.dimensionality_reduction module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.ensemble">dpet.ensemble module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.ensemble_analysis">dpet.ensemble_analysis module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.utils">dpet.utils module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet.visualization">dpet.visualization module</a></li>
+<li class="toctree-l3"><a class="reference internal" href="dpet.html#module-dpet">Module contents</a></li>
 </ul>
 </li>
 </ul>
-</div>
+</li>
+</ul>
+
         </div>
       </div>
     </nav>
@@ -98,6 +86,8 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="modules.html">dpet</a></li>
+          <li class="breadcrumb-item"><a href="dpet.html">dpet package</a></li>
       <li class="breadcrumb-item active">dpet.featurization package</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/dpet.featurization.rst.txt" rel="nofollow"> View page source</a>
@@ -634,7 +624,9 @@ and <a class="reference external" href="https://pubs.acs.org/doi/full/10.1021/ac
 
            </div>
           </div>
-          <footer>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="dpet.data.html" class="btn btn-neutral float-left" title="dpet.data package" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Previous</a>
+    </div>
 
   <hr/>
 

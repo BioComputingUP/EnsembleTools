@@ -4,12 +4,8 @@
 IDPET Documentation
 ===================
 
-Welcome to the documentation for **IDPET** – a Python package for analyzing
-intrinsically disordered protein ensembles.
-
-Add your content using ``reStructuredText`` syntax.
-See the `reStructuredText guide <https://www.sphinx-doc.org/en/master/usage/restructuredtext/index.html>`_
-for more details.
+**IDPET** (**I**\ntrinsically **D**\isordered **P**\rotein **E**\nsemble **T**\ools) is a Python package for comprehensively analyzing of the conformational ensembles of disordered proteins. It is built upon the mdtraj library for reading the ensemble files in various formats. 
+**IDPET** provides informative visualizations based on multiple global and local features of the flexible regions of proteins. Additionally, it integrates various dimensionality reduction and statistical methods to facilitate the analysis of conformational ensembles.
 
 .. toctree::
    :maxdepth: 1
