@@ -6,7 +6,7 @@ __pycache__/
 
 dist/
 outputdir/
-build/
+
 # Ignore egg-info directory
 *.egg-info/
 
@@ -15,5 +15,5 @@ build/
 *.egg-info
 *.tar.gz
 *.whl
-docs/
+
 notebooks/.ipynb_checkpoints/

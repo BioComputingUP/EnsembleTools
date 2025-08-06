@@ -1738,7 +1738,7 @@ class Visualization:
             # Plot the relative content for each protein
             x = np.arange(len(relative_ss_content))
             mask = x < len(dssp_data[0])  # Create a mask to filter out padded values
-            ax.plot(x[mask], relative_ss_content[mask], marker='o', linestyle='dashed', label=protein_name, alpha=0.5)
+            ax.plot(x[mask], relative_ss_content[mask], marker='o', linestyle='dashed', label=protein_name, alpha=1)
 
             bottom += relative_ss_content
         if not auto_xticks:
@@ -2206,7 +2206,8 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color
+                color=color,
+                x_ticks_rotation=x_ticks_rotation
             )
         else:
             if not multiple_hist_ax:
@@ -2219,7 +2220,7 @@ class Visualization:
                     range=hist_range,
                     title=title,
                     xlabel=axis_label,
-                    x_ticks_rotation=x_ticks_rotation
+                    
                 )
             else:
                 # Plot separate histograms for each ensemble on separate axes
@@ -2366,7 +2367,8 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color
+                color=color,
+                x_ticks_rotation=x_ticks_rotation
             )
         else:
             if not multiple_hist_ax:
@@ -2379,7 +2381,7 @@ class Visualization:
                     range=hist_range,
                     title=title,
                     xlabel=axis_label,
-                    x_ticks_rotation=x_ticks_rotation
+                    
                 )
             else:
                 # Plot separate histograms for each ensemble on separate axes
