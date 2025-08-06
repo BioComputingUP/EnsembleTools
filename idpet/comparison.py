@@ -3,10 +3,10 @@ from typing import Union, List, Tuple
 import numpy as np
 from scipy.stats import mannwhitneyu
 import mdtraj
-from dpet.ensemble import Ensemble
-from dpet.featurization.utils import get_triu_indices
-from dpet.featurization.distances import featurize_ca_dist
-from dpet.featurization.angles import featurize_a_angle, featurize_phi_psi
+from idpet.ensemble import Ensemble
+from idpet.featurization.utils import get_triu_indices
+from idpet.featurization.distances import featurize_ca_dist
+from idpet.featurization.angles import featurize_a_angle, featurize_phi_psi
 
 
 ####################################################

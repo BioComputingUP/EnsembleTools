@@ -1,5 +1,5 @@
 import requests
-from dpet.utils import logger
+from idpet.utils import logger
 
 
 class APIClient:

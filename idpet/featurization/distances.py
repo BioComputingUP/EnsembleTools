@@ -1,8 +1,8 @@
 from typing import List, Tuple, Union
 import numpy as np
 import mdtraj
-from dpet.data.topology import slice_traj_to_com
-from dpet.featurization.utils import get_max_sep
+from idpet.data.topology import slice_traj_to_com
+from idpet.featurization.utils import get_max_sep
 
 
 #--------------------------------------------------------------------

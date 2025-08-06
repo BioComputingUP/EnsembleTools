@@ -8,13 +8,13 @@ from matplotlib.colors import LogNorm
 from scipy.stats import gaussian_kde
 from sklearn.cluster import KMeans
 import mdtraj
-from dpet.featurization.distances import *
-from dpet.ensemble_analysis import EnsembleAnalysis
-from dpet.featurization.angles import featurize_a_angle
-from dpet.coord import *
-from dpet.featurization.glob import compute_asphericity, compute_prolateness
-from dpet.comparison import scores_data, process_all_vs_all_output
-from dpet.utils import logger
+from idpet.featurization.distances import *
+from idpet.ensemble_analysis import EnsembleAnalysis
+from idpet.featurization.angles import featurize_a_angle
+from idpet.coord import *
+from idpet.featurization.glob import compute_asphericity, compute_prolateness
+from idpet.comparison import scores_data, process_all_vs_all_output
+from idpet.utils import logger
 import plotly.express as px
 import pandas as pd
 

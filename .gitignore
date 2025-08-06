@@ -16,4 +16,5 @@ build/
 *.tar.gz
 *.whl
 docs/
+docs_1/
 notebooks/.ipynb_checkpoints/
