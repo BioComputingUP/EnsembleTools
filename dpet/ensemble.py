@@ -54,6 +54,9 @@ class Ensemble():
     
     def _save_clean_topology(self, frame, output_path):
         # Get actual residue numbers from topology (includes negatives)
+        """Save a clean topology to a PDB file with corrected residue numbering.
+        if the residue numbering in the PDB file is not starting from 1, this function will shift the residue numbers to start from 1.
+        This is useful for ensuring compatibility with other tools that expect residue numbering to start from 1"""
         pdb_res_nums = [res.resSeq for res in frame.topology.residues]
         min_residue_number = min(pdb_res_nums)
         shift = 1 - min_residue_number if min_residue_number <= 0 else 0
