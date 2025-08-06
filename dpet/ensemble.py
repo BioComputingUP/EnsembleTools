@@ -51,6 +51,33 @@ class Ensemble():
         self.chain_id = chain_id
         self.residue_range = residue_range
         self.trajectory = None
+    
+    def _save_clean_topology(self, frame, output_path):
+        # Get actual residue numbers from topology (includes negatives)
+        pdb_res_nums = [res.resSeq for res in frame.topology.residues]
+        min_residue_number = min(pdb_res_nums)
+        shift = 1 - min_residue_number if min_residue_number <= 0 else 0
+
+        atom_res_map = {atom.index: atom.residue.index for atom in frame.topology.atoms}
+
+        import tempfile
+        with tempfile.NamedTemporaryFile(suffix=".pdb", delete=False) as temp_pdb:
+            frame.save(temp_pdb.name)
+            with open(temp_pdb.name, 'r') as f:
+                lines = f.readlines()
+
+        with open(output_path, 'w') as f:
+            for line in lines:
+                if line.startswith(("ATOM", "HETATM")):
+                    atom_idx = int(line[6:11]) - 1  # PDB atom serials are 1-based
+                    res_idx = atom_res_map[atom_idx]
+                    original_resnum = pdb_res_nums[res_idx]
+                    corrected_resnum = original_resnum + shift
+                    line = line[:22] + f"{corrected_resnum:4d}" + line[26:]
+                f.write(line)
+
+
+
 
     def load_trajectory(self, data_dir: str = None):
         """
@@ -97,7 +124,7 @@ class Ensemble():
             traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
             
             self.trajectory.save(traj_dcd)
-            self.trajectory[0].save(traj_top)
+            self._save_clean_topology(self.trajectory[0], traj_top)
             
             logger.info(f"Generated trajectory saved to {data_dir}.")
         elif self.data_path.endswith(('.dcd', '.xtc')):
@@ -124,7 +151,7 @@ class Ensemble():
                 traj_dcd = os.path.join(data_dir, f'{self.code}{traj_suffix}.dcd')
                 traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
                 self.trajectory.save(traj_dcd)
-                self.trajectory[0].save(traj_top)
+                self._save_clean_topology(self.trajectory[0], traj_top)
                 logger.info(f"Generated trajectory saved to {data_dir}.")
             else:
                 raise FileNotFoundError(f"No PDB files found in directory: {self.data_path}")
