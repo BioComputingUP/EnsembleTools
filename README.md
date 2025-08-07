@@ -17,7 +17,7 @@ It supports various input formats such as `.pdb`, `.xtc`, and `.dcd`, and enable
 
 ---
 
-## 🔧 Features
+## Features
 
 With **IDPEnsembleTools**, you can:
 
@@ -43,7 +43,9 @@ With **IDPEnsembleTools**, you can:
 
 ---
 
-## 📘 Example Notebooks
+## Example Notebooks
+
+The `notebooks/` directory contains a collection of Jupyter notebooks that demonstrate how to use the `EnsembleTools` package. These examples cover key functionalities such as ensemble comparison, dimensionality reduction (PCA, t-SNE, UMAP), feature extraction, and visualization customization. They serve both as tutorials and reproducible workflows for analyzing disordered protein ensembles.
 
 | Notebook                      | Description                                                                                   | Link |
 |------------------------------|-----------------------------------------------------------------------------------------------|------|
@@ -55,11 +57,11 @@ With **IDPEnsembleTools**, you can:
 | `plot_customization.ipynb`   | Customize plots for clarity and publication-quality visualizations.                           | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/plot_customization.ipynb) |
 | `sh3_example.ipynb`          | Case study: global and local analysis of the SH3 domain of the Drk protein.                   | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/sh3_example.ipynb) |
 | `tsne_analysis.ipynb`        | t-SNE embedding of ensemble features to explore local structure.                              | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/tsne_analysis.ipynb) |
-| `umap_analysis.ipynb`        | UMAP embedding for global manifold learning and visualization.                                | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/umap_analysis.ipynb) |
+| `umap_analysis.ipynb`        | UMAP embedding of ensemble features and visualization.                                | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/umap_analysis.ipynb) |
 
 
 ---
-## 📦 Installation
+## Installation
 
 ### Using `pip`
 
@@ -68,6 +70,6 @@ Install the latest release from PyPI:
 ```bash
 pip install idpet
 ```
-## 📄 License
+## License
 
 This project is licensed under the [MIT License](LICENSE).
