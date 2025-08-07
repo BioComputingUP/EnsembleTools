@@ -63,13 +63,42 @@ The `notebooks/` directory contains a collection of Jupyter notebooks that demon
 ---
 ## Installation
 
-### Using `pip`
+It is recommended to install `idpet` in a **clean virtual environment** to avoid conflicts with existing packages.
 
-Install the latest release from PyPI:
+### 🔹 Option 1: Using `venv` (standard Python)
 
 ```bash
+# Create a new virtual environment (Python 3.7+)
+python -m venv idpet-env
+
+# Activate the environment
+# On Linux/macOS:
+source idpet-env/bin/activate
+# On Windows:
+idpet-env\Scripts\activate
+
+# Upgrade pip and install the package
+pip install --upgrade pip
+pip install idpet 
+```
+
+### 🔹 Option 2: Using `conda` (if you use Anaconda/Miniconda)
+
+```bash
+# Create and activate a new conda environment
+conda create -n idpet-env python=3.9 -y
+conda activate idpet-env
+
+# Install the package from PyPI
 pip install idpet
 ```
-## License
 
+### Developer Installation (from source)
+```bash
+git clone https://github.com/BioComputingUP/EnsembleTools.git
+cd idpet
+pip install -e .
+```
+
+## License
 This project is licensed under the [MIT License](LICENSE).
