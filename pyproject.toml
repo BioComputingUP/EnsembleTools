@@ -1,3 +1,32 @@
 [build-system]
-requires = ["setuptools>=61.0"]
-build-backend = "setuptools.build_meta"
+requires = ["hatchling==1.26.3", "hatch-vcs"]
+build-backend = "hatchling.build"
+
+[project]
+name = "idpet"
+version = "0.1.4"
+description = "A Python package for analysis of conformational ensembles of intrinsically disordered proteins"
+readme = "README.md"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Hamidreza Ghafouri", email = "Hamidreza.ghafouri@studenti.unipd.it"}
+]
+requires-python = ">=3.7"
+
+dependencies = [
+  "numpy>=1.20",
+  "pandas",
+  "mdtraj",
+  "matplotlib",
+  "scipy",
+  "scikit-learn",
+  "umap-learn",
+  "requests",
+  "numba",
+  "plotly",
+  "nbformat"
+]
+
+[project.urls]
+Homepage = "https://github.com/BioComputingUP/EnsembleTools"
+Repository = "https://github.com/BioComputingUP/EnsembleTools"

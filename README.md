@@ -1,58 +1,57 @@
+# IDPEnsembleTools
 
+<img src="https://raw.githubusercontent.com/BioComputingUP/EnsembleTools/main/images/idpet_logo_1.png" alt="IDPEnsembleTools Logo" width="180" height="70" />
 
-Badges which can be included! <br>
-![PyPI](https://img.shields.io/pypi/v/IDPEnsembletools.svg)
-![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.1234567-blue)
+[![PyPI](https://img.shields.io/pypi/v/idpet.svg)](https://pypi.org/project/idpet/)
+<!-- [![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.1234567-blue)](https://doi.org/10.5281/zenodo.1234567) -->
 
+---
 
-<img src="/images/idpet_logo_1.png" alt="Logo" width="180" height="70" />
+## IDPEnsembleTools: An Open-Source Library for Analysis of Conformational Ensembles of Disordered Proteins
 
-# IDPEnsembleTools : an open-source library for analysis of conformational ensembles of disordered proteins 
-![Pipline Example](/images/pipline_example.jpeg)
+IDPEnsembleTools is a Python package designed to facilitate the **loading, analysis, and comparison** of multiple conformational ensembles of intrinsically disordered proteins (IDPs).
 
-## Overview
-IDPensembleTools is a python package by which you can load and analyze multiple conformational ensembles in different formats such as (`pdb`, `xtc`,`dcd`,...)
+It supports various input formats such as `.pdb`, `.xtc`, and `.dcd`, and enables users to extract both **global** and **local** structural features, perform dimensionality reduction, and compute similarity scores between ensembles.
 
-## Features 
-With IDPensembleTools, you can:
+<img src="https://raw.githubusercontent.com/BioComputingUP/EnsembleTools/main/images/pipline_example.jpeg" alt="Pipeline Example" width="600" />
 
-- Extract and visualize **global features** of structural ensembles such as (`Rg`, `Asphericity`, `Prolateness`, `End to end distance`,...)
-- Extract and visualize **local features** of structural ensembles sucha as ( `intera-atomic distances`, `phi-psi angles` , `alpha-helix content`, ...)
-- Performing **dimensionality reduction** methods (`PCA`, `UMAP`, `t-SNE`) on different extracted features of structural ensemble
-- **Comparing** structural ensembles of disordered proteins using different similarity scores such as Kullback-Leibler (KL) and Jensen-Shannon (JS) divergence methods and visualize similarity matrix
-  
-For details, you can check our user-centric documentation , **put the link to the documentation**, is generated from our repository using Sphinx. 
+---
 
-## Installation 
-- Using pip:
-Using python package managment systme "pip" you can easily install IDPensembleTools (and its dependencies if needed), upgrade or uninstall with just one terminal command. 
+## 🔧 Features
 
-`pip install idpet`<br>
-`pip install --upgrade idpet`<br>
-`pip uninstall idpet`
+With **IDPEnsembleTools**, you can:
 
-- From source:
-  
+- **Extract global features** of structural ensembles:
+  - Radius of gyration (Rg)
+  - Asphericity
+  - Prolateness
+  - End-to-end distance
+
+- **Extract local features**:
+  - Interatomic distances
+  - Phi–psi angles
+  - Alpha-helix content
+
+- **Perform dimensionality reduction** on ensemble features:
+  - PCA
+  - UMAP
+  - t-SNE
+
+- **Compare structural ensembles** using:
+  - Jensen-Shannon (JS) divergence
+  - Visualize similarity matrices
+
+---
+
+## 📦 Installation
+
+### Using `pip`
+
+Install the latest release from PyPI:
+
 ```bash
-git clone https://github.com/hamidrgh/EnsembleTools.git
-cd EnsembleTools
-python setup.py install
+pip install idpet
 ```
+## 📄 License
 
-## Python Requirements and Dependencies
-
-- Recommend specific version of Python
-- Point to the dependencies (Numpy, Sklearn, pandas, matplotlib, mdtraj, ...)
-
-## Documentation
-  
-For details, you can check our user-centric [documentation](https://hamidrgh.github.io/gh_pages_idpet/overview.html), is generated from our repository using Sphinx. 
-
-## Citation 
-The link to the publication should be put here. 
-
-## License
-MIT License
-
-
-
+This project is licensed under the [MIT License](LICENSE).
