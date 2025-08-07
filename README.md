@@ -43,6 +43,22 @@ With **IDPEnsembleTools**, you can:
 
 ---
 
+## 📘 Example Notebooks
+
+| Notebook                      | Description                                                                                   | Link |
+|------------------------------|-----------------------------------------------------------------------------------------------|------|
+| `comparing_ensembles.ipynb`  | Compare multiple conformational ensembles using selected metrics and visualizations.          | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/comparing_ensembles.ipynb) |
+| `featurization.ipynb`        | Generate numerical features from protein ensembles for downstream analysis.                   | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/featurization.ipynb) |
+| `kpca_analysis.ipynb`        | Perform Kernel PCA to capture non-linear variance in ensemble structures.                     | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/kpca_analysis.ipynb) |
+| `loading_data.ipynb`         | Load and preprocess ensemble data from various formats.                                       | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/loading_data.ipynb) |
+| `pca_analysis.ipynb`         | Principal Component Analysis (PCA) for dimensionality reduction and visualization.            | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/pca_analysis.ipynb) |
+| `plot_customization.ipynb`   | Customize plots for clarity and publication-quality visualizations.                           | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/plot_customization.ipynb) |
+| `sh3_example.ipynb`          | Case study: global and local analysis of the SH3 domain of the Drk protein.                   | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/sh3_example.ipynb) |
+| `tsne_analysis.ipynb`        | t-SNE embedding of ensemble features to explore local structure.                              | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/tsne_analysis.ipynb) |
+| `umap_analysis.ipynb`        | UMAP embedding for global manifold learning and visualization.                                | [View](https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/umap_analysis.ipynb) |
+
+
+---
 ## 📦 Installation
 
 ### Using `pip`
