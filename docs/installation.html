@@ -49,10 +49,12 @@
 <li class="toctree-l1"><a class="reference internal" href="overview.html">Overview</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Installation</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#install-using-pip">Install using pip</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#step-1-install-mdtraj">Step 1: Install MDTraj</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#step-2-install-idpet">Step 2: Install IDPET</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-1-recommended-create-a-virtual-environment">Step 1: (Recommended) Create a virtual environment</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-2-install-mdtraj-required">Step 2: Install MDTraj (required)</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#step-3-install-idpet">Step 3: Install IDPET</a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#developer-installation-optional">Developer installation (optional)</a></li>
 </ul>
 </li>
 <li class="toctree-l1"><a class="reference internal" href="demo.html">Demo</a></li>
@@ -89,23 +91,61 @@
              
   <section id="installation">
 <h1>Installation<a class="headerlink" href="#installation" title="Link to this heading"></a></h1>
+<p>We recommend installing IDPET in a clean virtual environment to avoid package conflicts. Below are step-by-step instructions for installation using either <cite>venv</cite> or <cite>conda</cite>, along with important setup notes for MDTraj.</p>
 <section id="install-using-pip">
 <h2>Install using pip<a class="headerlink" href="#install-using-pip" title="Link to this heading"></a></h2>
 <p>To install IDPET using pip, follow these steps:</p>
-<section id="step-1-install-mdtraj">
-<h3>Step 1: Install MDTraj<a class="headerlink" href="#step-1-install-mdtraj" title="Link to this heading"></a></h3>
-<p>IDPET is built on top of <a class="reference external" href="https://mdtraj.org/">MDTraj</a>. As MDTraj can have compatibility issues on Windows OS, we recommend installing it using conda. This step can be omitted when using Linux.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mdtraj
+<section id="step-1-recommended-create-a-virtual-environment">
+<h3>Step 1: (Recommended) Create a virtual environment<a class="headerlink" href="#step-1-recommended-create-a-virtual-environment" title="Link to this heading"></a></h3>
+<p><strong>Using venv (standard Python):</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>-m<span class="w"> </span>venv<span class="w"> </span>idpet-env
+
+<span class="c1"># Activate the environment</span>
+<span class="c1"># On Linux/macOS:</span>
+<span class="nb">source</span><span class="w"> </span>idpet-env/bin/activate
+<span class="c1"># On Windows:</span>
+idpet-env<span class="se">\S</span>cripts<span class="se">\a</span>ctivate
+
+<span class="c1"># Upgrade pip</span>
+pip<span class="w"> </span>install<span class="w"> </span>--upgrade<span class="w"> </span>pip
+</pre></div>
+</div>
+<p><strong>Using conda:</strong></p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>create<span class="w"> </span>-n<span class="w"> </span>idpet-env<span class="w"> </span><span class="nv">python</span><span class="o">=</span><span class="m">3</span>.9<span class="w"> </span>-y
+conda<span class="w"> </span>activate<span class="w"> </span>idpet-env
 </pre></div>
 </div>
 </section>
-<section id="step-2-install-idpet">
-<h3>Step 2: Install IDPET<a class="headerlink" href="#step-2-install-idpet" title="Link to this heading"></a></h3>
-<p>Finally, you can install IDPET using pip.</p>
-<div class="highlight-shell notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>idpet
+<section id="step-2-install-mdtraj-required">
+<h3>Step 2: Install MDTraj (required)<a class="headerlink" href="#step-2-install-mdtraj-required" title="Link to this heading"></a></h3>
+<p>IDPET is built on top of <a class="reference external" href="https://mdtraj.org/">MDTraj</a>. Since MDTraj can have compatibility issues on Windows, we recommend installing it via <cite>conda</cite>:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>conda<span class="w"> </span>install<span class="w"> </span>-c<span class="w"> </span>conda-forge<span class="w"> </span>mdtraj
+</pre></div>
+</div>
+<p>This step is <strong>optional on Linux</strong>, but still safe and recommended to avoid binary issues.</p>
+</section>
+<section id="step-3-install-idpet">
+<h3>Step 3: Install IDPET<a class="headerlink" href="#step-3-install-idpet" title="Link to this heading"></a></h3>
+<p>With your environment active and MDTraj installed, you can now install IDPET from PyPI:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>idpet
+</pre></div>
+</div>
+<p>To verify the installation:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">idpet</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">idpet</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>
+</section>
+<section id="developer-installation-optional">
+<h2>Developer installation (optional)<a class="headerlink" href="#developer-installation-optional" title="Link to this heading"></a></h2>
+<p>If you wish to contribute to IDPET or work with the source code, you can install it in editable mode:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>git<span class="w"> </span>clone<span class="w"> </span>https://github.com/hamidrgh/idpet.git
+<span class="nb">cd</span><span class="w"> </span>idpet
+pip<span class="w"> </span>install<span class="w"> </span>-e<span class="w"> </span>.
+</pre></div>
+</div>
+<p>This will install IDPET in “editable” mode so any local changes take effect immediately.</p>
 </section>
 </section>
 
