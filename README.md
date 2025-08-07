@@ -65,7 +65,20 @@ The `notebooks/` directory contains a collection of Jupyter notebooks that demon
 
 It is recommended to install `idpet` in a **clean virtual environment** to avoid conflicts with existing packages.
 
-### 🔹 Option 1: Using `venv` (standard Python)
+
+### 🔹 Option 1: Using `conda` (if you use Anaconda/Miniconda)
+
+```bash
+# Create and activate a new conda environment
+conda create -n idpet-env python=3.9
+conda activate idpet-env
+
+# Install the package from PyPI
+pip install idpet
+```
+
+
+### 🔹 Option 2: Using `venv` (standard Python)
 
 ```bash
 # Create a new virtual environment (Python 3.7+)
@@ -80,17 +93,6 @@ idpet-env\Scripts\activate
 # Upgrade pip and install the package
 pip install --upgrade pip
 pip install idpet 
-```
-
-### 🔹 Option 2: Using `conda` (if you use Anaconda/Miniconda)
-
-```bash
-# Create and activate a new conda environment
-conda create -n idpet-env python=3.9 -y
-conda activate idpet-env
-
-# Install the package from PyPI
-pip install idpet
 ```
 
 ### Developer Installation (from source)
