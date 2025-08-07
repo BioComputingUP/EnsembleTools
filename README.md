@@ -16,7 +16,12 @@ It supports various input formats such as `.pdb`, `.xtc`, and `.dcd`, and enable
 <img src="https://raw.githubusercontent.com/BioComputingUP/EnsembleTools/main/images/pipline_example.jpeg" alt="Pipeline Example" width="600" />
 
 ---
+## Documentation
 
+Full documentation is available at:  
+[https://bioComputingUP.github.io/EnsembleTools](https://bioComputingUP.github.io/EnsembleTools)
+
+---
 ## Features
 
 With **IDPEnsembleTools**, you can:
