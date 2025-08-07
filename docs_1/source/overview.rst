@@ -10,9 +10,9 @@ As an example:
 .. code-block:: python
 
   # import idpet modules for reading, analyzing and visualizing of the IDP ensembles   		
- from dpet.ensemble import Ensemble
- from dpet.ensemble_analysis import EnsembleAnalysis
- from dpet.visualization import Visualization
+ from idpet.ensemble import Ensemble
+ from idpet.ensemble_analysis import EnsembleAnalysis
+ from idpet.visualization import Visualization
 
 
 There are two possibilities for loading the data:
@@ -68,3 +68,67 @@ There are two possibilities for loading the data:
 
  # Visualize the comparison matrix between loaded ensembles 
  vis.comparison_matrix()
+
+
+
+.. rubric:: Notebooks Overview
+
+
+Here’s a summary of the example notebooks available in the repository:
+
+.. grid:: 1 1 2 3
+   :gutter: 2
+
+   .. card:: ``comparing_ensembles``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/comparing_ensembles.ipynb
+      :link-type: url
+
+      Compare multiple conformational ensembles using selected metrics and visualizations.
+
+   .. card:: ``featurization``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/featurization.ipynb
+      :link-type: url
+
+      Generate numerical features from protein ensembles for downstream analysis.
+
+   .. card:: ``kpca_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/kpca_analysis.ipynb
+      :link-type: url
+
+      Perform Kernel PCA to capture non-linear variance in ensemble structures.
+
+   .. card:: ``loading_data``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/loading_data.ipynb
+      :link-type: url
+
+      Load and preprocess ensemble data from various formats.
+
+   .. card:: ``pca_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/pca_analysis.ipynb
+      :link-type: url
+
+      Principal Component Analysis (PCA) for dimensionality reduction and visualization.
+
+   .. card:: ``plot_customization``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/plot_customization.ipynb
+      :link-type: url
+
+      Customize plots for clarity and publication-quality visualizations.
+
+   .. card:: ``sh3_example``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/sh3_example.ipynb
+      :link-type: url
+
+      Case study: global and local analysis of the SH3 domain of the Drkn protein.
+
+   .. card:: ``tsne_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/tsne_analysis.ipynb
+      :link-type: url
+
+      t-SNE embedding of ensemble features to explore local structure.
+
+   .. card:: ``umap_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/umap_analysis.ipynb
+      :link-type: url
+
+      UMAP embedding for global manifold learning and visualization.

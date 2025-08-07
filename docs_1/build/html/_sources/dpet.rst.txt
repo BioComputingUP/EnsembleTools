@@ -1,4 +1,4 @@
-dpet package
+idpet package
 ============
 
 Subpackages
@@ -7,64 +7,64 @@ Subpackages
 .. toctree::
    :maxdepth: 4
 
-   dpet.data
-   dpet.featurization
+   idpet.data
+   idpet.featurization
 
 Submodules
 ----------
 
-dpet.comparison module
-----------------------
+idpet.comparison module
+-----------------------
 
-.. automodule:: dpet.comparison
+.. automodule:: idpet.comparison
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.coord module
------------------
+idpet.coord module
+------------------
 
-.. automodule:: dpet.coord
+.. automodule:: idpet.coord
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.dimensionality\_reduction module
--------------------------------------
+idpet.dimensionality\_reduction module
+--------------------------------------
 
-.. automodule:: dpet.dimensionality_reduction
+.. automodule:: idpet.dimensionality_reduction
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.ensemble module
---------------------
+idpet.ensemble module
+---------------------
 
-.. automodule:: dpet.ensemble
+.. automodule:: idpet.ensemble
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.ensemble\_analysis module
-------------------------------
+idpet.ensemble\_analysis module
+-------------------------------
 
-.. automodule:: dpet.ensemble_analysis
+.. automodule:: idpet.ensemble_analysis
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.utils module
------------------
+idpet.utils module
+------------------
 
-.. automodule:: dpet.utils
+.. automodule:: idpet.utils
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.visualization module
--------------------------
+idpet.visualization module
+--------------------------
 
-.. automodule:: dpet.visualization
+.. automodule:: idpet.visualization
    :members:
    :show-inheritance:
    :undoc-members:
@@ -72,7 +72,7 @@ dpet.visualization module
 Module contents
 ---------------
 
-.. automodule:: dpet
+.. automodule:: idpet
    :members:
    :show-inheritance:
    :undoc-members:

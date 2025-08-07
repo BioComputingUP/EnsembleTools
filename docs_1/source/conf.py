@@ -21,7 +21,8 @@ release = '0.1.0'
 extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
-    'sphinx_autodoc_typehints',  # for type hints
+    'sphinx_autodoc_typehints',
+    'sphinx_design'   
 ]
 
 templates_path = ['_templates']
@@ -34,3 +35,7 @@ exclude_patterns = []
 
 html_theme = 'sphinx_rtd_theme'
 html_static_path = ['_static']
+html_theme_options = {
+    "navigation_depth": 4,
+    "titles_only": False,  # For some themes
+}

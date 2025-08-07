@@ -1,29 +1,29 @@
-dpet.data package
+idpet.data package
 =================
 
 Submodules
 ----------
 
-dpet.data.api\_client module
+idpet.data.api\_client module
 ----------------------------
 
-.. automodule:: dpet.data.api_client
+.. automodule:: idpet.data.api_client
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.data.io\_utils module
+idpet.data.io\_utils module
 --------------------------
 
-.. automodule:: dpet.data.io_utils
+.. automodule:: idpet.data.io_utils
    :members:
    :show-inheritance:
    :undoc-members:
 
-dpet.data.topology module
+idpet.data.topology module
 -------------------------
 
-.. automodule:: dpet.data.topology
+.. automodule:: idpet.data.topology
    :members:
    :show-inheritance:
    :undoc-members:
@@ -31,7 +31,7 @@ dpet.data.topology module
 Module contents
 ---------------
 
-.. automodule:: dpet.data
+.. automodule:: idpet.data
    :members:
    :show-inheritance:
    :undoc-members:

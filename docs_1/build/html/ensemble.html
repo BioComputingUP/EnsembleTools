@@ -9,6 +9,7 @@
   <title>ensemble &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -16,6 +17,7 @@
       <script src="_static/documentation_options.js?v=01f34227"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -49,16 +51,16 @@
 <li class="toctree-l1"><a class="reference internal" href="demo.html">Demo</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ensemble</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#module-dpet.ensemble">Ensemble class</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#dpet.ensemble.Ensemble"><code class="docutils literal notranslate"><span class="pre">Ensemble</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.extract_features"><code class="docutils literal notranslate"><span class="pre">Ensemble.extract_features()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.get_chains_from_pdb"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_chains_from_pdb()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.get_features"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_features()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.get_num_residues"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_num_residues()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.get_size"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_size()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.load_trajectory"><code class="docutils literal notranslate"><span class="pre">Ensemble.load_trajectory()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.normalize_features"><code class="docutils literal notranslate"><span class="pre">Ensemble.normalize_features()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#dpet.ensemble.Ensemble.random_sample_trajectory"><code class="docutils literal notranslate"><span class="pre">Ensemble.random_sample_trajectory()</span></code></a></li>
+<li class="toctree-l2"><a class="reference internal" href="#module-idpet.ensemble">Ensemble class</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#idpet.ensemble.Ensemble"><code class="docutils literal notranslate"><span class="pre">Ensemble</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.extract_features"><code class="docutils literal notranslate"><span class="pre">Ensemble.extract_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.get_chains_from_pdb"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_chains_from_pdb()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.get_features"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.get_num_residues"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_num_residues()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.get_size"><code class="docutils literal notranslate"><span class="pre">Ensemble.get_size()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.load_trajectory"><code class="docutils literal notranslate"><span class="pre">Ensemble.load_trajectory()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.normalize_features"><code class="docutils literal notranslate"><span class="pre">Ensemble.normalize_features()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#idpet.ensemble.Ensemble.random_sample_trajectory"><code class="docutils literal notranslate"><span class="pre">Ensemble.random_sample_trajectory()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -96,11 +98,11 @@
              
   <section id="ensemble">
 <h1>ensemble<a class="headerlink" href="#ensemble" title="Link to this heading"></a></h1>
-<section id="module-dpet.ensemble">
-<span id="ensemble-class"></span><h2>Ensemble class<a class="headerlink" href="#module-dpet.ensemble" title="Link to this heading"></a></h2>
+<section id="module-idpet.ensemble">
+<span id="ensemble-class"></span><h2>Ensemble class<a class="headerlink" href="#module-idpet.ensemble" title="Link to this heading"></a></h2>
 <dl class="py class">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble">
-<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">dpet.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble">
+<em class="property"><span class="k"><span class="pre">class</span></span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble" title="Link to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a molecular dynamics ensemble.</p>
 <section id="parameters">
@@ -129,8 +131,8 @@
 <li><p>The <cite>residue_range</cite> parameter uses 1-based indexing, meaning the first residue is indexed as 1.</p></li>
 </ul>
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.extract_features">
-<span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurization</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.extract_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.extract_features" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.extract_features">
+<span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurization</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.extract_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.extract_features" title="Link to this definition"></a></dt>
 <dd><p>Extract features from the trajectory using the specified featurization method.</p>
 <section id="id1">
 <h4>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h4>
@@ -150,8 +152,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.get_chains_from_pdb">
-<span class="sig-name descname"><span class="pre">get_chains_from_pdb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.get_chains_from_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.get_chains_from_pdb" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.get_chains_from_pdb">
+<span class="sig-name descname"><span class="pre">get_chains_from_pdb</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.get_chains_from_pdb"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.get_chains_from_pdb" title="Link to this definition"></a></dt>
 <dd><p>Extracts unique chain IDs from a PDB file.</p>
 <section id="raises">
 <h4>Raises<a class="headerlink" href="#raises" title="Link to this heading"></a></h4>
@@ -165,8 +167,8 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.get_features">
-<span class="sig-name descname"><span class="pre">get_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurization</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.get_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.get_features" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.get_features">
+<span class="sig-name descname"><span class="pre">get_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurization</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">normalize</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.get_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.get_features" title="Link to this definition"></a></dt>
 <dd><p>Get features from the trajectory using the specified featurization method.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
@@ -198,13 +200,13 @@
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.get_num_residues">
-<span class="sig-name descname"><span class="pre">get_num_residues</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.get_num_residues"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.get_num_residues" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.get_num_residues">
+<span class="sig-name descname"><span class="pre">get_num_residues</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.get_num_residues"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.get_num_residues" title="Link to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.get_size">
-<span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.get_size" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.get_size">
+<span class="sig-name descname"><span class="pre">get_size</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.get_size"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.get_size" title="Link to this definition"></a></dt>
 <dd><p>Return the number of conformations in an ensemble, if data has been
 loaded.</p>
 <dl class="field-list simple">
@@ -215,8 +217,8 @@ loaded.</p>
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.load_trajectory">
-<span class="sig-name descname"><span class="pre">load_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.load_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.load_trajectory" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.load_trajectory">
+<span class="sig-name descname"><span class="pre">load_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.load_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.load_trajectory" title="Link to this definition"></a></dt>
 <dd><p>Load a trajectory for the ensemble.</p>
 <section id="id5">
 <h4>Parameters<a class="headerlink" href="#id5" title="Link to this heading"></a></h4>
@@ -240,8 +242,8 @@ Additional processing steps include checking for coarse-grained models, selectin
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.normalize_features">
-<span class="sig-name descname"><span class="pre">normalize_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.normalize_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.normalize_features" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.normalize_features">
+<span class="sig-name descname"><span class="pre">normalize_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.normalize_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.normalize_features" title="Link to this definition"></a></dt>
 <dd><p>Normalize the extracted features using the provided mean and standard deviation.</p>
 <section id="id7">
 <h4>Parameters<a class="headerlink" href="#id7" title="Link to this heading"></a></h4>
@@ -259,8 +261,8 @@ Additional processing steps include checking for coarse-grained models, selectin
 </dd></dl>
 
 <dl class="py method">
-<dt class="sig sig-object py" id="dpet.ensemble.Ensemble.random_sample_trajectory">
-<span class="sig-name descname"><span class="pre">random_sample_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/dpet/ensemble.html#Ensemble.random_sample_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#dpet.ensemble.Ensemble.random_sample_trajectory" title="Link to this definition"></a></dt>
+<dt class="sig sig-object py" id="idpet.ensemble.Ensemble.random_sample_trajectory">
+<span class="sig-name descname"><span class="pre">random_sample_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.random_sample_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.random_sample_trajectory" title="Link to this definition"></a></dt>
 <dd><p>Randomly sample frames from the original trajectory.</p>
 <section id="id9">
 <h4>Parameters<a class="headerlink" href="#id9" title="Link to this heading"></a></h4>

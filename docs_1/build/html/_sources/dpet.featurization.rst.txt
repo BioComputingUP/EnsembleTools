@@ -1,45 +1,45 @@
-dpet.featurization package
+idpet.featurization package
 ==========================
 
 Submodules
 ----------
-
-dpet.featurization.angles module
+ 
+idpet.featurization.angles module
 --------------------------------
 
-.. automodule:: dpet.featurization.angles
+.. automodule::  idpet.featurization.angles
    :members:
    :show-inheritance:
    :undoc-members:
-
-dpet.featurization.distances module
+ 
+idpet.featurization.distances module
 -----------------------------------
 
-.. automodule:: dpet.featurization.distances
+.. automodule::  idpet.featurization.distances
    :members:
    :show-inheritance:
    :undoc-members:
-
-dpet.featurization.ensemble\_level module
+ 
+idpet.featurization.ensemble\_level module
 -----------------------------------------
 
-.. automodule:: dpet.featurization.ensemble_level
+.. automodule::  idpet.featurization.ensemble_level
    :members:
    :show-inheritance:
    :undoc-members:
-
-dpet.featurization.glob module
+ 
+idpet.featurization.glob module
 ------------------------------
 
-.. automodule:: dpet.featurization.glob
+.. automodule::  idpet.featurization.glob
    :members:
    :show-inheritance:
    :undoc-members:
-
-dpet.featurization.utils module
+ 
+idpet.featurization.utils module
 -------------------------------
 
-.. automodule:: dpet.featurization.utils
+.. automodule::  idpet.featurization.utils
    :members:
    :show-inheritance:
    :undoc-members:
@@ -47,7 +47,7 @@ dpet.featurization.utils module
 Module contents
 ---------------
 
-.. automodule:: dpet.featurization
+.. automodule::  idpet.featurization
    :members:
    :show-inheritance:
    :undoc-members:

@@ -442,9 +442,9 @@ def get_adaJSD_matrix(
         Two Ensemble objects storing the ensemble data to compare.
     return_bins : bool, optional
         If True, also return the histogram bin edges used in the comparison.
-    **remaining
-        Additional arguments passed to `dpet.comparison.score_adaJSD`.
-    
+    **remaining**
+        Additional arguments passed to `idpet.comparison.score_adaJSD`.
+
     Output
     ------
     score : float

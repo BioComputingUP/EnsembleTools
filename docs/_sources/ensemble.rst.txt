@@ -4,7 +4,7 @@ ensemble
 Ensemble class
 --------------------
 
-.. automodule:: dpet.ensemble
+.. automodule:: idpet.ensemble
    :members:
    :undoc-members:
    :show-inheritance:

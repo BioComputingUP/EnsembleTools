@@ -1,0 +1,1347 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="en" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>idpet.comparison &mdash; IDPET 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+
+  
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=01f34227"></script>
+      <script src="../../_static/doctools.js?v=9bcbadda"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            IDPET
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" aria-label="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Contents:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../overview.html">Overview</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../installation.html">Installation</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../demo.html">Demo</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ensemble_analysis.html">ensemble_analysis</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../ensemble.html">ensemble</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../visualization.html">visualization</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">dpet</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">IDPET</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Module code</a></li>
+      <li class="breadcrumb-item active">idpet.comparison</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Source code for idpet.comparison</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">mannwhitneyu</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">mdtraj</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_triu_indices</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.distances</span><span class="w"> </span><span class="kn">import</span> <span class="n">featurize_ca_dist</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.angles</span><span class="w"> </span><span class="kn">import</span> <span class="n">featurize_a_angle</span><span class="p">,</span> <span class="n">featurize_phi_psi</span>
+
+
+<span class="c1">####################################################</span>
+<span class="c1"># Common functions for computing JSD-based scores. #</span>
+<span class="c1">####################################################</span>
+
+<span class="n">num_default_bins</span> <span class="o">=</span> <span class="mi">50</span>
+<span class="n">min_samples_auto_hist</span> <span class="o">=</span> <span class="mi">2500</span>
+
+<div class="viewcode-block" id="get_num_comparison_bins">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_num_comparison_bins">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_num_comparison_bins</span><span class="p">(</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Get the number of bins to be used in comparison between two ensembles using</span>
+<span class="sd">    an histogram-based score (such as a JSD approximation).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    bins: Union[str, int]</span>
+<span class="sd">        Determines the number of bins to be used. When providing an `int`, the</span>
+<span class="sd">        same value will simply be returned. When providing a string, the following</span>
+<span class="sd">        rules to determine bin value will be applied:</span>
+<span class="sd">        `auto`: applies `sqrt` if the size of the smallest ensemble is &lt;</span>
+<span class="sd">            `dpet.comparison.min_samples_auto_hist`. If it &gt;= than this</span>
+<span class="sd">            value, returns `dpet.comparison.num_default_bins`.</span>
+<span class="sd">        `sqrt`: applies the square root rule for determining bin number using</span>
+<span class="sd">            the size of the smallest ensemble (https://en.wikipedia.org/wiki/Histogram#Square-root_choice).</span>
+<span class="sd">        `sturges`: applies Sturge&#39;s formula for determining bin number using</span>
+<span class="sd">            the size of the smallest ensemble (https://en.wikipedia.org/wiki/Histogram#Sturges&#39;s_formula).</span>
+
+<span class="sd">    x: List[np.ndarray], optional</span>
+<span class="sd">        List of M feature matrices (one for each ensembles) of shape (N_i, *).</span>
+<span class="sd">        N_i values are the number of structures in each ensemble. The minimum</span>
+<span class="sd">        N_i will be used to apply bin assignment rule when the `bins` argument</span>
+<span class="sd">        is a string.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    num_bins: int</span>
+<span class="sd">        Number of bins.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="c1"># Apply a rule to define bin number.</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">str</span><span class="p">):</span>
+        <span class="c1"># Get minimum ensemble size.</span>
+        <span class="k">if</span> <span class="n">x</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="n">min_n</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="n">xi</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="k">for</span> <span class="n">xi</span> <span class="ow">in</span> <span class="n">x</span><span class="p">])</span>
+        <span class="k">if</span> <span class="n">bins</span> <span class="o">==</span> <span class="s2">&quot;auto&quot;</span><span class="p">:</span>
+            <span class="c1"># If minimum ensemble size is larger than a threshold, use a</span>
+            <span class="c1"># pre-defined bin number.</span>
+            <span class="k">if</span> <span class="n">min_n</span> <span class="o">&gt;=</span> <span class="n">min_samples_auto_hist</span><span class="p">:</span>
+                <span class="n">num_bins</span> <span class="o">=</span> <span class="n">num_default_bins</span>
+            <span class="c1"># Otherwise, apply square root rule.</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">num_bins</span> <span class="o">=</span> <span class="n">sqrt_rule</span><span class="p">(</span><span class="n">min_n</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bins</span> <span class="o">==</span> <span class="s2">&quot;sqrt&quot;</span><span class="p">:</span>
+            <span class="n">num_bins</span> <span class="o">=</span> <span class="n">sqrt_rule</span><span class="p">(</span><span class="n">min_n</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">bins</span> <span class="o">==</span> <span class="s2">&quot;sturges&quot;</span><span class="p">:</span>
+            <span class="n">num_bins</span> <span class="o">=</span> <span class="n">sturges_rule</span><span class="p">(</span><span class="n">min_n</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+    <span class="c1"># Directly use a certain bin number.</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="n">num_bins</span> <span class="o">=</span> <span class="n">bins</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">num_bins</span></div>
+
+
+<div class="viewcode-block" id="sturges_rule">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.sturges_rule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sturges_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="sqrt_rule">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.sqrt_rule">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">sqrt_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">))</span></div>
+
+
+<div class="viewcode-block" id="check_feature_matrices">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.check_feature_matrices">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">check_feature_matrices</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">func</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">wrapper</span></div>
+
+
+
+<div class="viewcode-block" id="calc_freqs">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_freqs">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_freqs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="calc_kld_for_jsd">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_kld_for_jsd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_kld_for_jsd</span><span class="p">(</span><span class="n">x_h</span><span class="p">,</span> <span class="n">m_h</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates KLD between distribution x and m.</span>
+<span class="sd">    x_h: histogram frequencies for sample p or q.</span>
+<span class="sd">    m_h: histogram frequencies for m = 0.5*(p+q).</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">non_zero</span> <span class="o">=</span> <span class="n">x_h</span> <span class="o">&gt;</span> <span class="mi">0</span>
+    <span class="k">if</span> <span class="n">non_zero</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x_h</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x_h</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span><span class="o">/</span><span class="n">m_h</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]))</span></div>
+
+
+<div class="viewcode-block" id="calc_jsd">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_jsd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">calc_jsd</span><span class="p">(</span><span class="n">p_h</span><span class="p">,</span> <span class="n">q_h</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Calculates JSD between distribution p and q.</span>
+<span class="sd">    p_h: histogram frequencies for sample p.</span>
+<span class="sd">    q_h: histogram frequencies for sample q.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">m_h</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">p_h</span> <span class="o">+</span> <span class="n">q_h</span><span class="p">)</span>
+    <span class="n">kld_pm</span> <span class="o">=</span> <span class="n">calc_kld_for_jsd</span><span class="p">(</span><span class="n">p_h</span><span class="p">,</span> <span class="n">m_h</span><span class="p">)</span>
+    <span class="n">kld_qm</span> <span class="o">=</span> <span class="n">calc_kld_for_jsd</span><span class="p">(</span><span class="n">q_h</span><span class="p">,</span> <span class="n">m_h</span><span class="p">)</span>
+    <span class="n">jsd_pq</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">kld_pm</span> <span class="o">+</span> <span class="n">kld_qm</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">jsd_pq</span></div>
+
+
+
+<span class="n">allowed_scores</span> <span class="o">=</span> <span class="p">{</span>
+            <span class="s2">&quot;jsd&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;ca_dist&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha_angle&quot;</span><span class="p">,</span> <span class="s2">&quot;rama&quot;</span><span class="p">],</span>
+        <span class="p">}</span>
+<span class="n">scores_data</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;adaJSD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;jsd&quot;</span><span class="p">,</span> <span class="s2">&quot;ca_dist&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;ramaJSD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;jsd&quot;</span><span class="p">,</span> <span class="s2">&quot;rama&quot;</span><span class="p">],</span>
+    <span class="s2">&quot;ataJSD&quot;</span><span class="p">:</span> <span class="p">[</span><span class="s2">&quot;jsd&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha_angle&quot;</span><span class="p">],</span>
+<span class="p">}</span>
+
+
+<span class="c1">#####################################################</span>
+<span class="c1"># Functions to score 1-d distributions of features. #</span>
+<span class="c1">#####################################################</span>
+
+<div class="viewcode-block" id="score_histogram_jsd">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_histogram_jsd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_histogram_jsd</span><span class="p">(</span>
+        <span class="n">p_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">q_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">limits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">float</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]]:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Scores an approximation of Jensen-Shannon divergence by discretizing in a</span>
+<span class="sd">    histogram the values two 1d samples provided as input.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p_data, q_data: np.ndarray</span>
+<span class="sd">        NumPy arrays of shape (*, ) containing samples from two mono-dimensional</span>
+<span class="sd">        distribution to be compared.</span>
+<span class="sd">    limits: Union[str, Tuple[int]]</span>
+<span class="sd">        Define the method to calculate the minimum and maximum values of the</span>
+<span class="sd">        range spanned by the bins. Accepted values are:</span>
+<span class="sd">            &quot;m&quot;: will use the minimum and maximum values observed by</span>
+<span class="sd">                concatenating samples in `p_data` and `q_data`.</span>
+<span class="sd">            &quot;p&quot;: will use the minimum and maximum values observed by</span>
+<span class="sd">                concatenating samples in `p_data`. If `q_data` contains values</span>
+<span class="sd">                outside that range, new bins of the same size will be added to</span>
+<span class="sd">                cover all values of q. Currently, this is not used in any IDPET</span>
+<span class="sd">                functionality. Note that the `bins` argument will determine</span>
+<span class="sd">                only the bins originally spanned by `p_data`.</span>
+<span class="sd">            &quot;a&quot;: limits for scoring angular features. Will use a</span>
+<span class="sd">                (-math.pi, math.pi) range for scoring such features.</span>
+<span class="sd">            (float, float): provide a custom range. Currently, not used in any</span>
+<span class="sd">                IDPET functionality.</span>
+<span class="sd">    bins: Union[int, str], optional</span>
+<span class="sd">        Determines the number of bins to be used when constructing histograms.</span>
+<span class="sd">        See `dpet.comparison.get_num_comparison_bins` for more information. The</span>
+<span class="sd">        range spanned by the bins will be define by the `limits` argument.</span>
+<span class="sd">    return_bins: bool, optional</span>
+<span class="sd">        If `True`, returns the bins used in the calculation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results: Union[float, Tuple[float, np.ndarray]]</span>
+<span class="sd">        If `return_bins` is `False`, only returns a float value for the JSD</span>
+<span class="sd">        score. The score will range from 0 (no common support) to log(2)</span>
+<span class="sd">        (same distribution). If `return_bins` is `True`, returns a tuple with</span>
+<span class="sd">        the JSD score and the number of bins.</span>
+
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">n_bins</span> <span class="o">=</span> <span class="n">get_num_comparison_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="n">p_data</span><span class="p">,</span> <span class="n">q_data</span><span class="p">])</span>
+
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">limits</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">):</span>
+        <span class="c1"># Get the minumum and max values of each array.</span>
+        <span class="n">p_min</span> <span class="o">=</span> <span class="n">p_data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">p_max</span> <span class="o">=</span> <span class="n">p_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+        <span class="n">q_min</span> <span class="o">=</span> <span class="n">q_data</span><span class="o">.</span><span class="n">min</span><span class="p">()</span>
+        <span class="n">q_max</span> <span class="o">=</span> <span class="n">q_data</span><span class="o">.</span><span class="n">max</span><span class="p">()</span>
+    
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">limits</span> <span class="o">==</span> <span class="s2">&quot;m&quot;</span><span class="p">:</span>
+        <span class="n">linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="nb">min</span><span class="p">(</span><span class="n">p_min</span><span class="p">,</span> <span class="n">q_min</span><span class="p">),</span> <span class="nb">max</span><span class="p">(</span><span class="n">p_max</span><span class="p">,</span> <span class="n">q_max</span><span class="p">),</span> <span class="n">n_bins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">linspace_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">}</span>
+
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">limits</span> <span class="o">==</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span>
+        <span class="c1"># Reference linspace.</span>
+        <span class="n">linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">p_min</span><span class="p">,</span> <span class="n">p_max</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">linspace_p</span> <span class="o">=</span> <span class="n">linspace</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">linspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span> <span class="o">==</span> <span class="n">p_min</span><span class="p">)</span>
+        <span class="c1"># Calculate the interval size (assuming equal spacing).</span>
+        <span class="n">interval</span> <span class="o">=</span> <span class="n">linspace</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">linspace</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+        <span class="c1"># Extend bins.</span>
+        <span class="k">if</span> <span class="n">q_min</span> <span class="o">&lt;</span> <span class="n">p_min</span><span class="p">:</span>
+            <span class="c1"># Create a new array extending from p_max to q_max.</span>
+            <span class="n">num_extra</span> <span class="o">=</span> <span class="p">(</span><span class="n">p_min</span> <span class="o">-</span> <span class="n">q_min</span><span class="p">)</span> <span class="o">/</span> <span class="n">interval</span>
+            <span class="n">num_extra</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">num_extra</span><span class="p">)</span><span class="o">+</span><span class="n">offset</span>  <span class="c1"># Number of points to extend.</span>
+            <span class="n">lin_extra</span> <span class="o">=</span> <span class="p">[</span><span class="n">p_min</span> <span class="o">-</span> <span class="n">interval</span><span class="o">*</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_extra</span><span class="p">)]</span>
+            <span class="n">lin_extra</span><span class="o">.</span><span class="n">reverse</span><span class="p">()</span>
+            <span class="n">lin_extra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lin_extra</span><span class="p">)</span>
+            <span class="c1"># Concatenate the original and extended arrays.</span>
+            <span class="n">linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">lin_extra</span><span class="p">,</span> <span class="n">linspace</span><span class="p">))</span>
+
+        <span class="k">if</span> <span class="n">q_max</span> <span class="o">&gt;</span> <span class="n">p_max</span><span class="p">:</span>
+            <span class="c1"># Create a new array extending from p_max to q_max.</span>
+            <span class="n">num_extra</span> <span class="o">=</span> <span class="p">(</span><span class="n">q_max</span> <span class="o">-</span> <span class="n">p_max</span><span class="p">)</span> <span class="o">/</span> <span class="n">interval</span>
+            <span class="n">num_extra</span> <span class="o">=</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">num_extra</span><span class="p">)</span><span class="o">+</span><span class="n">offset</span>  <span class="c1"># Number of points to extend.</span>
+            <span class="n">lin_extra</span> <span class="o">=</span> <span class="p">[</span><span class="n">p_max</span> <span class="o">+</span> <span class="n">interval</span><span class="o">*</span><span class="n">k</span> <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">num_extra</span><span class="p">)]</span>
+            <span class="n">lin_extra</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">lin_extra</span><span class="p">)</span>
+            <span class="c1"># Concatenate the original and extended arrays.</span>
+            <span class="n">linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">concatenate</span><span class="p">((</span><span class="n">linspace</span><span class="p">,</span> <span class="n">lin_extra</span><span class="p">))</span>
+
+        <span class="k">assert</span><span class="p">(</span><span class="n">linspace</span><span class="o">.</span><span class="n">min</span><span class="p">()</span> <span class="o">&lt;=</span> <span class="n">q_data</span><span class="o">.</span><span class="n">min</span><span class="p">())</span>
+        <span class="k">assert</span><span class="p">(</span><span class="n">linspace</span><span class="o">.</span><span class="n">max</span><span class="p">()</span> <span class="o">&gt;=</span> <span class="n">q_data</span><span class="o">.</span><span class="n">max</span><span class="p">())</span>
+        
+        <span class="n">linspace_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">linspace_p</span><span class="p">}</span>
+    
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">limits</span> <span class="o">==</span> <span class="s2">&quot;a&quot;</span><span class="p">:</span>
+        <span class="n">linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">math</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">linspace_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">}</span>
+    
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">limits</span><span class="p">,</span> <span class="nb">tuple</span><span class="p">):</span>
+        <span class="n">linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="n">limits</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">limits</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">n_bins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">linspace_data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;m&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">,</span> <span class="s2">&quot;p&quot;</span><span class="p">:</span> <span class="n">linspace</span><span class="p">}</span>
+        
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">limits</span><span class="p">)</span>
+
+    <span class="n">p_h</span> <span class="o">=</span> <span class="n">calc_freqs</span><span class="p">(</span><span class="n">p_data</span><span class="p">,</span> <span class="n">linspace</span><span class="p">)</span>
+    <span class="n">q_h</span> <span class="o">=</span> <span class="n">calc_freqs</span><span class="p">(</span><span class="n">q_data</span><span class="p">,</span> <span class="n">linspace</span><span class="p">)</span>
+    <span class="n">jsd_pq</span> <span class="o">=</span> <span class="n">calc_jsd</span><span class="p">(</span><span class="n">p_h</span><span class="p">,</span> <span class="n">q_h</span><span class="p">)</span>
+
+    <span class="n">data</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;linspace&quot;</span><span class="p">:</span> <span class="n">linspace_data</span><span class="p">,</span> <span class="s2">&quot;p_h&quot;</span><span class="p">:</span> <span class="n">p_h</span><span class="p">,</span> <span class="s2">&quot;q_h&quot;</span><span class="p">:</span> <span class="n">q_h</span><span class="p">}</span>
+
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsd_pq</span><span class="p">,</span> <span class="n">data</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsd_pq</span></div>
+
+
+    
+<div class="viewcode-block" id="score_avg_jsd">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_avg_jsd">[docs]</a>
+<span class="nd">@check_feature_matrices</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_avg_jsd</span><span class="p">(</span>
+        <span class="n">features_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">features_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">limits</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">25</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes as input two (*, F) feature matrices and computes an average JSD score</span>
+<span class="sd">    over all F features by discretizing each feature in histograms.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    features_1, features_2: np.ndarray</span>
+<span class="sd">        NumPy arrays of shape (*, F) containing two ensembles with * samples</span>
+<span class="sd">        described by F features. The number of samples in the two ensembles can</span>
+<span class="sd">        be different.</span>
+<span class="sd">    limits: Union[str, Tuple[int]]</span>
+<span class="sd">        Define the method to calculate the minimum and maximum values of the</span>
+<span class="sd">        range spanned by the bins. See documentation of `score_histogram_jsd`</span>
+<span class="sd">        in this module.</span>
+<span class="sd">    bins: Union[int, str], optional</span>
+<span class="sd">        Determines the number of bins to be used when constructing histograms.</span>
+<span class="sd">        See `dpet.comparison.get_num_comparison_bins` for more information.</span>
+<span class="sd">    return_bins: bool, optional</span>
+<span class="sd">        If `True`, returns the number of bins used in the calculation.</span>
+<span class="sd">    return_scores: bool, optional</span>
+<span class="sd">        If `True`, returns the a tuple with with (avg_score, all_scores), where</span>
+<span class="sd">        all_scores is an array with all the F scores (one for each feature) used</span>
+<span class="sd">        to compute the average score.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    avg_score : float</span>
+<span class="sd">        The average JSD score across the F features.</span>
+
+<span class="sd">    If `return_scores=True`:</span>
+<span class="sd">        (avg_score, all_scores) : Tuple[float, np.ndarray]</span>
+<span class="sd">            The average score and an array of JSD scores of shape (F,).</span>
+
+<span class="sd">    If `return_bins=True`:</span>
+<span class="sd">        (avg_score, num_bins) : Tuple[float, int]</span>
+<span class="sd">            The average score and the number of bins used.</span>
+
+<span class="sd">    If both `return_scores` and `return_bins` are True:</span>
+<span class="sd">        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]</span>
+<span class="sd">            The average score, array of per-feature scores, and number of bins used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="n">limits</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;m&quot;</span><span class="p">,</span> <span class="s2">&quot;a&quot;</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="n">_bins</span> <span class="o">=</span> <span class="n">get_num_comparison_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="n">features_1</span><span class="p">,</span> <span class="n">features_2</span><span class="p">])</span>
+    <span class="n">jsd</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">l</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">features_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+        <span class="n">jsd_l</span> <span class="o">=</span> <span class="n">score_histogram_jsd</span><span class="p">(</span>
+            <span class="n">p_data</span><span class="o">=</span><span class="n">features_1</span><span class="p">[:,</span><span class="n">l</span><span class="p">],</span>
+            <span class="n">q_data</span><span class="o">=</span><span class="n">features_2</span><span class="p">[:,</span><span class="n">l</span><span class="p">],</span>
+            <span class="n">limits</span><span class="o">=</span><span class="n">limits</span><span class="p">,</span>
+            <span class="n">bins</span><span class="o">=</span><span class="n">_bins</span><span class="p">,</span>
+            <span class="n">return_bins</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+        <span class="p">)</span>
+        <span class="n">jsd</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jsd_l</span><span class="p">)</span>
+    <span class="n">avg_jsd</span> <span class="o">=</span>  <span class="nb">sum</span><span class="p">(</span><span class="n">jsd</span><span class="p">)</span><span class="o">/</span><span class="nb">len</span><span class="p">(</span><span class="n">jsd</span><span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_scores</span><span class="p">:</span>
+        <span class="n">jsd_results</span> <span class="o">=</span>  <span class="n">avg_jsd</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">jsd_results</span> <span class="o">=</span>  <span class="p">(</span><span class="n">avg_jsd</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">jsd</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsd_results</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsd_results</span><span class="p">,</span> <span class="n">_bins</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_ada_jsd_features</span><span class="p">(</span>
+        <span class="n">ens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">max_sep</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+    <span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">Ensemble</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ens</span><span class="o">.</span><span class="n">get_features</span><span class="p">(</span>
+            <span class="n">featurization</span><span class="o">=</span><span class="s2">&quot;ca_dist&quot;</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span> <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span>
+        <span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">featurize_ca_dist</span><span class="p">(</span>
+            <span class="n">traj</span><span class="o">=</span><span class="n">ens</span><span class="p">,</span> 
+            <span class="n">get_names</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+            <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span>
+            <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span><span class="p">,</span>
+            <span class="n">atom_selector</span><span class="o">=</span><span class="s2">&quot;name CA&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+    
+<div class="viewcode-block" id="score_adaJSD">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_adaJSD">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_adaJSD</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">featurization_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to calculate the adaJSD (carbon Alfa Distance Average JSD)</span>
+<span class="sd">    score between two ensembles. The score evaluates the divergence between</span>
+<span class="sd">    distributions of Ca-Ca distances of the ensembles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory],</span>
+<span class="sd">        Two Ensemble or mdtraj.Trajectory objects storing the ensemble data to</span>
+<span class="sd">        compare.</span>
+<span class="sd">    bins: Union[str, int], optional</span>
+<span class="sd">        Determines the number of bins to be used when constructing histograms.</span>
+<span class="sd">        See `dpet.comparison.get_num_comparison_bins` for more information.</span>
+<span class="sd">    return_bins: bool, optional</span>
+<span class="sd">        If `True`, returns the number of bins used in the calculation.</span>
+<span class="sd">    return_scores: bool, optional</span>
+<span class="sd">        If `True`, returns the a tuple with with (avg_score, all_scores), where</span>
+<span class="sd">        all_scores is an array with all the F scores (one for each feature) used</span>
+<span class="sd">        to compute the average score.</span>
+<span class="sd">    featurization_params: dict, optional</span>
+<span class="sd">        Optional dictionary to customize the featurization process to calculate</span>
+<span class="sd">        Ca-Ca distances. See the `Ensemble.get_features` function for more</span>
+<span class="sd">        information.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    avg_score : float</span>
+<span class="sd">        The average JSD score across the F features.</span>
+
+<span class="sd">    If `return_scores=True`:</span>
+<span class="sd">        (avg_score, all_scores) : Tuple[float, np.ndarray]</span>
+<span class="sd">            The average score and an array of JSD scores of shape (F,).</span>
+
+<span class="sd">    If `return_bins=True`:</span>
+<span class="sd">        (avg_score, num_bins) : Tuple[float, int]</span>
+<span class="sd">            The average score and the number of bins used.</span>
+
+<span class="sd">    If both `return_scores` and `return_bins` are True:</span>
+<span class="sd">        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]</span>
+<span class="sd">            The average score, array of per-feature scores, and number of bins used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    
+    <span class="n">min_sep</span> <span class="o">=</span> <span class="n">featurization_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min_sep&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">max_sep</span> <span class="o">=</span> <span class="n">featurization_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_sep&quot;</span><span class="p">)</span>
+
+    <span class="c1"># Calculate Ca-Ca distances.</span>
+    <span class="n">ca_dist_1</span> <span class="o">=</span> <span class="n">_get_ada_jsd_features</span><span class="p">(</span>
+        <span class="n">ens</span><span class="o">=</span><span class="n">ens_1</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span> <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span>
+    <span class="p">)</span>
+    <span class="n">ca_dist_2</span> <span class="o">=</span> <span class="n">_get_ada_jsd_features</span><span class="p">(</span>
+        <span class="n">ens</span><span class="o">=</span><span class="n">ens_2</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span> <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span>
+    <span class="p">)</span>
+
+    <span class="c1"># Compute average JSD approximation.</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">score_avg_jsd</span><span class="p">(</span>
+        <span class="n">ca_dist_1</span><span class="p">,</span> <span class="n">ca_dist_2</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">limits</span><span class="o">=</span><span class="s2">&quot;m&quot;</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="o">=</span><span class="n">return_bins</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="o">=</span><span class="n">return_scores</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<div class="viewcode-block" id="get_adaJSD_matrix">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_adaJSD_matrix">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_adaJSD_matrix</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">featurization_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to calculate the adaJSD score between two ensembles and</span>
+<span class="sd">    return a matrix with JSD scores for each pair of Ca-Ca distances.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
+<span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+<span class="sd">    return_bins : bool, optional</span>
+<span class="sd">        If True, also return the histogram bin edges used in the comparison.</span>
+<span class="sd">    **remaining**</span>
+<span class="sd">        Additional arguments passed to `idpet.comparison.score_adaJSD`.</span>
+
+<span class="sd">    Output</span>
+<span class="sd">    ------</span>
+<span class="sd">    score : float</span>
+<span class="sd">        The overall adaJSD score between the two ensembles.</span>
+<span class="sd">    jsd_matrix : np.ndarray of shape (N, N)</span>
+<span class="sd">        Matrix containing JSD scores for each Ca-Ca distance pair, where N is</span>
+<span class="sd">        the number of residues.</span>
+<span class="sd">    bin_edges : np.ndarray, optional</span>
+<span class="sd">        Returned only if `return_bins=True`. The bin edges used in histogram comparisons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">min_sep</span> <span class="o">=</span> <span class="n">featurization_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min_sep&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+    <span class="n">max_sep</span> <span class="o">=</span> <span class="n">featurization_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_sep&quot;</span><span class="p">)</span>
+    <span class="n">out</span> <span class="o">=</span> <span class="n">score_adaJSD</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="o">=</span><span class="n">ens_1</span><span class="p">,</span>
+        <span class="n">ens_2</span><span class="o">=</span><span class="n">ens_2</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="o">=</span><span class="n">return_bins</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="n">featurization_params</span><span class="o">=</span><span class="n">featurization_params</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">),</span> <span class="n">_bins</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="n">n_res</span> <span class="o">=</span> <span class="n">ens_1</span><span class="o">.</span><span class="n">get_num_residues</span><span class="p">()</span>
+    <span class="n">res_ids</span> <span class="o">=</span> <span class="n">get_triu_indices</span><span class="p">(</span>
+        <span class="n">L</span><span class="o">=</span><span class="n">n_res</span><span class="p">,</span>
+        <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span>
+        <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">res_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_scores</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+    <span class="n">matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">n_res</span><span class="p">,</span> <span class="n">n_res</span><span class="p">,))</span>
+    <span class="n">matrix</span><span class="p">[:]</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">nan</span>
+    <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">s_ij</span> <span class="ow">in</span> <span class="nb">zip</span><span class="p">(</span><span class="n">res_ids</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">res_ids</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="n">all_scores</span><span class="p">):</span>
+        <span class="n">matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_ij</span>
+        <span class="n">matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">s_ij</span>
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">matrix</span><span class="p">),</span> <span class="n">_bins</span>
+    <span class="k">else</span><span class="p">:</span>
+         <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_ata_jsd_features</span><span class="p">(</span>
+        <span class="n">ens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+    <span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">Ensemble</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">ens</span><span class="o">.</span><span class="n">get_features</span><span class="p">(</span><span class="n">featurization</span><span class="o">=</span><span class="s2">&quot;a_angle&quot;</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">):</span>
+        <span class="k">return</span> <span class="n">featurize_a_angle</span><span class="p">(</span>
+            <span class="n">traj</span><span class="o">=</span><span class="n">ens</span><span class="p">,</span> <span class="n">get_names</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">atom_selector</span><span class="o">=</span><span class="s2">&quot;name CA&quot;</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="score_ataJSD">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_ataJSD">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_ataJSD</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to calculate the ataJSD (Alpha Torsion Average JSD) score</span>
+<span class="sd">    between two ensembles. The score evaluates the divergence between</span>
+<span class="sd">    distributions of alpha torsion angles (the angles formed by four consecutive</span>
+<span class="sd">    Ca atoms in a protein) of the ensembles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
+<span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    avg_score : float</span>
+<span class="sd">        The average JSD score across the F features.</span>
+
+<span class="sd">    If `return_scores=True`:</span>
+<span class="sd">        (avg_score, all_scores) : Tuple[float, np.ndarray]</span>
+<span class="sd">            The average score and an array of JSD scores of shape (F,).</span>
+
+<span class="sd">    If `return_bins=True`:</span>
+<span class="sd">        (avg_score, num_bins) : Tuple[float, int]</span>
+<span class="sd">            The average score and the number of bins used.</span>
+
+<span class="sd">    If both `return_scores` and `return_bins` are True:</span>
+<span class="sd">        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]</span>
+<span class="sd">            The average score, array of per-feature scores, and number of bins used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="c1"># Calculate torsion angles (alpha_angles).</span>
+    <span class="n">alpha_1</span> <span class="o">=</span> <span class="n">_get_ata_jsd_features</span><span class="p">(</span><span class="n">ens_1</span><span class="p">)</span>
+    <span class="n">alpha_2</span> <span class="o">=</span> <span class="n">_get_ata_jsd_features</span><span class="p">(</span><span class="n">ens_2</span><span class="p">)</span>
+    <span class="c1"># Compute average JSD approximation.</span>
+    <span class="n">results</span> <span class="o">=</span> <span class="n">score_avg_jsd</span><span class="p">(</span>
+        <span class="n">alpha_1</span><span class="p">,</span>
+        <span class="n">alpha_2</span><span class="p">,</span>
+        <span class="n">limits</span><span class="o">=</span><span class="s2">&quot;a&quot;</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="o">=</span><span class="n">return_bins</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="o">=</span><span class="n">return_scores</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="k">return</span> <span class="n">results</span></div>
+
+
+
+<div class="viewcode-block" id="get_ataJSD_profile">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ataJSD_profile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ataJSD_profile</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to calculate the ataJSD score between two ensembles and</span>
+<span class="sd">    return a profile with JSD scores for each alpha angle in the proteins.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
+<span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+<span class="sd">   return_bins : bool, optional</span>
+<span class="sd">        If True, also return the histogram bin edges used in the comparison.</span>
+<span class="sd">    **remaining</span>
+<span class="sd">        Additional arguments passed to `dpet.comparison.score_ataJSD`.</span>
+<span class="sd">    </span>
+<span class="sd">    Output</span>
+<span class="sd">    ------</span>
+<span class="sd">    score : float</span>
+<span class="sd">        The overall ataJSD score between the two ensembles.</span>
+<span class="sd">    jsd_profile : np.ndarray of shape (N - 3,)</span>
+<span class="sd">        JSD scores for individual α backbone angles, where N is the number</span>
+<span class="sd">        of residues in the protein.</span>
+<span class="sd">    bin_edges : np.ndarray, optional</span>
+<span class="sd">        Returned only if `return_bins=True`. The bin edges used in histogram</span>
+<span class="sd">        comparisons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">score_ataJSD</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="o">=</span><span class="n">ens_1</span><span class="p">,</span>
+        <span class="n">ens_2</span><span class="o">=</span><span class="n">ens_2</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="o">=</span><span class="n">return_bins</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">),</span> <span class="n">_bins</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="n">n_res</span> <span class="o">=</span> <span class="n">ens_1</span><span class="o">.</span><span class="n">get_num_residues</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">n_res</span> <span class="o">-</span> <span class="mi">3</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_scores</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">),</span> <span class="n">_bins</span>
+    <span class="k">else</span><span class="p">:</span>
+         <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span></div>
+
+
+
+<span class="c1">#####################################################</span>
+<span class="c1"># Functions to score 2-d distributions of features. #</span>
+<span class="c1">#####################################################</span>
+
+<div class="viewcode-block" id="score_avg_2d_angle_jsd">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_avg_2d_angle_jsd">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_avg_2d_angle_jsd</span><span class="p">(</span>
+        <span class="n">array_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">array_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes as input two (*, F, 2) bidimensional feature matrices and computes an</span>
+<span class="sd">    average JSD score over all F bidimensional features by discretizing them</span>
+<span class="sd">    in 2d histograms. The features in this functions are supposed to be angles</span>
+<span class="sd">    whose values range from -math.pi to math.pi. For example, int the</span>
+<span class="sd">    `score_ramaJSD` function the F features represent the phi-psi values of F</span>
+<span class="sd">    residues in a protein of length L=F+2 (first and last residues don&#39;t have</span>
+<span class="sd">    both phi and psi values).</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    p_data, q_data: np.ndarray</span>
+<span class="sd">        NumPy arrays of shape (*, F, 2) containing samples from F bi-dimensional</span>
+<span class="sd">        distributions to be compared.</span>
+<span class="sd">    bins: Union[int, str], optional</span>
+<span class="sd">        Determines the number of bins to be used when constructing histograms.</span>
+<span class="sd">        See `dpet.comparison.get_num_comparison_bins` for more information. The</span>
+<span class="sd">        range spanned by the bins will be -math.pi to math.pi. Note that the</span>
+<span class="sd">        effective number of bins used in the functio will be the square of</span>
+<span class="sd">        the number returned by `dpet.comparison.get_num_comparison_bins`, since</span>
+<span class="sd">        we are building a 2d histogram.</span>
+<span class="sd">    return_bins: bool, optional</span>
+<span class="sd">        If `True`, returns the square root of the effective number of bins used</span>
+<span class="sd">        in the calculation.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results: Union[float, Tuple[float, np.ndarray]]</span>
+<span class="sd">        If `return_bins` is `False`, only returns a float value for the JSD</span>
+<span class="sd">        score. The score will range from 0 (no common support) to log(2)</span>
+<span class="sd">        (same distribution). If `return_bins` is `True`, returns a tuple with</span>
+<span class="sd">        the JSD score and the number of bins. If `return_scores` is `True` it</span>
+<span class="sd">        will also return the F scores used to compute the average JSD score.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">array_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]</span> <span class="o">==</span> <span class="n">array_2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">:]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+
+    <span class="n">n_bins</span> <span class="o">=</span> <span class="n">get_num_comparison_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="p">[</span><span class="n">array_1</span><span class="p">,</span> <span class="n">array_2</span><span class="p">])</span>
+
+    <span class="n">angle_linspace</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">linspace</span><span class="p">(</span><span class="o">-</span><span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">pi</span><span class="p">,</span> <span class="n">n_bins</span><span class="o">+</span><span class="mi">1</span><span class="p">)</span>
+    <span class="n">n_distr</span> <span class="o">=</span> <span class="n">array_1</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+    <span class="n">jsh_list</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n_distr</span><span class="p">):</span>
+        <span class="n">h2d_1</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">array_1</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">array_1</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">angle_linspace</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">h2d_2</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram2d</span><span class="p">(</span>
+            <span class="n">x</span><span class="o">=</span><span class="n">array_2</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="mi">0</span><span class="p">],</span> <span class="n">y</span><span class="o">=</span><span class="n">array_2</span><span class="p">[:,</span><span class="n">i</span><span class="p">,</span><span class="mi">1</span><span class="p">],</span> <span class="n">bins</span><span class="o">=</span><span class="n">angle_linspace</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">p_h</span> <span class="o">=</span> <span class="n">h2d_1</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">p_h</span> <span class="o">=</span> <span class="n">p_h</span> <span class="o">/</span> <span class="n">p_h</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+        <span class="n">q_h</span> <span class="o">=</span> <span class="n">h2d_2</span><span class="o">.</span><span class="n">ravel</span><span class="p">()</span>
+        <span class="n">q_h</span> <span class="o">=</span> <span class="n">q_h</span> <span class="o">/</span> <span class="n">q_h</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span>
+
+        <span class="n">jsd_pq</span> <span class="o">=</span> <span class="n">calc_jsd</span><span class="p">(</span><span class="n">p_h</span><span class="p">,</span> <span class="n">q_h</span><span class="p">)</span>
+        <span class="n">jsh_list</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">jsd_pq</span><span class="p">)</span>
+
+    <span class="n">avg_score</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">jsh_list</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_scores</span><span class="p">:</span>
+        <span class="n">jsd_results</span> <span class="o">=</span>  <span class="n">avg_score</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">jsd_results</span> <span class="o">=</span>  <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">jsh_list</span><span class="p">))</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsd_results</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">jsd_results</span><span class="p">,</span> <span class="n">n_bins</span></div>
+
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">_get_rama_jsd_features</span><span class="p">(</span>
+        <span class="n">ens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+    <span class="p">):</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">Ensemble</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">ens</span><span class="o">.</span><span class="n">coarse_grained</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="s2">&quot;ramaJSD cannot be computed for coarse-grained ensembles&quot;</span>
+            <span class="p">)</span>
+        <span class="k">return</span> <span class="n">ens</span><span class="o">.</span><span class="n">get_features</span><span class="p">(</span><span class="s2">&quot;phi_psi&quot;</span><span class="p">,</span> <span class="n">ravel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">elif</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">):</span>
+        <span class="c1"># TODO: should check for a CG ensemble here.</span>
+        <span class="k">return</span> <span class="n">featurize_phi_psi</span><span class="p">(</span><span class="n">traj</span><span class="o">=</span><span class="n">ens</span><span class="p">,</span>  <span class="n">get_names</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">ravel</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
+
+
+<div class="viewcode-block" id="score_ramaJSD">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_ramaJSD">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">score_ramaJSD</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility unction to calculate the ramaJSD (Ramachandran plot average JSD)</span>
+<span class="sd">    score between two ensembles. The score evaluates the divergence between</span>
+<span class="sd">    distributions of phi-psi torsion angles of every residue in the ensembles.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
+<span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    avg_score : float</span>
+<span class="sd">        The average JSD score across the F features.</span>
+
+<span class="sd">    If `return_scores=True`:</span>
+<span class="sd">        (avg_score, all_scores) : Tuple[float, np.ndarray]</span>
+<span class="sd">            The average score and an array of JSD scores of shape (F,).</span>
+
+<span class="sd">    If `return_bins=True`:</span>
+<span class="sd">        (avg_score, num_bins) : Tuple[float, int]</span>
+<span class="sd">            The average score and the number of bins used.</span>
+
+<span class="sd">    If both `return_scores` and `return_bins` are True:</span>
+<span class="sd">        ((avg_score, all_scores), num_bins) : Tuple[Tuple[float, np.ndarray], int]</span>
+<span class="sd">            The average score, array of per-feature scores, and number of bins used.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">phi_psi_1</span> <span class="o">=</span> <span class="n">_get_rama_jsd_features</span><span class="p">(</span><span class="n">ens_1</span><span class="p">)</span>
+    <span class="n">phi_psi_2</span> <span class="o">=</span> <span class="n">_get_rama_jsd_features</span><span class="p">(</span><span class="n">ens_2</span><span class="p">)</span>
+    
+    <span class="k">return</span> <span class="n">score_avg_2d_angle_jsd</span><span class="p">(</span>
+        <span class="n">array_1</span><span class="o">=</span><span class="n">phi_psi_1</span><span class="p">,</span>
+        <span class="n">array_2</span><span class="o">=</span><span class="n">phi_psi_2</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="o">=</span><span class="n">return_scores</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="o">=</span><span class="n">return_bins</span>
+    <span class="p">)</span></div>
+
+
+
+<div class="viewcode-block" id="get_ramaJSD_profile">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ramaJSD_profile">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">get_ramaJSD_profile</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Utility function to calculate the ramaJSD score between two ensembles and</span>
+<span class="sd">    return a profile with JSD scores for the Ramachandran plots of pair of</span>
+<span class="sd">    corresponding residue in the proteins.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
+<span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+<span class="sd">    return_bins : bool, optional</span>
+<span class="sd">        If True, also return the histogram bin edges used in the comparison.</span>
+<span class="sd">    **remaining</span>
+<span class="sd">        Additional arguments passed to `dpet.comparison.score_ramaJSD`.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    score : float</span>
+<span class="sd">        The overall ramaJSD score between the two ensembles.</span>
+<span class="sd">    jsd_profile : np.ndarray of shape (N - 2,)</span>
+<span class="sd">        JSD scores for the Ramachandran distribution of each residue,</span>
+<span class="sd">        where N is the number of residues in the protein.</span>
+<span class="sd">    bin_edges : np.ndarray, optional</span>
+<span class="sd">        Returned only if `return_bins=True`. The bin edges used in histogram</span>
+<span class="sd">        comparisons.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">out</span> <span class="o">=</span> <span class="n">score_ramaJSD</span><span class="p">(</span>
+        <span class="n">ens_1</span><span class="o">=</span><span class="n">ens_1</span><span class="p">,</span>
+        <span class="n">ens_2</span><span class="o">=</span><span class="n">ens_2</span><span class="p">,</span>
+        <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">,</span>
+        <span class="n">return_bins</span><span class="o">=</span><span class="n">return_bins</span><span class="p">,</span>
+        <span class="n">return_scores</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
+    <span class="p">)</span>
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">),</span> <span class="n">_bins</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span> <span class="o">=</span> <span class="n">out</span>
+    <span class="n">n_res</span> <span class="o">=</span> <span class="n">ens_1</span><span class="o">.</span><span class="n">get_num_residues</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">n_res</span> <span class="o">-</span> <span class="mi">2</span> <span class="o">!=</span> <span class="nb">len</span><span class="p">(</span><span class="n">all_scores</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">return_bins</span><span class="p">:</span>
+        <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">),</span> <span class="n">_bins</span>
+    <span class="k">else</span><span class="p">:</span>
+         <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span></div>
+
+
+
+<span class="c1">########################</span>
+<span class="c1"># All-vs-all analysis. #</span>
+<span class="c1">########################</span>
+
+<div class="viewcode-block" id="all_vs_all_comparison">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.all_vs_all_comparison">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">all_vs_all_comparison</span><span class="p">(</span>
+        <span class="n">ensembles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">],</span>
+        <span class="n">score</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
+        <span class="n">featurization_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
+        <span class="n">bootstrap_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">bootstrap_frac</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">1.0</span><span class="p">,</span>
+        <span class="n">bootstrap_replace</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">str</span><span class="p">]</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
+        <span class="n">random_seed</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
+    <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Compare all pair of ensembles using divergence scores.</span>
+<span class="sd">    Implemented scores are approximate average Jensen–Shannon divergence</span>
+<span class="sd">    (JSD) over several kinds of molecular features. The lower these scores</span>
+<span class="sd">    are, the higher the similarity between the probability distribution of</span>
+<span class="sd">    the features of the ensembles. JSD scores here range from a minimum of 0</span>
+<span class="sd">    to a maximum of log(2) ~= 0.6931.</span>
+
+<span class="sd">    Parameters</span>
+<span class="sd">    ----------</span>
+<span class="sd">    ensembles: List[Ensemble]</span>
+<span class="sd">        Ensemble objectes to analyze.</span>
+<span class="sd">    score: str</span>
+<span class="sd">        Type of score used to compare ensembles. Choices: `adaJSD` (carbon</span>
+<span class="sd">        Alfa Distance Average JSD), `ramaJSD` (RAMAchandran average JSD) and</span>
+<span class="sd">        `ataJSD` (Alpha Torsion Average JSD). `adaJSD` scores the average</span>
+<span class="sd">        JSD over all Ca-Ca distance distributions of residue pairs with</span>
+<span class="sd">        sequence separation &gt; 1. `ramaJSD` scores the average JSD over the</span>
+<span class="sd">        phi-psi angle distributions of all residues. `ataJSD` scores the</span>
+<span class="sd">        average JSD over all alpha torsion angles, which are the angles</span>
+<span class="sd">        formed by four consecutive Ca atoms in a protein.</span>
+<span class="sd">    featurization_params: dict, optional</span>
+<span class="sd">        Optional dictionary to customize the featurization process for the</span>
+<span class="sd">        above features.</span>
+<span class="sd">    bootstrap_iters: int, optional</span>
+<span class="sd">        Number of bootstrap iterations. By default its value is None. In</span>
+<span class="sd">        this case, IDPET will directly compare each pair of ensemble $i$ and</span>
+<span class="sd">        $j$ by using all of their conformers and perform the comparison only</span>
+<span class="sd">        once. On the other hand, if providing an integer value to this</span>
+<span class="sd">        argument, each pair of ensembles $i$ and $j$ will be compared</span>
+<span class="sd">        `bootstrap_iters` times by randomly selecting (bootstrapping)</span>
+<span class="sd">        conformations from them. Additionally, each ensemble will be</span>
+<span class="sd">        auto-compared with itself by subsampling conformers via</span>
+<span class="sd">        bootstrapping. Then IDPET will perform a statistical test to</span>
+<span class="sd">        establish if the inter-ensemble ($i != j$) scores are significantly</span>
+<span class="sd">        different from the intra-ensemble ($i == j$) scores. The tests work</span>
+<span class="sd">        as follows: for each ensemble pair $i != j$ IDPET will get their</span>
+<span class="sd">        inter-ensemble comparison scores obtained in bootstrapping. Then, it</span>
+<span class="sd">        will get the bootstrapping scores from auto-comparisons of ensemble</span>
+<span class="sd">        $i$ and $j$ and the scores with the higher mean here are selected as</span>
+<span class="sd">        reference intra-ensemble scores. Finally, the inter-ensemble and</span>
+<span class="sd">        intra-ensemble scores are compared via a one-sided Mann-Whitney U</span>
+<span class="sd">        test with the alternative hypothesis being: inter-ensemble scores</span>
+<span class="sd">        are stochastically greater than intra-ensemble scores. The p-values</span>
+<span class="sd">        obtained in these tests will additionally be returned. For small</span>
+<span class="sd">        protein structural ensembles (less than 500 conformations) most</span>
+<span class="sd">        comparison scores in IDPET are not robust estimators of</span>
+<span class="sd">        divergence/distance. By performing bootstrapping, you can have an</span>
+<span class="sd">        idea of how the size of your ensembles impacts the comparison. Use</span>
+<span class="sd">        values &gt;= 50 when comparing ensembles with very few conformations</span>
+<span class="sd">        (less than 100). When comparing large ensembles (more than</span>
+<span class="sd">        1,000-5,000 conformations) you can safely avoid bootstrapping.</span>
+<span class="sd">    bootstrap_frac: float, optional</span>
+<span class="sd">        Fraction of the total conformations to sample when bootstrapping.</span>
+<span class="sd">        Default value is 1.0, which results in bootstrap samples with the</span>
+<span class="sd">        same number of conformations of the original ensemble.</span>
+<span class="sd">    bootstrap_replace: bool, optional</span>
+<span class="sd">        If `True`, bootstrap will sample with replacement. Default is `True`.</span>
+<span class="sd">    bins: Union[int, str], optional</span>
+<span class="sd">        Number of bins or bin assignment rule for JSD comparisons. See the</span>
+<span class="sd">        documentation of `dpet.comparison.get_num_comparison_bins` for</span>
+<span class="sd">        more information.</span>
+<span class="sd">    random_seed: int, optional</span>
+<span class="sd">        Random seed used when performing bootstrapping.</span>
+<span class="sd">    verbose: bool, optional</span>
+<span class="sd">        If `True`, some information about the comparisons will be printed to</span>
+<span class="sd">        stdout.</span>
+
+<span class="sd">    Returns</span>
+<span class="sd">    -------</span>
+<span class="sd">    results: dict</span>
+<span class="sd">        A dictionary containing the following key-value pairs:</span>
+<span class="sd">            `scores`: a (M, M, B) NumPy array storing the comparison</span>
+<span class="sd">                scores, where M is the number of ensembles being</span>
+<span class="sd">                compared and B is the number of bootstrap iterations (B</span>
+<span class="sd">                will be 1 if bootstrapping was not performed).</span>
+<span class="sd">            `p_values`: a (M, M) NumPy array storing the p-values</span>
+<span class="sd">                obtained in the statistical test performed when using</span>
+<span class="sd">                a bootstrapping strategy (see the `bootstrap_iters`)</span>
+<span class="sd">                method. Returned only when performing a bootstrapping</span>
+<span class="sd">                strategy.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+
+    <span class="n">score_type</span><span class="p">,</span> <span class="n">feature</span> <span class="o">=</span> <span class="n">scores_data</span><span class="p">[</span><span class="n">score</span><span class="p">]</span>
+    
+    <span class="c1">### Check arguments.</span>
+    <span class="k">if</span> <span class="n">score_type</span> <span class="o">==</span> <span class="s2">&quot;jsd&quot;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ca_dist&quot;</span><span class="p">,</span> <span class="s2">&quot;alpha_angle&quot;</span><span class="p">):</span>
+            <span class="n">score_func</span> <span class="o">=</span> <span class="n">score_avg_jsd</span>
+        <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;rama&quot;</span><span class="p">:</span>
+            <span class="n">score_func</span> <span class="o">=</span> <span class="n">score_avg_2d_angle_jsd</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Invalid feature for JSD-based scores: </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;The type of similarity score should be selected among:&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; </span><span class="si">{</span><span class="nb">list</span><span class="p">(</span><span class="n">allowed_scores</span><span class="o">.</span><span class="n">keys</span><span class="p">())</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="n">feature</span> <span class="ow">in</span> <span class="n">allowed_scores</span><span class="p">[</span><span class="n">score_type</span><span class="p">]:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;The &#39;</span><span class="si">{</span><span class="n">score_type</span><span class="si">}</span><span class="s2">&#39; score must be calculated based on the&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; following features: </span><span class="si">{</span><span class="n">allowed_scores</span><span class="p">[</span><span class="n">score_type</span><span class="p">]</span><span class="si">}</span><span class="s2">&quot;</span>
+        <span class="p">)</span>
+
+    <span class="n">min_bootstrap_iters</span> <span class="o">=</span> <span class="mi">2</span>
+    <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bootstrap_iters</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+        <span class="k">if</span> <span class="n">bootstrap_iters</span> <span class="o">&lt;</span> <span class="n">min_bootstrap_iters</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;Need at leasts </span><span class="si">{</span><span class="n">min_bootstrap_iters</span><span class="si">}</span><span class="s2"> bootstrap_iters&quot;</span>
+            <span class="p">)</span>
+        <span class="n">comparison_iters</span> <span class="o">=</span> <span class="n">bootstrap_iters</span>
+    <span class="k">elif</span> <span class="n">bootstrap_iters</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">comparison_iters</span> <span class="o">=</span> <span class="mi">1</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">bootstrap_iters</span><span class="p">)</span>
+
+    <span class="k">if</span> <span class="ow">not</span> <span class="mi">0</span> <span class="o">&lt;=</span> <span class="n">bootstrap_frac</span> <span class="o">&lt;=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid bootstrap_frac: </span><span class="si">{</span><span class="n">bootstrap_frac</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="c1">### Check the ensembles.</span>
+    <span class="n">num_residues</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">get_num_residues</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ensembles</span><span class="p">])</span>
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">num_residues</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span>
+            <span class="s2">&quot;Can only compare ensembles with the same number of residues.&quot;</span>
+            <span class="s2">&quot; Ensembles in this analysis have different number of residues.&quot;</span>
+        <span class="p">)</span>
+    
+    <span class="c1">### Define the random seed.</span>
+    <span class="k">if</span> <span class="n">random_seed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">rng</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">default_rng</span><span class="p">(</span><span class="n">random_seed</span><span class="p">)</span>
+        <span class="n">rand_func</span> <span class="o">=</span> <span class="n">rng</span><span class="o">.</span><span class="n">choice</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">rand_func</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span>
+
+    <span class="c1">### Featurize (run it here to avoid re-calculating at every comparison).</span>
+    <span class="n">features</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="c1"># Compute features.</span>
+    <span class="k">for</span> <span class="n">ensemble_i</span> <span class="ow">in</span> <span class="n">ensembles</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;ca_dist&quot;</span><span class="p">:</span>
+            <span class="n">feats_i</span> <span class="o">=</span> <span class="n">ensemble_i</span><span class="o">.</span><span class="n">get_features</span><span class="p">(</span>
+                <span class="n">normalize</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+                <span class="n">featurization</span><span class="o">=</span><span class="s2">&quot;ca_dist&quot;</span><span class="p">,</span>
+                <span class="n">min_sep</span><span class="o">=</span><span class="n">featurization_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;min_sep&quot;</span><span class="p">,</span> <span class="mi">2</span><span class="p">),</span>
+                <span class="n">max_sep</span><span class="o">=</span><span class="n">featurization_params</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;max_sep&quot;</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;alpha_angle&quot;</span><span class="p">:</span>
+            <span class="n">feats_i</span> <span class="o">=</span> <span class="n">ensemble_i</span><span class="o">.</span><span class="n">get_features</span><span class="p">(</span><span class="n">featurization</span><span class="o">=</span><span class="s2">&quot;a_angle&quot;</span><span class="p">)</span>
+        <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;rama&quot;</span><span class="p">:</span>
+            <span class="n">feats_i</span> <span class="o">=</span> <span class="n">ensemble_i</span><span class="o">.</span><span class="n">get_features</span><span class="p">(</span>
+                <span class="n">featurization</span><span class="o">=</span><span class="s2">&quot;phi_psi&quot;</span><span class="p">,</span> <span class="n">ravel</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Invalid feature for comparison: </span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">features</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">feats_i</span><span class="p">)</span>
+    
+    <span class="c1">### Setup the comparisons.</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;# Scoring &#39;</span><span class="si">{</span><span class="n">score_type</span><span class="si">}</span><span class="s2">&#39; using features &#39;</span><span class="si">{</span><span class="n">feature</span><span class="si">}</span><span class="s2">&#39;&quot;</span><span class="p">)</span>
+    <span class="n">n</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">ensembles</span><span class="p">)</span>
+
+    <span class="c1"># Define the parameters for the evaluation.</span>
+    <span class="k">if</span> <span class="n">score_type</span> <span class="o">==</span> <span class="s2">&quot;jsd&quot;</span><span class="p">:</span>
+        <span class="c1"># Apply the same bin number to every comparison, based on the number</span>
+        <span class="c1"># of conformers in the smallest ensemble.</span>
+        <span class="n">num_bins</span> <span class="o">=</span> <span class="n">get_num_comparison_bins</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="n">features</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;num_bins: </span><span class="si">{</span><span class="n">num_bins</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">scoring_params</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;bins&quot;</span><span class="p">:</span> <span class="n">num_bins</span><span class="p">}</span>
+        <span class="k">if</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;ca_dist&quot;</span><span class="p">,</span> <span class="p">):</span>
+            <span class="n">scoring_params</span><span class="p">[</span><span class="s2">&quot;limits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;m&quot;</span>
+        <span class="k">elif</span> <span class="n">feature</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;alpha_angle&quot;</span><span class="p">,</span> <span class="p">):</span>
+            <span class="n">scoring_params</span><span class="p">[</span><span class="s2">&quot;limits&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;a&quot;</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="k">pass</span>
+        <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;- Number of bins for all comparisons: </span><span class="si">{</span><span class="n">num_bins</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="n">score_type</span><span class="p">)</span>
+
+    <span class="c1"># Initialize a (n, n, *) matrices for storing the comparison scores.</span>
+    <span class="n">score_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">comparison_iters</span><span class="p">))</span>
+    
+        <span class="c1"># Get the pairs to compare.</span>
+    <span class="n">pairs_to_compare</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+        <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">j</span> <span class="o">&gt;</span> <span class="n">i</span><span class="p">:</span>
+                <span class="n">pairs_to_compare</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+            <span class="k">elif</span> <span class="n">i</span> <span class="o">==</span> <span class="n">j</span> <span class="ow">and</span> <span class="n">comparison_iters</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">pairs_to_compare</span><span class="o">.</span><span class="n">append</span><span class="p">((</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">))</span>
+    
+    <span class="c1"># Get the total number of comparisons to perform.</span>
+    <span class="k">if</span> <span class="n">comparison_iters</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="n">permutation_scores</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">comparison_iters</span><span class="p">))</span>
+        <span class="n">tot_comparisons</span> <span class="o">=</span> <span class="p">(</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_compare</span><span class="p">)</span> <span class="o">+</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_compare</span><span class="p">))</span><span class="o">*</span><span class="n">comparison_iters</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tot_comparisons</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_compare</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">verbose</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span>
+            <span class="sa">f</span><span class="s2">&quot;- We have </span><span class="si">{</span><span class="nb">len</span><span class="p">(</span><span class="n">pairs_to_compare</span><span class="p">)</span><span class="si">}</span><span class="s2"> pairs of ensembles&quot;</span>
+            <span class="sa">f</span><span class="s2">&quot; and will perform a total of </span><span class="si">{</span><span class="n">tot_comparisons</span><span class="si">}</span><span class="s2"> comparisons.&quot;</span>
+        <span class="p">)</span>
+
+    <span class="c1">### Perform the comparisons.</span>
+
+    <span class="c1">## Use all conformers, repeat only once.</span>
+    <span class="k">if</span> <span class="n">comparison_iters</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">pairs_to_compare</span><span class="p">:</span>
+            <span class="c1"># Score.</span>
+            <span class="n">score_ij</span> <span class="o">=</span> <span class="n">score_func</span><span class="p">(</span>
+                <span class="n">features</span><span class="p">[</span><span class="n">i</span><span class="p">],</span> <span class="n">features</span><span class="p">[</span><span class="n">j</span><span class="p">],</span> <span class="o">**</span><span class="n">scoring_params</span>
+            <span class="p">)</span>
+            <span class="c1"># Store the results.</span>
+            <span class="n">score_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_ij</span>
+            <span class="n">score_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_ij</span>
+
+    <span class="c1">## Bootstrap analysis, compare ensembles multiple times by subsampling.</span>
+    <span class="k">else</span><span class="p">:</span>
+        
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">j</span> <span class="ow">in</span> <span class="n">pairs_to_compare</span><span class="p">:</span>
+
+            <span class="k">for</span> <span class="n">k</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">comparison_iters</span><span class="p">):</span>
+
+                <span class="c1"># Features for ensemble i.</span>
+                <span class="n">n_i</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">i</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">rand_ids_ik</span> <span class="o">=</span> <span class="n">rand_func</span><span class="p">(</span>
+                    <span class="n">n_i</span><span class="p">,</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_i</span><span class="o">*</span><span class="n">bootstrap_frac</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">replace</span><span class="o">=</span><span class="n">bootstrap_replace</span>
+                <span class="p">)</span>
+                <span class="n">features_ik</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">i</span><span class="p">][</span><span class="n">rand_ids_ik</span><span class="p">]</span>
+                <span class="c1"># Features for ensemble j.</span>
+                <span class="n">n_j</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">j</span><span class="p">]</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">rand_ids_jk</span> <span class="o">=</span> <span class="n">rand_func</span><span class="p">(</span>
+                    <span class="n">n_j</span><span class="p">,</span>
+                    <span class="nb">max</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">n_j</span><span class="o">*</span><span class="n">bootstrap_frac</span><span class="p">),</span> <span class="mi">1</span><span class="p">),</span>
+                    <span class="n">replace</span><span class="o">=</span><span class="n">bootstrap_replace</span>
+                <span class="p">)</span>
+                <span class="n">features_jk</span> <span class="o">=</span> <span class="n">features</span><span class="p">[</span><span class="n">j</span><span class="p">][</span><span class="n">rand_ids_jk</span><span class="p">]</span>
+                <span class="c1"># Score.</span>
+                <span class="n">score_ijk</span> <span class="o">=</span> <span class="n">score_func</span><span class="p">(</span>
+                    <span class="n">features_ik</span><span class="p">,</span> <span class="n">features_jk</span><span class="p">,</span> <span class="o">**</span><span class="n">scoring_params</span>
+                <span class="p">)</span>
+                <span class="c1"># Store the results.</span>
+                <span class="n">score_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_ijk</span>
+                <span class="n">score_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">,</span> <span class="n">k</span><span class="p">]</span> <span class="o">=</span> <span class="n">score_ijk</span>
+
+
+    <span class="c1">### Prepare the output.</span>
+    <span class="n">output</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;scores&quot;</span><span class="p">:</span> <span class="n">score_matrix</span><span class="p">}</span>
+
+    <span class="c1">### Evaluate statistical significance if necessary.</span>
+    <span class="k">if</span> <span class="n">comparison_iters</span> <span class="o">&gt;</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="c1"># Perform mannwhitneyu test to check if inter-ensembles scores are</span>
+        <span class="c1"># different in a statistically significant way from intra-ensemble</span>
+        <span class="c1"># scores.</span>
+        <span class="n">p_values</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">((</span><span class="n">n</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="p">))</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">scores_i</span> <span class="o">=</span> <span class="n">score_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span>
+                <span class="n">scores_j</span> <span class="o">=</span> <span class="n">score_matrix</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span>
+                <span class="c1"># Get the higher intra-ensemble scores between ensemble</span>
+                <span class="c1"># i and j.</span>
+                <span class="n">scores_ref</span> <span class="o">=</span> <span class="n">scores_i</span> <span class="k">if</span> <span class="n">scores_i</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">&gt;</span> <span class="n">scores_j</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> \
+                                        <span class="k">else</span> <span class="n">scores_j</span>
+                <span class="c1"># Run the statistical test.</span>
+                <span class="n">u_ij</span> <span class="o">=</span> <span class="n">mannwhitneyu</span><span class="p">(</span>
+                    <span class="n">x</span><span class="o">=</span><span class="n">score_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">y</span><span class="o">=</span><span class="n">scores_ref</span><span class="p">,</span>
+                    <span class="n">alternative</span><span class="o">=</span><span class="s1">&#39;greater&#39;</span>
+                <span class="p">)</span>
+                <span class="c1"># Store p-values.</span>
+                <span class="n">p_values</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">p_values</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">u_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">output</span><span class="p">[</span><span class="s2">&quot;p_values&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">p_values</span>
+
+    <span class="k">return</span> <span class="n">output</span></div>
+
+
+
+<span class="c1">######################</span>
+<span class="c1"># Statistical tests. #</span>
+<span class="c1">######################</span>
+
+<div class="viewcode-block" id="percentile_func">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.percentile_func">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">percentile_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="confidence_interval">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.confidence_interval">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">confidence_interval</span><span class="p">(</span>
+        <span class="n">theta_boot</span><span class="p">,</span> <span class="n">theta_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">confidence_level</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;percentile&#39;</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Returns bootstrap confidence intervals.</span>
+<span class="sd">    Adapted from: https://github.com/scipy/scipy/blob/v1.14.0/scipy/stats/_resampling.py</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">alpha</span> <span class="o">=</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">confidence_level</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
+    <span class="n">interval</span> <span class="o">=</span> <span class="n">alpha</span><span class="p">,</span> <span class="mi">1</span><span class="o">-</span><span class="n">alpha</span>
+    <span class="c1"># Calculate confidence interval of statistic</span>
+    <span class="n">ci_l</span> <span class="o">=</span> <span class="n">percentile_func</span><span class="p">(</span><span class="n">theta_boot</span><span class="p">,</span> <span class="n">interval</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+    <span class="n">ci_u</span> <span class="o">=</span> <span class="n">percentile_func</span><span class="p">(</span><span class="n">theta_boot</span><span class="p">,</span> <span class="n">interval</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span><span class="o">*</span><span class="mi">100</span><span class="p">)</span>
+    <span class="k">if</span> <span class="n">method</span> <span class="o">==</span> <span class="s1">&#39;basic&#39;</span><span class="p">:</span>
+        <span class="k">if</span> <span class="n">theta_hat</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">theta_hat</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">theta_boot</span><span class="p">)</span>
+        <span class="n">ci_l</span><span class="p">,</span> <span class="n">ci_u</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">theta_hat</span> <span class="o">-</span> <span class="n">ci_u</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">theta_hat</span> <span class="o">-</span> <span class="n">ci_l</span>
+    <span class="k">return</span> <span class="p">[</span><span class="n">ci_l</span><span class="p">,</span> <span class="n">ci_u</span><span class="p">]</span></div>
+
+
+<div class="viewcode-block" id="process_all_vs_all_output">
+<a class="viewcode-back" href="../../idpet.html#idpet.comparison.process_all_vs_all_output">[docs]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">process_all_vs_all_output</span><span class="p">(</span>
+        <span class="n">comparison_out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
+        <span class="n">confidence_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
+    <span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Takes as input a dictionary produced as output of the `all_vs_all_comparison`</span>
+<span class="sd">    function. If a bootstrap analysis was performed in `all_vs_all_comparison`,</span>
+<span class="sd">    this function will assign bootstrap confidence intervals.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">comparison_out</span><span class="p">,</span> <span class="nb">dict</span><span class="p">):</span>
+        <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
+
+    <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison_out</span><span class="p">)</span> <span class="o">==</span> <span class="mi">1</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;scores&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">comparison_out</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+        <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;single&quot;</span>
+        <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;scores_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">][:,:,</span><span class="mi">0</span><span class="p">]</span>
+    <span class="k">elif</span> <span class="nb">len</span><span class="p">(</span><span class="n">comparison_out</span><span class="p">)</span> <span class="o">==</span> <span class="mi">2</span><span class="p">:</span>
+        <span class="k">if</span> <span class="s2">&quot;scores&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">comparison_out</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+        <span class="k">if</span> <span class="s2">&quot;p_values&quot;</span> <span class="ow">not</span> <span class="ow">in</span> <span class="n">comparison_out</span><span class="p">:</span>
+            <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+        <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;mode&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;bootstrap&quot;</span>
+        <span class="n">scores_mean</span> <span class="o">=</span> <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">]</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">axis</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+        <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;scores_mean&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">scores_mean</span>
+        <span class="n">conf_intervals</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">zeros</span><span class="p">(</span>
+            <span class="p">(</span><span class="n">scores_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">scores_mean</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">],</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="p">)</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">conf_intervals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]):</span>
+            <span class="k">for</span> <span class="n">j</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">conf_intervals</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]):</span>
+                <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;</span> <span class="n">j</span><span class="p">:</span>
+                    <span class="k">continue</span>
+                <span class="n">c_ij</span> <span class="o">=</span> <span class="n">confidence_interval</span><span class="p">(</span>
+                    <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;scores&quot;</span><span class="p">][</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">],</span>
+                    <span class="n">confidence_level</span><span class="o">=</span><span class="n">confidence_level</span>
+                <span class="p">)</span>
+                <span class="n">conf_intervals</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">conf_intervals</span><span class="p">[</span><span class="n">i</span><span class="p">,</span> <span class="n">j</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+                <span class="n">conf_intervals</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">][</span><span class="mi">0</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_ij</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span>
+                <span class="n">conf_intervals</span><span class="p">[</span><span class="n">j</span><span class="p">,</span> <span class="n">i</span><span class="p">][</span><span class="mi">1</span><span class="p">]</span> <span class="o">=</span> <span class="n">c_ij</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span>
+        <span class="n">comparison_out</span><span class="p">[</span><span class="s2">&quot;confidence_intervals&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">conf_intervals</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">comparison_out</span></div>
+
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Hamidreza Ghafouri, Giacomo Janson, Silvio C.E. Tosatto, Alexander Miguel Monzon.</p>
+  </div>
+
+  Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    provided by <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

@@ -9,6 +9,7 @@
   <title>Global analysis &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
@@ -16,6 +17,7 @@
       <script src="_static/documentation_options.js?v=01f34227"></script>
       <script src="_static/doctools.js?v=9bcbadda"></script>
       <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="_static/design-tabs.js?v=f930bc37"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -110,9 +112,9 @@
 </ul>
 <section id="initialize-the-analysis">
 <h2>Initialize the analysis<a class="headerlink" href="#initialize-the-analysis" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">dpet.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpet.ensemble_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">dpet.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Visualization</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Visualization</span>
 
 <span class="n">ensembles</span> <span class="o">=</span> <span class="p">[</span>
  <span class="n">Ensemble</span><span class="p">(</span><span class="s1">&#39;PED00156e001&#39;</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;ped&#39;</span><span class="p">),</span> <span class="c1">#The ensemble derived from Random pool</span>

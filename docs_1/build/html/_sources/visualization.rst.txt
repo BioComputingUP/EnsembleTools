@@ -5,7 +5,7 @@ visualization
 Visualization class
 -------------------------
 
-.. automodule:: dpet.visualization
+.. automodule:: idpet.visualization
    :members:
    :undoc-members:
    :show-inheritance:

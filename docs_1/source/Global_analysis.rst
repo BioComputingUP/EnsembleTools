@@ -11,13 +11,17 @@ To illustrate the output of our functions, we have chosen the analysis of the SH
 - **PED00158**: This ensemble is a combination of conformations from the RANDOM and ENSEMBLE pools, offering greater conformational diversity.
 
 
+.. _sh3_example.ipynb: https://github.com/your-username/your-repo/blob/main/sh3_example.ipynb
+
+
+
 Initialize the analysis
 -----------------------
 .. code-block:: python
 
-   from dpet.ensemble import Ensemble
-   from dpet.ensemble_analysis import EnsembleAnalysis
-   from dpet.visualization import Visualization
+   from idpet.ensemble import Ensemble
+   from idpet.ensemble_analysis import EnsembleAnalysis
+   from idpet.visualization import Visualization
 
    ensembles = [
     Ensemble('PED00156e001', database='ped'), #The ensemble derived from Random pool

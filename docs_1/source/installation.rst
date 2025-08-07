@@ -24,6 +24,6 @@ Finally, you can install IDPET using pip.
 
 .. code-block:: shell
 
-    pip install dpet
+    pip install idpet
 
 

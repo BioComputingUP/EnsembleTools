@@ -3,7 +3,7 @@ ensemble_compariosn
 
 
 
-.. automodule:: dpet.comparison
+.. automodule:: idpet.comparison
    :members:
    :undoc-members:
    :show-inheritance:
