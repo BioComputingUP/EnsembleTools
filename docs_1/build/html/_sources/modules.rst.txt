@@ -1,5 +1,5 @@
-dpet
-====
+Package Overview
+================
 
 .. toctree::
    :maxdepth: 4
