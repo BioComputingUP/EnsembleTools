@@ -24,7 +24,7 @@ IDPET Documentation
 
 Changelog
 ==========
-*Last updated: June 2024*
+*Last updated: August 2025*
 
 Indices and tables
 ==================

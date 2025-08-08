@@ -8,9 +8,69 @@ Demo
 
 We designed the IDPET Python package to facilitate the study and analysis of conformational ensembles of intrinsically disordered proteins. These proteins, known for their dynamic and highly variable structures, play a fundamental role in various biological processes.
 
-Here, we highlight four different types of analyses that can be performed using IDPET.
+Here, we highlight four different types of analyses that can be performed using IDPET. For more details you can also check the jupyter notebooks provided in the github repository.  
+
+.. rubric:: Notebooks Overview
 
 
+Here’s a summary of the example notebooks available in the github repository:
+
+.. grid:: 1 1 2 3
+   :gutter: 2
+
+   .. card:: ``comparing_ensembles``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/comparing_ensembles.ipynb
+      :link-type: url
+
+      Compare multiple conformational ensembles using selected metrics and visualizations.
+
+   .. card:: ``featurization``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/featurization.ipynb
+      :link-type: url
+
+      Generate numerical features from protein ensembles for downstream analysis.
+
+   .. card:: ``kpca_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/kpca_analysis.ipynb
+      :link-type: url
+
+      Perform Kernel PCA to capture non-linear variance in ensemble structures.
+
+   .. card:: ``loading_data``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/loading_data.ipynb
+      :link-type: url
+
+      Load and preprocess ensemble data from various formats.
+
+   .. card:: ``pca_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/pca_analysis.ipynb
+      :link-type: url
+
+      Principal Component Analysis (PCA) for dimensionality reduction and visualization.
+
+   .. card:: ``plot_customization``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/plot_customization.ipynb
+      :link-type: url
+
+      Customize plots for clarity and publication-quality visualizations.
+
+   .. card:: ``sh3_example``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/sh3_example.ipynb
+      :link-type: url
+
+      Case study: global and local analysis of the SH3 domain of the Drkn protein.
+
+   .. card:: ``tsne_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/tsne_analysis.ipynb
+      :link-type: url
+
+      t-SNE embedding of ensemble features to explore local structure.
+
+   .. card:: ``umap_analysis``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/umap_analysis.ipynb
+      :link-type: url
+
+      UMAP embedding for global manifold learning and visualization.
 
 
 
@@ -68,11 +128,6 @@ Here, we highlight four different types of analyses that can be performed using 
     <img src="_static/images/icons/comp_ensambles.png" alt="comparing_ensamble" title="We have explored techniques for comparing and analyzing datasets, focusing on the calculation of various metrics " onclick="redirectToPage('comparing_ensambles.html')" style="cursor: pointer;width: 200px; height: 200px;">
     <div style="font-size: 12px; color: #001;">Ensemble Comparison</div>
    </div>
-
-
-
-
-
 
 .. toctree::
    :hidden:
