@@ -8,6 +8,7 @@
   <title>idpet.dimensionality_reduction &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -15,6 +16,7 @@
       <script src="../../_static/documentation_options.js?v=01f34227"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -48,7 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_compariosn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">dpet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Package Overview</a></li>
 </ul>
 
         </div>
@@ -89,10 +91,10 @@
 
 
 <div class="viewcode-block" id="DimensionalityReduction">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.DimensionalityReduction">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.DimensionalityReduction">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DimensionalityReduction</span><span class="p">(</span><span class="n">ABC</span><span class="p">):</span>
 <div class="viewcode-block" id="DimensionalityReduction.fit">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.DimensionalityReduction.fit">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.DimensionalityReduction.fit">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -111,7 +113,7 @@
 
 
 <div class="viewcode-block" id="DimensionalityReduction.transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.DimensionalityReduction.transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.DimensionalityReduction.transform">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -135,7 +137,7 @@
 
     
 <div class="viewcode-block" id="DimensionalityReduction.fit_transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.DimensionalityReduction.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.DimensionalityReduction.fit_transform">[docs]</a>
     <span class="nd">@abstractmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -160,7 +162,7 @@
 
 
 <div class="viewcode-block" id="PCAReduction">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.PCAReduction">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.PCAReduction">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">PCAReduction</span><span class="p">(</span><span class="n">DimensionalityReduction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Principal Component Analysis (PCA) for dimensionality reduction.</span>
@@ -175,7 +177,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">n_components</span> <span class="o">=</span> <span class="n">n_components</span>
 
 <div class="viewcode-block" id="PCAReduction.fit">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.PCAReduction.fit">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.PCAReduction.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">fit</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -183,14 +185,14 @@
 
     
 <div class="viewcode-block" id="PCAReduction.transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.PCAReduction.transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.PCAReduction.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">reduce_dim_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">reduce_dim_data</span></div>
 
     
 <div class="viewcode-block" id="PCAReduction.fit_transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.PCAReduction.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.PCAReduction.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">pca</span> <span class="o">=</span> <span class="n">PCA</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">n_components</span><span class="p">)</span>
         <span class="n">transformed</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
@@ -199,7 +201,7 @@
 
 
 <div class="viewcode-block" id="TSNEReduction">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.TSNEReduction">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.TSNEReduction">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">TSNEReduction</span><span class="p">(</span><span class="n">DimensionalityReduction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for performing dimensionality reduction using t-SNE algorithm.</span>
@@ -250,7 +252,7 @@
             <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">()</span>
 
 <div class="viewcode-block" id="TSNEReduction.fit">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.TSNEReduction.fit">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.TSNEReduction.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_tsne</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
@@ -258,13 +260,13 @@
         <span class="c1"># return super().fit(data)</span>
     
 <div class="viewcode-block" id="TSNEReduction.transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.TSNEReduction.transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.TSNEReduction.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="TSNEReduction.fit_transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.TSNEReduction.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.TSNEReduction.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">:</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">data</span> <span class="o">=</span> <span class="n">data</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s2">&quot;tsne is running...&quot;</span><span class="p">)</span>
@@ -316,7 +318,7 @@
 
 
 <div class="viewcode-block" id="UMAPReduction">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.UMAPReduction">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.UMAPReduction">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UMAPReduction</span><span class="p">(</span><span class="n">DimensionalityReduction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for performing dimensionality reduction using Uniform Manifold Approximation and Projection (UMAP) algorithm.</span>
@@ -359,20 +361,20 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">random_state</span> <span class="o">=</span> <span class="n">random_state</span>
     
 <div class="viewcode-block" id="UMAPReduction.fit">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.UMAPReduction.fit">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.UMAPReduction.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">best_embedding</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="bp">self</span></div>
 
     
 <div class="viewcode-block" id="UMAPReduction.transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.UMAPReduction.transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.UMAPReduction.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 
 
 <div class="viewcode-block" id="UMAPReduction.fit_transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.UMAPReduction.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.UMAPReduction.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="s1">&#39;UMAP is running...&#39;</span><span class="p">)</span>
         <span class="k">for</span> <span class="n">n_neighbor</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">n_neighbors</span><span class="p">:</span>
@@ -399,7 +401,7 @@
 
     
 <div class="viewcode-block" id="UMAPReduction.cluster">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.UMAPReduction.cluster">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.UMAPReduction.cluster">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">cluster</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embedding</span><span class="p">,</span> <span class="n">n_neighbor</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="n">Tuple</span><span class="p">]:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Perform clustering using KMeans algorithm for each number of clusters in the specified range.</span>
@@ -429,7 +431,7 @@
 
     
 <div class="viewcode-block" id="KPCAReduction">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.KPCAReduction">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.KPCAReduction">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">KPCAReduction</span><span class="p">(</span><span class="n">DimensionalityReduction</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Class for performing dimensionality reduction using Kernel PCA (KPCA) algorithm.</span>
@@ -459,7 +461,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">kernel</span> <span class="o">=</span> <span class="n">kernel</span>
 
 <div class="viewcode-block" id="KPCAReduction.fit">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.KPCAReduction.fit">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.KPCAReduction.fit">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
         <span class="c1"># Use angular features and a custom similarity function.</span>
         <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">circular</span><span class="p">:</span>
@@ -481,21 +483,21 @@
 
     
 <div class="viewcode-block" id="KPCAReduction.transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.KPCAReduction.transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.KPCAReduction.transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="n">reduce_dim_data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pca</span><span class="o">.</span><span class="n">transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">reduce_dim_data</span></div>
 
     
 <div class="viewcode-block" id="KPCAReduction.fit_transform">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.KPCAReduction.fit_transform">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.KPCAReduction.fit_transform">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">fit_transform</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
         <span class="k">return</span> <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">data</span><span class="p">)</span></div>
 </div>
 
 
 <div class="viewcode-block" id="DimensionalityReductionFactory">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.DimensionalityReductionFactory">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.DimensionalityReductionFactory">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">DimensionalityReductionFactory</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Factory class for creating instances of various dimensionality reduction algorithms.</span>
@@ -507,7 +509,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
 
 <div class="viewcode-block" id="DimensionalityReductionFactory.get_reducer">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.DimensionalityReductionFactory.get_reducer">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.DimensionalityReductionFactory.get_reducer">[docs]</a>
     <span class="nd">@staticmethod</span>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_reducer</span><span class="p">(</span><span class="n">method</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">DimensionalityReduction</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
@@ -545,7 +547,7 @@
 <span class="c1">#----------------------------------------------------------------------</span>
 
 <div class="viewcode-block" id="unit_vectorize">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.unit_vectorize">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.unit_vectorize">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unit_vectorize</span><span class="p">(</span><span class="n">a</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Convert an array with (\*, N) angles in an array with (\*, N, 2) sine and</span>
@@ -556,7 +558,7 @@
 
 
 <div class="viewcode-block" id="unit_vector_distance">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.unit_vector_distance">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.unit_vector_distance">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unit_vector_distance</span><span class="p">(</span><span class="n">a0</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">a1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">sqrt</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute the sum of distances between two (\*, N) arrays storing the</span>
@@ -575,7 +577,7 @@
 
 
 <div class="viewcode-block" id="unit_vector_kernel">
-<a class="viewcode-back" href="../../dpet.html#idpet.dimensionality_reduction.unit_vector_kernel">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.dimensionality_reduction.unit_vector_kernel">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">unit_vector_kernel</span><span class="p">(</span><span class="n">a1</span><span class="p">,</span> <span class="n">a2</span><span class="p">,</span> <span class="n">gamma</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Compute unit vector kernel.</span>

@@ -8,6 +8,7 @@
   <title>idpet.ensemble &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -15,6 +16,7 @@
       <script src="../../_static/documentation_options.js?v=01f34227"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -48,7 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_compariosn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">dpet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Package Overview</a></li>
 </ul>
 
         </div>
@@ -91,7 +93,7 @@
 
 
 <div class="viewcode-block" id="Ensemble">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble">[docs]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Ensemble</span><span class="p">():</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Represents a molecular dynamics ensemble.</span>
@@ -163,7 +165,7 @@
 
 
 <div class="viewcode-block" id="Ensemble.load_trajectory">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.load_trajectory">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.load_trajectory">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">load_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data_dir</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Load a trajectory for the ensemble.</span>
@@ -261,7 +263,7 @@
         <span class="bp">self</span><span class="o">.</span><span class="n">atom_selector</span> <span class="o">=</span> <span class="s2">&quot;all&quot;</span> <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">coarse_grained</span> <span class="k">else</span> <span class="s2">&quot;name == CA&quot;</span>
 
 <div class="viewcode-block" id="Ensemble.random_sample_trajectory">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.random_sample_trajectory">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.random_sample_trajectory">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">random_sample_trajectory</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">sample_size</span><span class="p">:</span> <span class="nb">int</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Randomly sample frames from the original trajectory.</span>
@@ -288,7 +290,7 @@
 
         
 <div class="viewcode-block" id="Ensemble.extract_features">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.extract_features">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.extract_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">extract_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featurization</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extract features from the trajectory using the specified featurization method.</span>
@@ -358,7 +360,7 @@
 
 
 <div class="viewcode-block" id="Ensemble.get_features">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.get_features">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.get_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">featurization</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">normalize</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Sequence</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Get features from the trajectory using the specified featurization method.</span>
@@ -431,7 +433,7 @@
 
         
 <div class="viewcode-block" id="Ensemble.normalize_features">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.normalize_features">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.normalize_features">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">normalize_features</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">mean</span><span class="p">:</span> <span class="nb">float</span><span class="p">,</span> <span class="n">std</span><span class="p">:</span> <span class="nb">float</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Normalize the extracted features using the provided mean and standard deviation.</span>
@@ -515,13 +517,13 @@
         <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Selected residues from ensemble </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">code</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
     
 <div class="viewcode-block" id="Ensemble.get_num_residues">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.get_num_residues">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.get_num_residues">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_num_residues</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">trajectory</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">n_residues</span></div>
 
 
 <div class="viewcode-block" id="Ensemble.get_chains_from_pdb">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.get_chains_from_pdb">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.get_chains_from_pdb">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_chains_from_pdb</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Extracts unique chain IDs from a PDB file.</span>
@@ -563,7 +565,7 @@
 
     
 <div class="viewcode-block" id="Ensemble.get_size">
-<a class="viewcode-back" href="../../ensemble.html#idpet.ensemble.Ensemble.get_size">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.ensemble.Ensemble.get_size">[docs]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">get_size</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Return the number of conformations in an ensemble, if data has been</span>
 <span class="sd">        loaded.&quot;&quot;&quot;</span>

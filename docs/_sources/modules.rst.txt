@@ -2,6 +2,8 @@ Package Overview
 ================
 
 .. toctree::
-   :maxdepth: 4
+   :maxdepth: 1
+   :caption: Package Overview
+   :includehidden:
 
    idpet

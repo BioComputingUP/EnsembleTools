@@ -8,6 +8,7 @@
   <title>idpet.coord &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
@@ -15,6 +16,7 @@
       <script src="../../_static/documentation_options.js?v=01f34227"></script>
       <script src="../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
     <link rel="search" title="Search" href="../../search.html" /> 
@@ -48,7 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_compariosn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../modules.html">dpet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../modules.html">Package Overview</a></li>
 </ul>
 
         </div>
@@ -80,7 +82,7 @@
 <span class="kn">import</span><span class="w"> </span><span class="nn">mdtraj</span>
 
 <div class="viewcode-block" id="get_distance_matrix">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.get_distance_matrix">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.get_distance_matrix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_distance_matrix</span><span class="p">(</span><span class="n">xyz</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets an ensemble of xyz conformations with shape (N, L, 3) and</span>
@@ -90,7 +92,7 @@
 
 
 <div class="viewcode-block" id="get_contact_map">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.get_contact_map">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.get_contact_map">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_contact_map</span><span class="p">(</span><span class="n">dmap</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">,</span> <span class="n">pseudo_count</span><span class="o">=</span><span class="mf">0.01</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Gets a trajectory of distance maps with shape (N, L, L) and</span>
@@ -103,7 +105,7 @@
 
 
 <div class="viewcode-block" id="calc_chain_dihedrals">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.calc_chain_dihedrals">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.calc_chain_dihedrals">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">calc_chain_dihedrals</span><span class="p">(</span><span class="n">xyz</span><span class="p">,</span> <span class="n">norm</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
     <span class="c1"># not sure where this function is used</span>
     <span class="n">r_sel</span> <span class="o">=</span> <span class="n">xyz</span>
@@ -124,7 +126,7 @@
     
 
 <div class="viewcode-block" id="create_consecutive_indices_matrix">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.create_consecutive_indices_matrix">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.create_consecutive_indices_matrix">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">create_consecutive_indices_matrix</span><span class="p">(</span><span class="n">ca_indices</span><span class="p">):</span>
 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function gets the CA indices of (L,) shape and </span>
@@ -148,7 +150,7 @@
 
 
 <div class="viewcode-block" id="contact_probability_map">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.contact_probability_map">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.contact_probability_map">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">contact_probability_map</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="s1">&#39;ca&#39;</span><span class="p">,</span> <span class="n">contact</span><span class="o">=</span><span class="s1">&#39;all&#39;</span><span class="p">,</span> <span class="n">threshold</span><span class="o">=</span><span class="mf">0.8</span><span class="p">):</span>
     <span class="n">cmap_out</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">compute_contacts</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span> <span class="n">contacts</span><span class="o">=</span><span class="n">contact</span><span class="p">,</span> <span class="n">scheme</span><span class="o">=</span><span class="n">scheme</span><span class="p">)</span>
     <span class="n">distances</span><span class="p">,</span> <span class="n">res_pair</span> <span class="o">=</span> <span class="n">cmap_out</span>
@@ -160,7 +162,7 @@
 
 
 <div class="viewcode-block" id="dict_phi_psi_normal_cases">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.dict_phi_psi_normal_cases">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.dict_phi_psi_normal_cases">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">dict_phi_psi_normal_cases</span><span class="p">(</span><span class="n">dict_phi_psi</span><span class="p">):</span>
     <span class="n">dict_phi_psi_normal_case</span><span class="o">=</span><span class="p">{}</span>
     <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">dict_phi_psi</span><span class="o">.</span><span class="n">keys</span><span class="p">():</span>
@@ -171,7 +173,7 @@
 
 
 <div class="viewcode-block" id="split_dictionary_phipsiangles">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.split_dictionary_phipsiangles">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.split_dictionary_phipsiangles">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">split_dictionary_phipsiangles</span><span class="p">(</span><span class="n">features_dict</span><span class="p">):</span>
     <span class="n">dict_phi_psi</span><span class="o">=</span><span class="p">{}</span>
     <span class="k">for</span> <span class="n">ens_code</span><span class="p">,</span> <span class="n">features</span> <span class="ow">in</span> <span class="n">features_dict</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
@@ -184,7 +186,7 @@
 
 
 <div class="viewcode-block" id="ss_measure_disorder">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.ss_measure_disorder">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.ss_measure_disorder">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">ss_measure_disorder</span><span class="p">(</span><span class="n">features_dict</span><span class="p">:</span><span class="nb">dict</span><span class="p">):</span>
 <span class="w">    </span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;This function accepts the dictionary of phi-psi arrays</span>
@@ -224,7 +226,7 @@
 
 
 <div class="viewcode-block" id="site_specific_order_parameter">
-<a class="viewcode-back" href="../../dpet.html#idpet.coord.site_specific_order_parameter">[docs]</a>
+<a class="viewcode-back" href="../../idpet.html#idpet.coord.site_specific_order_parameter">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">site_specific_order_parameter</span><span class="p">(</span><span class="n">ca_xyz_dict</span><span class="p">:</span> <span class="nb">dict</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span> 
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Computes site-specific order parameters for a set of protein conformations.</span>
