@@ -8,6 +8,7 @@
   <title>idpet.data.topology &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -15,6 +16,7 @@
       <script src="../../../_static/documentation_options.js?v=01f34227"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -48,7 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">ensemble_compariosn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Package Overview</a></li>
 </ul>
 
         </div>
@@ -97,7 +99,7 @@
 <span class="p">}</span>
 
 <div class="viewcode-block" id="get_ca_topology">
-<a class="viewcode-back" href="../../../dpet.data.html#idpet.data.topology.get_ca_topology">[docs]</a>
+<a class="viewcode-back" href="../../../idpet.data.html#idpet.data.topology.get_ca_topology">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_ca_topology</span><span class="p">(</span><span class="n">sequence</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span> <span class="n">bead_name</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;CA&quot;</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Topology</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    input: amino acid sequence.</span>
@@ -112,7 +114,7 @@
 
 
 <div class="viewcode-block" id="slice_traj_to_com">
-<a class="viewcode-back" href="../../../dpet.data.html#idpet.data.topology.slice_traj_to_com">[docs]</a>
+<a class="viewcode-back" href="../../../idpet.data.html#idpet.data.topology.slice_traj_to_com">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">slice_traj_to_com</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">:</span>
     <span class="n">ha_ids</span> <span class="o">=</span> <span class="p">[</span><span class="n">a</span><span class="o">.</span><span class="n">index</span> <span class="k">for</span> <span class="n">a</span> <span class="ow">in</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">atoms</span> <span class="k">if</span> \
               <span class="n">a</span><span class="o">.</span><span class="n">residue</span><span class="o">.</span><span class="n">name</span> <span class="ow">in</span> <span class="n">aa_three_letters</span> <span class="ow">and</span> \

@@ -8,6 +8,7 @@
   <title>idpet.featurization.utils &mdash; IDPET 0.1.0 documentation</title>
       <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
@@ -15,6 +16,7 @@
       <script src="../../../_static/documentation_options.js?v=01f34227"></script>
       <script src="../../../_static/doctools.js?v=9bcbadda"></script>
       <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
     <link rel="search" title="Search" href="../../../search.html" /> 
@@ -48,7 +50,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">visualization</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">ensemble_compariosn</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">dpet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Package Overview</a></li>
 </ul>
 
         </div>
@@ -80,7 +82,7 @@
 
 
 <div class="viewcode-block" id="get_triu_indices">
-<a class="viewcode-back" href="../../../dpet.featurization.html#idpet.featurization.utils.get_triu_indices">[docs]</a>
+<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.utils.get_triu_indices">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_triu_indices</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">List</span><span class="p">[</span><span class="nb">list</span><span class="p">]:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the upper triangle indices of a square matrix with specified minimum and maximum separations.</span>
@@ -117,7 +119,7 @@
 
 
 <div class="viewcode-block" id="get_max_sep">
-<a class="viewcode-back" href="../../../dpet.featurization.html#idpet.featurization.utils.get_max_sep">[docs]</a>
+<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.utils.get_max_sep">[docs]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">get_max_sep</span><span class="p">(</span><span class="n">L</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">])</span> <span class="o">-&gt;</span> <span class="nb">int</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Get the maximum separation between indices.</span>
