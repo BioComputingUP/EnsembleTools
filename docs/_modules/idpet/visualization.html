@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>idpet.visualization &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=01f34227"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=2389946f"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Package Overview</a></li>
 </ul>
 
@@ -78,31 +78,29 @@
            <div itemprop="articleBody">
              
   <h1>Source code for idpet.visualization</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">cProfile</span><span class="w"> </span><span class="kn">import</span> <span class="n">label</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib</span><span class="w"> </span><span class="kn">import</span> <span class="n">colors</span><span class="p">,</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.colors</span><span class="w"> </span><span class="kn">import</span> <span class="n">LogNorm</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">gaussian_kde</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">sklearn.cluster</span><span class="w"> </span><span class="kn">import</span> <span class="n">KMeans</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">mdtraj</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.distances</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.angles</span><span class="w"> </span><span class="kn">import</span> <span class="n">featurize_a_angle</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.coord</span><span class="w"> </span><span class="kn">import</span> <span class="o">*</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.glob</span><span class="w"> </span><span class="kn">import</span> <span class="n">compute_asphericity</span><span class="p">,</span> <span class="n">compute_prolateness</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.comparison</span><span class="w"> </span><span class="kn">import</span> <span class="n">scores_data</span><span class="p">,</span> <span class="n">process_all_vs_all_output</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">logger</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">plotly.express</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">px</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">pandas</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pd</span>
+<span></span><span class="kn">from</span> <span class="nn">cProfile</span> <span class="kn">import</span> <span class="n">label</span>
+<span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
+<span class="kn">from</span> <span class="nn">matplotlib</span> <span class="kn">import</span> <span class="n">colors</span><span class="p">,</span> <span class="n">pyplot</span> <span class="k">as</span> <span class="n">plt</span>
+<span class="kn">from</span> <span class="nn">matplotlib.colors</span> <span class="kn">import</span> <span class="n">LogNorm</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">gaussian_kde</span>
+<span class="kn">from</span> <span class="nn">sklearn.cluster</span> <span class="kn">import</span> <span class="n">KMeans</span>
+<span class="kn">import</span> <span class="nn">mdtraj</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.distances</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">idpet.ensemble_analysis</span> <span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.angles</span> <span class="kn">import</span> <span class="n">featurize_a_angle</span>
+<span class="kn">from</span> <span class="nn">idpet.coord</span> <span class="kn">import</span> <span class="o">*</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.glob</span> <span class="kn">import</span> <span class="n">compute_asphericity</span><span class="p">,</span> <span class="n">compute_prolateness</span>
+<span class="kn">from</span> <span class="nn">idpet.comparison</span> <span class="kn">import</span> <span class="n">scores_data</span><span class="p">,</span> <span class="n">process_all_vs_all_output</span>
+<span class="kn">from</span> <span class="nn">idpet.utils</span> <span class="kn">import</span> <span class="n">logger</span>
+<span class="kn">import</span> <span class="nn">plotly.express</span> <span class="k">as</span> <span class="nn">px</span>
+<span class="kn">import</span> <span class="nn">pandas</span> <span class="k">as</span> <span class="nn">pd</span>
 
 <span class="n">PLOT_DIR</span> <span class="o">=</span> <span class="s2">&quot;plots&quot;</span>
 
-<div class="viewcode-block" id="plot_histogram">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.plot_histogram">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_histogram</span><span class="p">(</span>
+<div class="viewcode-block" id="plot_histogram"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.plot_histogram">[docs]</a><span class="k">def</span> <span class="nf">plot_histogram</span><span class="p">(</span>
         <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -176,8 +174,7 @@
 
     <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_hist_bins</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_hist_bins</span><span class="p">(</span><span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">bins</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>  <span class="c1"># Make a range.</span>
         <span class="k">if</span> <span class="nb">range</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">_min</span> <span class="o">=</span> <span class="nb">min</span><span class="p">([</span><span class="nb">min</span><span class="p">(</span><span class="n">x_i</span><span class="p">)</span> <span class="k">for</span> <span class="n">x_i</span> <span class="ow">in</span> <span class="n">data</span><span class="p">])</span>
@@ -190,9 +187,7 @@
         <span class="n">_bins</span> <span class="o">=</span> <span class="n">bins</span>
     <span class="k">return</span> <span class="n">_bins</span>
 
-<div class="viewcode-block" id="plot_violins">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.plot_violins">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_violins</span><span class="p">(</span>
+<div class="viewcode-block" id="plot_violins"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.plot_violins">[docs]</a><span class="k">def</span> <span class="nf">plot_violins</span><span class="p">(</span>
         <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span>
         <span class="n">data</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">],</span>
         <span class="n">labels</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -227,7 +222,7 @@
 <span class="sd">    plt.Axes</span>
 <span class="sd">        Axis objects for the histogram plot of original labels.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">matplotlib.lines</span><span class="w"> </span><span class="kn">import</span> <span class="n">Line2D</span>
+    <span class="kn">from</span> <span class="nn">matplotlib.lines</span> <span class="kn">import</span> <span class="n">Line2D</span>
 
     <span class="c1"># Define the list of colors you want to provide</span>
     <span class="n">mycolors</span> <span class="o">=</span> <span class="p">[</span><span class="s1">&#39;purple&#39;</span><span class="p">,</span> <span class="s1">&#39;green&#39;</span><span class="p">,</span> <span class="s1">&#39;blue&#39;</span><span class="p">]</span>  <span class="c1"># You can customize this list</span>
@@ -265,10 +260,7 @@
     <span class="n">ax</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="n">title</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="plot_comparison_matrix">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.plot_comparison_matrix">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">plot_comparison_matrix</span><span class="p">(</span>
+<div class="viewcode-block" id="plot_comparison_matrix"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.plot_comparison_matrix">[docs]</a><span class="k">def</span> <span class="nf">plot_comparison_matrix</span><span class="p">(</span>
         <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">,</span>
         <span class="n">comparison_out</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">codes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">],</span>
@@ -338,7 +330,7 @@
 <span class="sd">    with the ensemble labels.</span>
 
 <span class="sd">    &quot;&quot;&quot;</span>
-    <span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.axes_grid1</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_axes_locatable</span>
+    <span class="kn">from</span> <span class="nn">mpl_toolkits.axes_grid1</span> <span class="kn">import</span> <span class="n">make_axes_locatable</span>
 
     
     <span class="n">comparison_out</span> <span class="o">=</span> <span class="n">process_all_vs_all_output</span><span class="p">(</span>
@@ -384,19 +376,18 @@
 
     <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_random_a_angle_ids</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prot_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+<span class="k">def</span> <span class="nf">_get_random_a_angle_ids</span><span class="p">(</span><span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span> <span class="n">prot_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">rand_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">prot_len</span><span class="o">-</span><span class="mi">3</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="n">torsion_ids</span> <span class="o">=</span> <span class="n">_get_a_angle_ids</span><span class="p">(</span><span class="n">rand_ids</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">torsion_ids</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_a_angle_ids</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_a_angle_ids</span><span class="p">(</span><span class="n">ids</span><span class="p">):</span>
     <span class="n">torsion_ids</span> <span class="o">=</span> <span class="p">[]</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="n">ids</span><span class="p">:</span>
         <span class="n">torsion_ids</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">i</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">2</span><span class="p">,</span> <span class="n">i</span><span class="o">+</span><span class="mi">3</span><span class="p">])</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">torsion_ids</span><span class="p">)</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_random_pairs</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_get_random_pairs</span><span class="p">(</span>
         <span class="n">n</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">prot_len</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span>
@@ -406,12 +397,12 @@
     <span class="n">rand_ids</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">random</span><span class="o">.</span><span class="n">choice</span><span class="p">(</span><span class="n">pairs</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">],</span> <span class="n">n</span><span class="p">,</span> <span class="n">replace</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">pairs</span><span class="p">[</span><span class="n">rand_ids</span><span class="p">]</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_to_array</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_to_array</span><span class="p">(</span><span class="n">x</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">asarray</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
 
 <span class="n">_phi_psi_offsets</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;phi&quot;</span><span class="p">:</span> <span class="mi">1</span><span class="p">,</span> <span class="s2">&quot;psi&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_max_plots_in_grid</span><span class="p">(</span><span class="n">min_len</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">_get_max_plots_in_grid</span><span class="p">(</span><span class="n">min_len</span><span class="p">,</span> <span class="n">feature</span><span class="p">):</span>
     <span class="k">if</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;ca_dist&quot;</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">min_len</span><span class="o">*</span><span class="p">(</span><span class="n">min_len</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span><span class="o">/</span><span class="mi">2</span>
     <span class="k">elif</span> <span class="n">feature</span> <span class="o">==</span> <span class="s2">&quot;a_angle&quot;</span><span class="p">:</span>
@@ -429,9 +420,7 @@
     <span class="s2">&quot;fontsize&quot;</span><span class="p">:</span> <span class="mi">8</span>
 <span class="p">}</span>
 
-<div class="viewcode-block" id="Visualization">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization">[docs]</a>
-<span class="k">class</span><span class="w"> </span><span class="nc">Visualization</span><span class="p">:</span>
+<div class="viewcode-block" id="Visualization"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization">[docs]</a><span class="k">class</span> <span class="nc">Visualization</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Visualization class for ensemble analysis.</span>
 
@@ -439,12 +428,12 @@
 <span class="sd">        analysis (EnsembleAnalysis): An instance of EnsembleAnalysis providing data for visualization.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analysis</span><span class="p">:</span> <span class="n">EnsembleAnalysis</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">analysis</span><span class="p">:</span> <span class="n">EnsembleAnalysis</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span> <span class="o">=</span> <span class="n">analysis</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">plot_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">output_dir</span><span class="p">,</span> <span class="n">PLOT_DIR</span><span class="p">)</span>
         <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_index_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_index_models</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">analysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span>
         <span class="n">model_indexes</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="n">analysis</span><span class="o">.</span><span class="n">trajectories</span><span class="p">:</span>
@@ -452,7 +441,7 @@
                 <span class="n">model_indexes</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;model</span><span class="si">{</span><span class="n">frame</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s1">_</span><span class="si">{</span><span class="n">ensemble</span><span class="si">}</span><span class="s1">&#39;</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">model_indexes</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_tsne_scatter</span><span class="p">(</span>
+    <span class="k">def</span> <span class="nf">_tsne_scatter</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">color_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rg&quot;</span><span class="p">,</span>
             <span class="n">kde_by_ensemble</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -615,9 +604,7 @@
 
         <span class="k">return</span> <span class="n">ax</span>
     
-<div class="viewcode-block" id="Visualization.dimensionality_reduction_scatter">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.dimensionality_reduction_scatter">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">dimensionality_reduction_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.dimensionality_reduction_scatter"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.dimensionality_reduction_scatter">[docs]</a>    <span class="k">def</span> <span class="nf">dimensionality_reduction_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                                          <span class="n">color_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rg&quot;</span><span class="p">,</span> 
                                          <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
                                          <span class="n">ax</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -675,8 +662,7 @@
         <span class="k">else</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">NotImplementedError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Scatter plot for method &#39;</span><span class="si">{</span><span class="n">method</span><span class="si">}</span><span class="s2">&#39; is not implemented. Please select between &#39;tsne&#39;, &#39;dimenfix&#39;, and &#39;umap&#39;.&quot;</span><span class="p">)</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_umap_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+    <span class="k">def</span> <span class="nf">_umap_scatter</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                          <span class="n">color_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rg&quot;</span><span class="p">,</span> 
                          <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                          <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span><span class="p">,</span> 
@@ -829,7 +815,7 @@
 
         <span class="k">return</span> <span class="n">axes</span>
     
-    <span class="k">def</span><span class="w"> </span><span class="nf">_scatter_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+    <span class="k">def</span> <span class="nf">_scatter_3d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                     <span class="n">color_by</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;rg&quot;</span><span class="p">,</span> 
                     <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
                     <span class="n">ax</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -846,8 +832,8 @@
         <span class="k">elif</span> <span class="n">color_by</span> <span class="o">==</span> <span class="s1">&#39;sasa&#39;</span><span class="p">:</span>
             <span class="n">colorbar_title</span> <span class="o">=</span> <span class="s1">&#39;SASA [nm^2]&#39;</span>
 
-        <span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span>
-        <span class="kn">from</span><span class="w"> </span><span class="nn">mpl_toolkits.mplot3d</span><span class="w"> </span><span class="kn">import</span> <span class="n">Axes3D</span>
+        <span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
+        <span class="kn">from</span> <span class="nn">mpl_toolkits.mplot3d</span> <span class="kn">import</span> <span class="n">Axes3D</span>
         <span class="n">analysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span>
 
         <span class="k">if</span> <span class="n">analysis</span><span class="o">.</span><span class="n">reduce_dim_method</span> <span class="ow">not</span> <span class="ow">in</span> <span class="p">(</span><span class="s2">&quot;dimenfix&quot;</span><span class="p">,</span> <span class="s2">&quot;umap&quot;</span><span class="p">):</span>
@@ -939,9 +925,9 @@
         <span class="k">if</span> <span class="n">plotly</span><span class="p">:</span>
             <span class="c1"># df = pd.DataFrame({&#39;x&#39;:analysis.reducer.best_tsne[:, 0], &#39;y&#39;: analysis.reducer.best_tsne[:, 1], &#39;index&#39;: range(len(analysis.reducer.best_tsne[:, 0]))})</span>
             <span class="c1"># fig = px.scatter(x=analysis.transformed_data[:, 0], y=analysis.transformed_data[:, 1], color=colors, hover_data={&#39;index&#39;:self._index_models()} )</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">plotly.colors</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">pc</span>
-            <span class="kn">from</span><span class="w"> </span><span class="nn">plotly.subplots</span><span class="w"> </span><span class="kn">import</span> <span class="n">make_subplots</span>
-            <span class="kn">import</span><span class="w"> </span><span class="nn">plotly.graph_objects</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">go</span>
+            <span class="kn">import</span> <span class="nn">plotly.colors</span> <span class="k">as</span> <span class="nn">pc</span>
+            <span class="kn">from</span> <span class="nn">plotly.subplots</span> <span class="kn">import</span> <span class="n">make_subplots</span>
+            <span class="kn">import</span> <span class="nn">plotly.graph_objects</span> <span class="k">as</span> <span class="nn">go</span>
             <span class="n">n_clusters</span> <span class="o">=</span> <span class="nb">len</span><span class="p">(</span><span class="n">np</span><span class="o">.</span><span class="n">unique</span><span class="p">(</span><span class="n">labels_clust</span><span class="p">))</span>
             <span class="n">color_list</span> <span class="o">=</span> <span class="n">pc</span><span class="o">.</span><span class="n">qualitative</span><span class="o">.</span><span class="n">Set1</span>  <span class="c1"># or Set2, Dark2, Pastel, etc.</span>
 
@@ -1061,9 +1047,7 @@
         <span class="k">return</span> <span class="p">[</span><span class="n">ax1</span><span class="p">,</span> <span class="n">ax2</span><span class="p">,</span> <span class="n">ax3</span><span class="p">]</span>
 
 
-<div class="viewcode-block" id="Visualization.pca_cumulative_explained_variance">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_cumulative_explained_variance">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pca_cumulative_explained_variance</span><span class="p">(</span>
+<div class="viewcode-block" id="Visualization.pca_cumulative_explained_variance"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_cumulative_explained_variance">[docs]</a>    <span class="k">def</span> <span class="nf">pca_cumulative_explained_variance</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span> <span class="p">,</span>
@@ -1115,12 +1099,11 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span><span class="p">,</span> <span class="n">cumvar</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_set_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">reduce_dim_method</span><span class="p">,</span> <span class="n">dim_x</span><span class="p">,</span> <span class="n">dim_y</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_set_labels</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">ax</span><span class="p">,</span> <span class="n">reduce_dim_method</span><span class="p">,</span> <span class="n">dim_x</span><span class="p">,</span> <span class="n">dim_y</span><span class="p">):</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reduce_dim_method</span><span class="si">}</span><span class="s2"> dim </span><span class="si">{</span><span class="n">dim_x</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
         <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">reduce_dim_method</span><span class="si">}</span><span class="s2"> dim </span><span class="si">{</span><span class="n">dim_y</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_dimred_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check_dimred_method</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">method</span><span class="p">,</span> <span class="n">allowed</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
         <span class="k">if</span> <span class="n">method</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">(</span><span class="s2">&quot;No dimensionality reduction was performed&quot;</span><span class="p">)</span>
         <span class="k">if</span> <span class="n">allowed</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
@@ -1129,9 +1112,7 @@
                     <span class="sa">f</span><span class="s2">&quot;Analysis is only valid for the following dimensionality reduction methods: </span><span class="si">{</span><span class="n">allowed</span><span class="si">}</span><span class="s2">.&quot;</span>
                 <span class="p">)</span>
 
-<div class="viewcode-block" id="Visualization.pca_2d_landscapes">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_2d_landscapes">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pca_2d_landscapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.pca_2d_landscapes"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_2d_landscapes">[docs]</a>    <span class="k">def</span> <span class="nf">pca_2d_landscapes</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">sel_components</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">],</span>
             <span class="n">ax</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1220,10 +1201,7 @@
 
         <span class="k">return</span> <span class="n">axes</span></div>
 
-
-<div class="viewcode-block" id="Visualization.pca_1d_histograms">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_1d_histograms">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pca_1d_histograms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.pca_1d_histograms"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_1d_histograms">[docs]</a>    <span class="k">def</span> <span class="nf">pca_1d_histograms</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">sel_components</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span>
             <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">30</span><span class="p">,</span>
@@ -1309,10 +1287,7 @@
 
         <span class="k">return</span> <span class="n">axes</span></div>
 
-
-<div class="viewcode-block" id="Visualization.pca_residue_correlation">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_residue_correlation">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pca_residue_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.pca_residue_correlation"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_residue_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">pca_residue_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">sel_components</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">],</span>
             <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">ax</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -1416,10 +1391,7 @@
 
         <span class="k">return</span> <span class="n">axes</span></div>
 
-
-<div class="viewcode-block" id="Visualization.pca_rg_correlation">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_rg_correlation">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">pca_rg_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.pca_rg_correlation"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.pca_rg_correlation">[docs]</a>    <span class="k">def</span> <span class="nf">pca_rg_correlation</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">ax</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span><span class="p">,</span>
@@ -1490,11 +1462,8 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
 
         <span class="k">return</span> <span class="n">axes</span><span class="p">,</span> <span class="n">data</span></div>
-
     
-<div class="viewcode-block" id="Visualization.global_sasa">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.global_sasa">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">global_sasa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="Visualization.global_sasa"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.global_sasa">[docs]</a>    <span class="k">def</span> <span class="nf">global_sasa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                 <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> 
                 <span class="n">hist_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
                 <span class="n">violin_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span> 
@@ -1657,10 +1626,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.rg_vs_asphericity">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.rg_vs_asphericity">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rg_vs_asphericity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.rg_vs_asphericity"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.rg_vs_asphericity">[docs]</a>    <span class="k">def</span> <span class="nf">rg_vs_asphericity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                            <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span><span class="p">,</span>
                            <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                            <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
@@ -1717,11 +1683,8 @@
             <span class="n">msg</span> <span class="o">=</span> <span class="sa">f</span><span class="s2">&quot;Rg vs. Asphericity plot saved to </span><span class="si">{</span><span class="bp">self</span><span class="o">.</span><span class="n">plot_dir</span><span class="si">}</span><span class="s2">/Rg_vs_Asphericity_</span><span class="si">{</span><span class="n">analysis</span><span class="o">.</span><span class="n">ens_codes</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span><span class="si">}</span><span class="s2">.png&quot;</span>
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
-
   
-<div class="viewcode-block" id="Visualization.rg_vs_prolateness">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.rg_vs_prolateness">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">rg_vs_prolateness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="Visualization.rg_vs_prolateness"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.rg_vs_prolateness">[docs]</a>    <span class="k">def</span> <span class="nf">rg_vs_prolateness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                           <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span><span class="p">,</span>
                           <span class="n">size</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">4</span><span class="p">,</span>
                           <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1779,17 +1742,14 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_protein_dssp_data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_protein_dssp_data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ensembles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ensembles</span>
         <span class="n">dssp_data_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="n">ensembles</span><span class="p">:</span>
             <span class="n">dssp_data_dict</span><span class="p">[</span><span class="n">ensemble</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">compute_dssp</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">dssp_data_dict</span>
     
-<div class="viewcode-block" id="Visualization.relative_dssp_content">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.relative_dssp_content">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">relative_dssp_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.relative_dssp_content"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.relative_dssp_content">[docs]</a>    <span class="k">def</span> <span class="nf">relative_dssp_content</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">dssp_code</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s1">&#39;H&#39;</span><span class="p">,</span> 
             <span class="n">dpi</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">96</span><span class="p">,</span>
             <span class="n">auto_xticks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
@@ -1885,17 +1845,14 @@
         
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_rg_data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_rg_data_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ensembles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ensembles</span>
         <span class="n">rg_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="n">ensembles</span><span class="p">:</span>
             <span class="n">rg_dict</span><span class="p">[</span><span class="n">ensemble</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">compute_rg</span><span class="p">(</span><span class="n">ensemble</span><span class="o">.</span><span class="n">trajectory</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">rg_dict</span>
 
-<div class="viewcode-block" id="Visualization.radius_of_gyration">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.radius_of_gyration">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">radius_of_gyration</span><span class="p">(</span>
+<div class="viewcode-block" id="Visualization.radius_of_gyration"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.radius_of_gyration">[docs]</a>    <span class="k">def</span> <span class="nf">radius_of_gyration</span><span class="p">(</span>
             <span class="bp">self</span><span class="p">,</span>
             <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
             <span class="n">hist_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -2047,8 +2004,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_distance_matrix_ens_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_distance_matrix_ens_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ensembles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ensembles</span>
         <span class="n">distance_matrix_ens_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="k">for</span> <span class="n">ensemble</span> <span class="ow">in</span> <span class="n">ensembles</span><span class="p">:</span>
@@ -2059,7 +2015,7 @@
             <span class="n">distance_matrix_ens_dict</span><span class="p">[</span><span class="n">ensemble</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_distance_matrix</span><span class="p">(</span><span class="n">xyz_ens</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">distance_matrix_ens_dict</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">_get_contact_ens_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_get_contact_ens_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ensembles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ensembles</span>
         <span class="n">distance_matrix_ens_dict</span> <span class="o">=</span> <span class="p">{}</span>
         <span class="n">contact_ens_dict</span> <span class="o">=</span> <span class="p">{}</span>
@@ -2069,9 +2025,7 @@
             <span class="n">contact_ens_dict</span><span class="p">[</span><span class="n">ensemble</span><span class="o">.</span><span class="n">code</span><span class="p">]</span> <span class="o">=</span> <span class="n">get_contact_map</span><span class="p">(</span><span class="n">distance_matrix_ens_dict</span><span class="p">[</span><span class="n">ensemble</span><span class="o">.</span><span class="n">code</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">contact_ens_dict</span>
      
-<div class="viewcode-block" id="Visualization.end_to_end_distances">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.end_to_end_distances">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">end_to_end_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rg_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
+<div class="viewcode-block" id="Visualization.end_to_end_distances"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.end_to_end_distances">[docs]</a>    <span class="k">def</span> <span class="nf">end_to_end_distances</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">rg_norm</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> 
                          <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> 
                          <span class="n">hist_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
                          <span class="n">violin_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2241,10 +2195,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.asphericity">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.asphericity">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">asphericity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="Visualization.asphericity"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.asphericity">[docs]</a>    <span class="k">def</span> <span class="nf">asphericity</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                     <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
                     <span class="n">hist_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                     <span class="n">violin_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2404,10 +2355,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.prolateness">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.prolateness">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">prolateness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.prolateness"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.prolateness">[docs]</a>    <span class="k">def</span> <span class="nf">prolateness</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                 <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span>
                 <span class="n">hist_range</span><span class="p">:</span> <span class="n">Tuple</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
                 <span class="n">violin_plot</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
@@ -2568,10 +2516,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.alpha_angles">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.alpha_angles">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">alpha_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
+<div class="viewcode-block" id="Visualization.alpha_angles"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.alpha_angles">[docs]</a>    <span class="k">def</span> <span class="nf">alpha_angles</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">50</span><span class="p">,</span> <span class="n">save</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span> <span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">:</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">        Alpha angles: Angles between four consecutive Cα atoms along the protein backbone.</span>
 <span class="sd">        This method calculates the alpha angles for each ensemble in the analysis and plots their distribution</span>
@@ -2624,10 +2569,7 @@
 
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.contact_prob_maps">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.contact_prob_maps">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">contact_prob_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.contact_prob_maps"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.contact_prob_maps">[docs]</a>    <span class="k">def</span> <span class="nf">contact_prob_maps</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">log_scale</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
             <span class="n">avoid_zero_count</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
             <span class="n">threshold</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.8</span><span class="p">,</span>
@@ -2711,8 +2653,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">axes</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_pair_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">max_sep</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_pair_ids</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span><span class="n">max_sep</span> <span class="o">=</span> <span class="kc">None</span> <span class="p">):</span>
         <span class="n">analysis</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span>
         <span class="n">pair_ids</span> <span class="o">=</span> <span class="p">[]</span>
         <span class="k">for</span> <span class="n">ens</span> <span class="ow">in</span> <span class="n">analysis</span><span class="o">.</span><span class="n">ensembles</span><span class="p">:</span>
@@ -2728,9 +2669,7 @@
                         <span class="n">pair_ids</span><span class="o">.</span><span class="n">append</span><span class="p">([</span><span class="n">id_i</span><span class="p">,</span> <span class="n">id_j</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">pair_ids</span>
     
-<div class="viewcode-block" id="Visualization.ramachandran_plots">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.ramachandran_plots">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">ramachandran_plots</span><span class="p">(</span>
+<div class="viewcode-block" id="Visualization.ramachandran_plots"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.ramachandran_plots">[docs]</a>    <span class="k">def</span> <span class="nf">ramachandran_plots</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span>
         <span class="n">two_d_hist</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="o">-</span><span class="mi">180</span><span class="p">,</span> <span class="mi">180</span><span class="p">,</span> <span class="mi">80</span><span class="p">),</span>
@@ -2834,10 +2773,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.site_specific_flexibility">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.site_specific_flexibility">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">site_specific_flexibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="Visualization.site_specific_flexibility"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.site_specific_flexibility">[docs]</a>    <span class="k">def</span> <span class="nf">site_specific_flexibility</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                         <span class="n">pointer</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
                         <span class="n">auto_xticks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
                         <span class="n">xtick_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -2917,10 +2853,7 @@
         <span class="n">fig</span><span class="o">.</span><span class="n">tight_layout</span><span class="p">()</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.site_specific_order">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.site_specific_order">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">site_specific_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+<div class="viewcode-block" id="Visualization.site_specific_order"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.site_specific_order">[docs]</a>    <span class="k">def</span> <span class="nf">site_specific_order</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
                         <span class="n">pointer</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>  
                         <span class="n">auto_xticks</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
                         <span class="n">xtick_interval</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">5</span><span class="p">,</span>
@@ -2998,10 +2931,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.per_residue_mean_sasa">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.per_residue_mean_sasa">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">per_residue_mean_sasa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.per_residue_mean_sasa"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.per_residue_mean_sasa">[docs]</a>    <span class="k">def</span> <span class="nf">per_residue_mean_sasa</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
                             <span class="n">probe_radius</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.14</span><span class="p">,</span>
                             <span class="n">n_sphere_points</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">960</span><span class="p">,</span> 
                             <span class="n">figsize</span><span class="p">:</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="p">(</span><span class="mi">15</span><span class="p">,</span> <span class="mi">5</span><span class="p">),</span>
@@ -3095,10 +3025,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.distance_maps">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.distance_maps">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">distance_maps</span><span class="p">(</span>
+<div class="viewcode-block" id="Visualization.distance_maps"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.distance_maps">[docs]</a>    <span class="k">def</span> <span class="nf">distance_maps</span><span class="p">(</span>
         <span class="bp">self</span><span class="p">,</span> 
         <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span> 
         <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span> 
@@ -3179,12 +3106,12 @@
         <span class="c1"># ------------------------------------------------------------------------</span>
 
         <span class="n">plotted_axes</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">]</span> <span class="o">=</span> <span class="p">[]</span>
-        <span class="k">def</span><span class="w"> </span><span class="nf">set_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">):</span>
+        <span class="k">def</span> <span class="nf">set_labels</span><span class="p">(</span><span class="n">ax</span><span class="p">:</span> <span class="n">plt</span><span class="o">.</span><span class="n">Axes</span><span class="p">):</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_xlabel</span><span class="p">(</span><span class="s2">&quot;j&quot;</span><span class="p">)</span>
             <span class="n">ax</span><span class="o">.</span><span class="n">set_ylabel</span><span class="p">(</span><span class="s2">&quot;i&quot;</span><span class="p">)</span>
 
 
-        <span class="k">def</span><span class="w"> </span><span class="nf">maybe_inverse</span><span class="p">(</span><span class="n">dmap</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">apply</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
+        <span class="k">def</span> <span class="nf">maybe_inverse</span><span class="p">(</span><span class="n">dmap</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">apply</span><span class="p">:</span> <span class="nb">bool</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
             <span class="k">if</span> <span class="ow">not</span> <span class="n">apply</span><span class="p">:</span>
                 <span class="k">return</span> <span class="n">dmap</span>
             <span class="k">with</span> <span class="n">np</span><span class="o">.</span><span class="n">errstate</span><span class="p">(</span><span class="n">divide</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">,</span> <span class="n">invalid</span><span class="o">=</span><span class="s1">&#39;ignore&#39;</span><span class="p">):</span>
@@ -3238,8 +3165,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">plotted_axes</span></div>
 
-
-    <span class="k">def</span><span class="w"> </span><span class="nf">_check_grid_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">_check_grid_input</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="n">ensembles</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">analysis</span><span class="o">.</span><span class="n">ensembles</span>
         <span class="n">ens_lens</span> <span class="o">=</span> <span class="nb">set</span><span class="p">([</span><span class="n">e</span><span class="o">.</span><span class="n">get_num_residues</span><span class="p">()</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">ensembles</span><span class="p">])</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">ens_lens</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">1</span><span class="p">:</span>
@@ -3250,9 +3176,7 @@
         <span class="n">min_len</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="n">ens_lens</span><span class="p">)</span>  <span class="c1"># Get the minimum number of residues.</span>
         <span class="k">return</span> <span class="n">min_len</span>
 
-<div class="viewcode-block" id="Visualization.plot_histogram_grid">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.plot_histogram_grid">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_histogram_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.plot_histogram_grid"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.plot_histogram_grid">[docs]</a>    <span class="k">def</span> <span class="nf">plot_histogram_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">feature</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;ca_dist&quot;</span><span class="p">,</span>
             <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
@@ -3486,10 +3410,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.plot_rama_grid">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.plot_rama_grid">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">plot_rama_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.plot_rama_grid"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.plot_rama_grid">[docs]</a>    <span class="k">def</span> <span class="nf">plot_rama_grid</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">ids</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">list</span><span class="p">]]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
             <span class="n">n_rows</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
             <span class="n">n_cols</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">3</span><span class="p">,</span>
@@ -3656,10 +3577,7 @@
             <span class="n">logger</span><span class="o">.</span><span class="n">info</span><span class="p">(</span><span class="n">msg</span><span class="p">)</span>
         <span class="k">return</span> <span class="n">ax</span></div>
 
-
-<div class="viewcode-block" id="Visualization.comparison_matrix">
-<a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.comparison_matrix">[docs]</a>
-    <span class="k">def</span><span class="w"> </span><span class="nf">comparison_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
+<div class="viewcode-block" id="Visualization.comparison_matrix"><a class="viewcode-back" href="../../visualization.html#idpet.visualization.Visualization.comparison_matrix">[docs]</a>    <span class="k">def</span> <span class="nf">comparison_matrix</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span>
             <span class="n">score</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
             <span class="n">featurization_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
             <span class="n">bootstrap_iters</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -3780,9 +3698,7 @@
         <span class="n">results</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;ax&quot;</span><span class="p">:</span> <span class="n">ax</span><span class="p">,</span> <span class="s2">&quot;comparison&quot;</span><span class="p">:</span> <span class="n">comparison_out</span><span class="p">,</span> <span class="s2">&quot;codes&quot;</span><span class="p">:</span> <span class="n">codes</span><span class="p">}</span>
         <span class="k">if</span> <span class="n">fig</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">results</span><span class="p">[</span><span class="s2">&quot;fig&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">fig</span>
-        <span class="k">return</span> <span class="n">results</span></div>
-</div>
-
+        <span class="k">return</span> <span class="n">results</span></div></div>
 </pre></div>
 
            </div>

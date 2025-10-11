@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>idpet.comparison &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../_static/documentation_options.js?v=01f34227"></script>
-      <script src="../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=2389946f"></script>
+      <script src="../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../genindex.html" />
@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../modules.html">Package Overview</a></li>
 </ul>
 
@@ -78,15 +78,15 @@
            <div itemprop="articleBody">
              
   <h1>Source code for idpet.comparison</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">math</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">scipy.stats</span><span class="w"> </span><span class="kn">import</span> <span class="n">mannwhitneyu</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">mdtraj</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_triu_indices</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.distances</span><span class="w"> </span><span class="kn">import</span> <span class="n">featurize_ca_dist</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.angles</span><span class="w"> </span><span class="kn">import</span> <span class="n">featurize_a_angle</span><span class="p">,</span> <span class="n">featurize_phi_psi</span>
+<span></span><span class="kn">import</span> <span class="nn">math</span>
+<span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">Union</span><span class="p">,</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">from</span> <span class="nn">scipy.stats</span> <span class="kn">import</span> <span class="n">mannwhitneyu</span>
+<span class="kn">import</span> <span class="nn">mdtraj</span>
+<span class="kn">from</span> <span class="nn">idpet.ensemble</span> <span class="kn">import</span> <span class="n">Ensemble</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.utils</span> <span class="kn">import</span> <span class="n">get_triu_indices</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.distances</span> <span class="kn">import</span> <span class="n">featurize_ca_dist</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.angles</span> <span class="kn">import</span> <span class="n">featurize_a_angle</span><span class="p">,</span> <span class="n">featurize_phi_psi</span>
 
 
 <span class="c1">####################################################</span>
@@ -96,9 +96,7 @@
 <span class="n">num_default_bins</span> <span class="o">=</span> <span class="mi">50</span>
 <span class="n">min_samples_auto_hist</span> <span class="o">=</span> <span class="mi">2500</span>
 
-<div class="viewcode-block" id="get_num_comparison_bins">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_num_comparison_bins">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_num_comparison_bins</span><span class="p">(</span>
+<div class="viewcode-block" id="get_num_comparison_bins"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_num_comparison_bins">[docs]</a><span class="k">def</span> <span class="nf">get_num_comparison_bins</span><span class="p">(</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
         <span class="n">x</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="p">):</span>
@@ -160,23 +158,14 @@
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="n">bins</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">num_bins</span></div>
 
-
-<div class="viewcode-block" id="sturges_rule">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.sturges_rule">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">sturges_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="viewcode-block" id="sturges_rule"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.sturges_rule">[docs]</a><span class="k">def</span> <span class="nf">sturges_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">n</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="sqrt_rule">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.sqrt_rule">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">sqrt_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
+<div class="viewcode-block" id="sqrt_rule"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.sqrt_rule">[docs]</a><span class="k">def</span> <span class="nf">sqrt_rule</span><span class="p">(</span><span class="n">n</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">math</span><span class="o">.</span><span class="n">ceil</span><span class="p">(</span><span class="n">math</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">n</span><span class="p">))</span></div>
 
-
-<div class="viewcode-block" id="check_feature_matrices">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.check_feature_matrices">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">check_feature_matrices</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="nf">wrapper</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+<div class="viewcode-block" id="check_feature_matrices"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.check_feature_matrices">[docs]</a><span class="k">def</span> <span class="nf">check_feature_matrices</span><span class="p">(</span><span class="n">func</span><span class="p">):</span>
+    <span class="k">def</span> <span class="nf">wrapper</span><span class="p">(</span><span class="n">m1</span><span class="p">,</span> <span class="n">m2</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
         <span class="k">if</span> <span class="nb">len</span><span class="p">(</span><span class="n">m1</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span> <span class="ow">or</span> <span class="nb">len</span><span class="p">(</span><span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span> <span class="o">!=</span> <span class="mi">2</span><span class="p">:</span>
             <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]</span> <span class="o">!=</span> <span class="n">m2</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">1</span><span class="p">]:</span>
@@ -185,16 +174,10 @@
     <span class="k">return</span> <span class="n">wrapper</span></div>
 
 
-
-<div class="viewcode-block" id="calc_freqs">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_freqs">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calc_freqs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
+<div class="viewcode-block" id="calc_freqs"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_freqs">[docs]</a><span class="k">def</span> <span class="nf">calc_freqs</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">histogram</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="n">bins</span><span class="o">=</span><span class="n">bins</span><span class="p">)[</span><span class="mi">0</span><span class="p">]</span> <span class="o">/</span> <span class="n">x</span><span class="o">.</span><span class="n">shape</span><span class="p">[</span><span class="mi">0</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="calc_kld_for_jsd">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_kld_for_jsd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calc_kld_for_jsd</span><span class="p">(</span><span class="n">x_h</span><span class="p">,</span> <span class="n">m_h</span><span class="p">):</span>
+<div class="viewcode-block" id="calc_kld_for_jsd"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_kld_for_jsd">[docs]</a><span class="k">def</span> <span class="nf">calc_kld_for_jsd</span><span class="p">(</span><span class="n">x_h</span><span class="p">,</span> <span class="n">m_h</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates KLD between distribution x and m.</span>
 <span class="sd">    x_h: histogram frequencies for sample p or q.</span>
@@ -205,10 +188,7 @@
         <span class="k">raise</span> <span class="ne">ValueError</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">sum</span><span class="p">(</span><span class="n">x_h</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span><span class="o">*</span><span class="n">np</span><span class="o">.</span><span class="n">log</span><span class="p">(</span><span class="n">x_h</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]</span><span class="o">/</span><span class="n">m_h</span><span class="p">[</span><span class="n">non_zero</span><span class="p">]))</span></div>
 
-
-<div class="viewcode-block" id="calc_jsd">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_jsd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calc_jsd</span><span class="p">(</span><span class="n">p_h</span><span class="p">,</span> <span class="n">q_h</span><span class="p">):</span>
+<div class="viewcode-block" id="calc_jsd"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.calc_jsd">[docs]</a><span class="k">def</span> <span class="nf">calc_jsd</span><span class="p">(</span><span class="n">p_h</span><span class="p">,</span> <span class="n">q_h</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Calculates JSD between distribution p and q.</span>
 <span class="sd">    p_h: histogram frequencies for sample p.</span>
@@ -219,7 +199,6 @@
     <span class="n">kld_qm</span> <span class="o">=</span> <span class="n">calc_kld_for_jsd</span><span class="p">(</span><span class="n">q_h</span><span class="p">,</span> <span class="n">m_h</span><span class="p">)</span>
     <span class="n">jsd_pq</span> <span class="o">=</span> <span class="mf">0.5</span><span class="o">*</span><span class="p">(</span><span class="n">kld_pm</span> <span class="o">+</span> <span class="n">kld_qm</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">jsd_pq</span></div>
-
 
 
 <span class="n">allowed_scores</span> <span class="o">=</span> <span class="p">{</span>
@@ -236,9 +215,7 @@
 <span class="c1"># Functions to score 1-d distributions of features. #</span>
 <span class="c1">#####################################################</span>
 
-<div class="viewcode-block" id="score_histogram_jsd">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_histogram_jsd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">score_histogram_jsd</span><span class="p">(</span>
+<div class="viewcode-block" id="score_histogram_jsd"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_histogram_jsd">[docs]</a><span class="k">def</span> <span class="nf">score_histogram_jsd</span><span class="p">(</span>
         <span class="n">p_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">q_data</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">limits</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="nb">int</span><span class="p">]],</span>
@@ -353,12 +330,9 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">jsd_pq</span></div>
 
-
     
-<div class="viewcode-block" id="score_avg_jsd">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_avg_jsd">[docs]</a>
-<span class="nd">@check_feature_matrices</span>
-<span class="k">def</span><span class="w"> </span><span class="nf">score_avg_jsd</span><span class="p">(</span>
+<div class="viewcode-block" id="score_avg_jsd"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_avg_jsd">[docs]</a><span class="nd">@check_feature_matrices</span>
+<span class="k">def</span> <span class="nf">score_avg_jsd</span><span class="p">(</span>
         <span class="n">features_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">features_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">limits</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
@@ -435,8 +409,7 @@
         <span class="k">return</span> <span class="n">jsd_results</span><span class="p">,</span> <span class="n">_bins</span></div>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_ada_jsd_features</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_get_ada_jsd_features</span><span class="p">(</span>
         <span class="n">ens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
         <span class="n">max_sep</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -457,9 +430,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
 
     
-<div class="viewcode-block" id="score_adaJSD">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_adaJSD">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">score_adaJSD</span><span class="p">(</span>
+<div class="viewcode-block" id="score_adaJSD"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_adaJSD">[docs]</a><span class="k">def</span> <span class="nf">score_adaJSD</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -533,10 +504,7 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
-
-<div class="viewcode-block" id="get_adaJSD_matrix">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_adaJSD_matrix">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_adaJSD_matrix</span><span class="p">(</span>
+<div class="viewcode-block" id="get_adaJSD_matrix"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_adaJSD_matrix">[docs]</a><span class="k">def</span> <span class="nf">get_adaJSD_matrix</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
@@ -601,8 +569,7 @@
          <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">matrix</span><span class="p">)</span></div>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_ata_jsd_features</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_get_ata_jsd_features</span><span class="p">(</span>
         <span class="n">ens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
     <span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">Ensemble</span><span class="p">):</span>
@@ -615,9 +582,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="score_ataJSD">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_ataJSD">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">score_ataJSD</span><span class="p">(</span>
+<div class="viewcode-block" id="score_ataJSD"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_ataJSD">[docs]</a><span class="k">def</span> <span class="nf">score_ataJSD</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -669,10 +634,7 @@
     <span class="k">return</span> <span class="n">results</span></div>
 
 
-
-<div class="viewcode-block" id="get_ataJSD_profile">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ataJSD_profile">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_ataJSD_profile</span><span class="p">(</span>
+<div class="viewcode-block" id="get_ataJSD_profile"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ataJSD_profile">[docs]</a><span class="k">def</span> <span class="nf">get_ataJSD_profile</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -725,14 +687,11 @@
          <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span></div>
 
 
-
 <span class="c1">#####################################################</span>
 <span class="c1"># Functions to score 2-d distributions of features. #</span>
 <span class="c1">#####################################################</span>
 
-<div class="viewcode-block" id="score_avg_2d_angle_jsd">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_avg_2d_angle_jsd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">score_avg_2d_angle_jsd</span><span class="p">(</span>
+<div class="viewcode-block" id="score_avg_2d_angle_jsd"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_avg_2d_angle_jsd">[docs]</a><span class="k">def</span> <span class="nf">score_avg_2d_angle_jsd</span><span class="p">(</span>
         <span class="n">array_1</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">array_2</span><span class="p">:</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span>
         <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -812,8 +771,7 @@
         <span class="k">return</span> <span class="n">jsd_results</span><span class="p">,</span> <span class="n">n_bins</span></div>
 
 
-
-<span class="k">def</span><span class="w"> </span><span class="nf">_get_rama_jsd_features</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_get_rama_jsd_features</span><span class="p">(</span>
         <span class="n">ens</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
     <span class="p">):</span>
     <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">ens</span><span class="p">,</span> <span class="n">Ensemble</span><span class="p">):</span>
@@ -829,9 +787,7 @@
         <span class="k">raise</span> <span class="ne">TypeError</span><span class="p">(</span><span class="n">ens</span><span class="o">.</span><span class="vm">__class__</span><span class="p">)</span>
 
 
-<div class="viewcode-block" id="score_ramaJSD">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_ramaJSD">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">score_ramaJSD</span><span class="p">(</span>
+<div class="viewcode-block" id="score_ramaJSD"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.score_ramaJSD">[docs]</a><span class="k">def</span> <span class="nf">score_ramaJSD</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">bins</span><span class="p">:</span> <span class="nb">int</span><span class="p">,</span>
@@ -878,10 +834,7 @@
     <span class="p">)</span></div>
 
 
-
-<div class="viewcode-block" id="get_ramaJSD_profile">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ramaJSD_profile">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">get_ramaJSD_profile</span><span class="p">(</span>
+<div class="viewcode-block" id="get_ramaJSD_profile"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ramaJSD_profile">[docs]</a><span class="k">def</span> <span class="nf">get_ramaJSD_profile</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
@@ -935,14 +888,11 @@
          <span class="k">return</span> <span class="p">(</span><span class="n">avg_score</span><span class="p">,</span> <span class="n">all_scores</span><span class="p">)</span></div>
 
 
-
 <span class="c1">########################</span>
 <span class="c1"># All-vs-all analysis. #</span>
 <span class="c1">########################</span>
 
-<div class="viewcode-block" id="all_vs_all_comparison">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.all_vs_all_comparison">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">all_vs_all_comparison</span><span class="p">(</span>
+<div class="viewcode-block" id="all_vs_all_comparison"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.all_vs_all_comparison">[docs]</a><span class="k">def</span> <span class="nf">all_vs_all_comparison</span><span class="p">(</span>
         <span class="n">ensembles</span><span class="p">:</span> <span class="n">List</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">],</span>
         <span class="n">score</span><span class="p">:</span> <span class="nb">str</span><span class="p">,</span>
         <span class="n">featurization_params</span><span class="p">:</span> <span class="nb">dict</span> <span class="o">=</span> <span class="p">{},</span>
@@ -954,87 +904,94 @@
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compare all pair of ensembles using divergence scores.</span>
-<span class="sd">    Implemented scores are approximate average Jensen–Shannon divergence</span>
+<span class="sd">    Compare all pairs of ensembles using divergence scores.</span>
+
+<span class="sd">    Implemented scores are approximate average Jensen–Shannon divergences</span>
 <span class="sd">    (JSD) over several kinds of molecular features. The lower these scores</span>
-<span class="sd">    are, the higher the similarity between the probability distribution of</span>
+<span class="sd">    are, the higher the similarity between the probability distributions of</span>
 <span class="sd">    the features of the ensembles. JSD scores here range from a minimum of 0</span>
-<span class="sd">    to a maximum of log(2) ~= 0.6931.</span>
+<span class="sd">    to a maximum of log(2) ≈ 0.6931.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ensembles: List[Ensemble]</span>
-<span class="sd">        Ensemble objectes to analyze.</span>
-<span class="sd">    score: str</span>
+<span class="sd">    ensembles : List[Ensemble]</span>
+<span class="sd">        Ensemble objects to analyze.</span>
+<span class="sd">    score : str</span>
 <span class="sd">        Type of score used to compare ensembles. Choices: `adaJSD` (carbon</span>
-<span class="sd">        Alfa Distance Average JSD), `ramaJSD` (RAMAchandran average JSD) and</span>
+<span class="sd">        Alpha Distance Average JSD), `ramaJSD` (RAMAchandran Average JSD), and</span>
 <span class="sd">        `ataJSD` (Alpha Torsion Average JSD). `adaJSD` scores the average</span>
-<span class="sd">        JSD over all Ca-Ca distance distributions of residue pairs with</span>
+<span class="sd">        JSD over all Cα–Cα distance distributions of residue pairs with</span>
 <span class="sd">        sequence separation &gt; 1. `ramaJSD` scores the average JSD over the</span>
-<span class="sd">        phi-psi angle distributions of all residues. `ataJSD` scores the</span>
-<span class="sd">        average JSD over all alpha torsion angles, which are the angles</span>
-<span class="sd">        formed by four consecutive Ca atoms in a protein.</span>
-<span class="sd">    featurization_params: dict, optional</span>
+<span class="sd">        φ–ψ angle distributions of all residues. `ataJSD` scores the average</span>
+<span class="sd">        JSD over all alpha torsion angles, which are the angles formed by four</span>
+<span class="sd">        consecutive Cα atoms in a protein.</span>
+<span class="sd">    featurization_params : dict, optional</span>
 <span class="sd">        Optional dictionary to customize the featurization process for the</span>
 <span class="sd">        above features.</span>
-<span class="sd">    bootstrap_iters: int, optional</span>
-<span class="sd">        Number of bootstrap iterations. By default its value is None. In</span>
-<span class="sd">        this case, IDPET will directly compare each pair of ensemble $i$ and</span>
-<span class="sd">        $j$ by using all of their conformers and perform the comparison only</span>
-<span class="sd">        once. On the other hand, if providing an integer value to this</span>
-<span class="sd">        argument, each pair of ensembles $i$ and $j$ will be compared</span>
-<span class="sd">        `bootstrap_iters` times by randomly selecting (bootstrapping)</span>
-<span class="sd">        conformations from them. Additionally, each ensemble will be</span>
-<span class="sd">        auto-compared with itself by subsampling conformers via</span>
-<span class="sd">        bootstrapping. Then IDPET will perform a statistical test to</span>
-<span class="sd">        establish if the inter-ensemble ($i != j$) scores are significantly</span>
-<span class="sd">        different from the intra-ensemble ($i == j$) scores. The tests work</span>
-<span class="sd">        as follows: for each ensemble pair $i != j$ IDPET will get their</span>
-<span class="sd">        inter-ensemble comparison scores obtained in bootstrapping. Then, it</span>
-<span class="sd">        will get the bootstrapping scores from auto-comparisons of ensemble</span>
-<span class="sd">        $i$ and $j$ and the scores with the higher mean here are selected as</span>
-<span class="sd">        reference intra-ensemble scores. Finally, the inter-ensemble and</span>
-<span class="sd">        intra-ensemble scores are compared via a one-sided Mann-Whitney U</span>
-<span class="sd">        test with the alternative hypothesis being: inter-ensemble scores</span>
-<span class="sd">        are stochastically greater than intra-ensemble scores. The p-values</span>
-<span class="sd">        obtained in these tests will additionally be returned. For small</span>
-<span class="sd">        protein structural ensembles (less than 500 conformations) most</span>
-<span class="sd">        comparison scores in IDPET are not robust estimators of</span>
-<span class="sd">        divergence/distance. By performing bootstrapping, you can have an</span>
-<span class="sd">        idea of how the size of your ensembles impacts the comparison. Use</span>
-<span class="sd">        values &gt;= 50 when comparing ensembles with very few conformations</span>
-<span class="sd">        (less than 100). When comparing large ensembles (more than</span>
-<span class="sd">        1,000-5,000 conformations) you can safely avoid bootstrapping.</span>
-<span class="sd">    bootstrap_frac: float, optional</span>
+<span class="sd">    bootstrap_iters : int, optional</span>
+<span class="sd">        Number of bootstrap iterations. By default, its value is ``None``. In</span>
+<span class="sd">        this case, IDPET will directly compare each pair of ensembles</span>
+<span class="sd">        :math:`i` and :math:`j` by using all of their conformers and perform</span>
+<span class="sd">        the comparison only once. On the other hand, if an integer value is</span>
+<span class="sd">        provided for this argument, each pair of ensembles :math:`i` and</span>
+<span class="sd">        :math:`j` will be compared ``bootstrap_iters`` times by randomly</span>
+<span class="sd">        selecting (bootstrapping) conformations from them. Additionally, each</span>
+<span class="sd">        ensemble will be auto-compared with itself by subsampling conformers</span>
+<span class="sd">        via bootstrapping. Then, IDPET will perform a statistical test to</span>
+<span class="sd">        determine whether the inter-ensemble (:math:`i \\neq j`) scores are</span>
+<span class="sd">        significantly different from the intra-ensemble (:math:`i = j`)</span>
+<span class="sd">        scores.</span>
+
+<span class="sd">        The tests work as follows: for each ensemble pair :math:`i \\neq j`,</span>
+<span class="sd">        IDPET obtains their inter-ensemble comparison scores from</span>
+<span class="sd">        bootstrapping. Then, it retrieves the bootstrapping scores from</span>
+<span class="sd">        auto-comparisons of ensembles :math:`i` and :math:`j`, and the scores</span>
+<span class="sd">        with the higher mean are selected as reference intra-ensemble scores.</span>
+<span class="sd">        Finally, the inter-ensemble and intra-ensemble scores are compared via</span>
+<span class="sd">        a one-sided Mann–Whitney U test with the alternative hypothesis that</span>
+<span class="sd">        inter-ensemble scores are stochastically greater than intra-ensemble</span>
+<span class="sd">        scores. The p-values obtained from these tests will additionally be</span>
+<span class="sd">        returned.</span>
+
+<span class="sd">        For small protein structural ensembles (fewer than 500 conformations),</span>
+<span class="sd">        most comparison scores in IDPET are not robust estimators of</span>
+<span class="sd">        divergence or distance. Performing bootstrapping provides an estimate</span>
+<span class="sd">        of how ensemble size affects the comparison. Use values ≥ 50 when</span>
+<span class="sd">        comparing ensembles with very few conformations (less than 100). When</span>
+<span class="sd">        comparing large ensembles (more than 1,000–5,000 conformations), you</span>
+<span class="sd">        can safely avoid bootstrapping.</span>
+<span class="sd">    bootstrap_frac : float, optional</span>
 <span class="sd">        Fraction of the total conformations to sample when bootstrapping.</span>
-<span class="sd">        Default value is 1.0, which results in bootstrap samples with the</span>
-<span class="sd">        same number of conformations of the original ensemble.</span>
-<span class="sd">    bootstrap_replace: bool, optional</span>
-<span class="sd">        If `True`, bootstrap will sample with replacement. Default is `True`.</span>
-<span class="sd">    bins: Union[int, str], optional</span>
+<span class="sd">        Default value is 1.0, which results in bootstrap samples with the same</span>
+<span class="sd">        number of conformations as the original ensemble.</span>
+<span class="sd">    bootstrap_replace : bool, optional</span>
+<span class="sd">        If ``True``, bootstrap will sample with replacement. Default is</span>
+<span class="sd">        ``True``.</span>
+<span class="sd">    bins : Union[int, str], optional</span>
 <span class="sd">        Number of bins or bin assignment rule for JSD comparisons. See the</span>
-<span class="sd">        documentation of `dpet.comparison.get_num_comparison_bins` for</span>
+<span class="sd">        documentation of ``dpet.comparison.get_num_comparison_bins`` for</span>
 <span class="sd">        more information.</span>
-<span class="sd">    random_seed: int, optional</span>
+<span class="sd">    random_seed : int, optional</span>
 <span class="sd">        Random seed used when performing bootstrapping.</span>
-<span class="sd">    verbose: bool, optional</span>
-<span class="sd">        If `True`, some information about the comparisons will be printed to</span>
+<span class="sd">    verbose : bool, optional</span>
+<span class="sd">        If ``True``, prints additional information about the comparisons to</span>
 <span class="sd">        stdout.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    results: dict</span>
-<span class="sd">        A dictionary containing the following key-value pairs:</span>
-<span class="sd">            `scores`: a (M, M, B) NumPy array storing the comparison</span>
-<span class="sd">                scores, where M is the number of ensembles being</span>
-<span class="sd">                compared and B is the number of bootstrap iterations (B</span>
-<span class="sd">                will be 1 if bootstrapping was not performed).</span>
-<span class="sd">            `p_values`: a (M, M) NumPy array storing the p-values</span>
-<span class="sd">                obtained in the statistical test performed when using</span>
-<span class="sd">                a bootstrapping strategy (see the `bootstrap_iters`)</span>
-<span class="sd">                method. Returned only when performing a bootstrapping</span>
-<span class="sd">                strategy.</span>
+<span class="sd">    results : dict</span>
+<span class="sd">        A dictionary containing the following key–value pairs:</span>
+
+<span class="sd">        - ``scores``: a (M, M, B) NumPy array storing the comparison</span>
+<span class="sd">          scores, where M is the number of ensembles being compared and</span>
+<span class="sd">          B is the number of bootstrap iterations (B = 1 if bootstrapping</span>
+<span class="sd">          was not performed).</span>
+<span class="sd">        - ``p_values``: a (M, M) NumPy array storing the p-values</span>
+<span class="sd">          obtained from the statistical tests performed when using</span>
+<span class="sd">          a bootstrapping strategy (see the ``bootstrap_iters`` parameter).</span>
+<span class="sd">          Returned only when performing a bootstrapping strategy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
+
 
     <span class="n">score_type</span><span class="p">,</span> <span class="n">feature</span> <span class="o">=</span> <span class="n">scores_data</span><span class="p">[</span><span class="n">score</span><span class="p">]</span>
     
@@ -1237,20 +1194,14 @@
     <span class="k">return</span> <span class="n">output</span></div>
 
 
-
 <span class="c1">######################</span>
 <span class="c1"># Statistical tests. #</span>
 <span class="c1">######################</span>
 
-<div class="viewcode-block" id="percentile_func">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.percentile_func">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">percentile_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
+<div class="viewcode-block" id="percentile_func"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.percentile_func">[docs]</a><span class="k">def</span> <span class="nf">percentile_func</span><span class="p">(</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="p">):</span>
     <span class="k">return</span> <span class="n">np</span><span class="o">.</span><span class="n">percentile</span><span class="p">(</span><span class="n">a</span><span class="o">=</span><span class="n">a</span><span class="p">,</span> <span class="n">q</span><span class="o">=</span><span class="n">q</span><span class="p">,</span> <span class="n">axis</span><span class="o">=-</span><span class="mi">1</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="confidence_interval">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.confidence_interval">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">confidence_interval</span><span class="p">(</span>
+<div class="viewcode-block" id="confidence_interval"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.confidence_interval">[docs]</a><span class="k">def</span> <span class="nf">confidence_interval</span><span class="p">(</span>
         <span class="n">theta_boot</span><span class="p">,</span> <span class="n">theta_hat</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">confidence_level</span><span class="o">=</span><span class="mf">0.95</span><span class="p">,</span> <span class="n">method</span><span class="o">=</span><span class="s1">&#39;percentile&#39;</span>
     <span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -1268,10 +1219,7 @@
         <span class="n">ci_l</span><span class="p">,</span> <span class="n">ci_u</span> <span class="o">=</span> <span class="mi">2</span><span class="o">*</span><span class="n">theta_hat</span> <span class="o">-</span> <span class="n">ci_u</span><span class="p">,</span> <span class="mi">2</span><span class="o">*</span><span class="n">theta_hat</span> <span class="o">-</span> <span class="n">ci_l</span>
     <span class="k">return</span> <span class="p">[</span><span class="n">ci_l</span><span class="p">,</span> <span class="n">ci_u</span><span class="p">]</span></div>
 
-
-<div class="viewcode-block" id="process_all_vs_all_output">
-<a class="viewcode-back" href="../../idpet.html#idpet.comparison.process_all_vs_all_output">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">process_all_vs_all_output</span><span class="p">(</span>
+<div class="viewcode-block" id="process_all_vs_all_output"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.process_all_vs_all_output">[docs]</a><span class="k">def</span> <span class="nf">process_all_vs_all_output</span><span class="p">(</span>
         <span class="n">comparison_out</span><span class="p">:</span> <span class="nb">dict</span><span class="p">,</span>
         <span class="n">confidence_level</span><span class="p">:</span> <span class="nb">float</span> <span class="o">=</span> <span class="mf">0.95</span>
     <span class="p">):</span>
@@ -1316,7 +1264,6 @@
         <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">()</span>
 
     <span class="k">return</span> <span class="n">comparison_out</span></div>
-
 </pre></div>
 
            </div>

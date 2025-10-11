@@ -1,22 +1,22 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Overview &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -52,7 +52,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Package Overview</a></li>
 </ul>
 
@@ -81,15 +81,15 @@
            <div itemprop="articleBody">
              
   <section id="overview">
-<h1>Overview<a class="headerlink" href="#overview" title="Link to this heading"></a></h1>
+<h1>Overview<a class="headerlink" href="#overview" title="Permalink to this heading"></a></h1>
 <p>IDPET is a Python library that can analyze multiple structural ensembles of disordered proteins in parallel. The data can be automatically downloaded from databases like the Protein Ensemble Database (PED) using the package or loaded from local data files. IDPET provides various functions to facilitate the visualization of results through different plots.
 Using mdtraj as the backend engine, IDPET can read and load multiple datasets as input. Through web APIs, it can directly download, store, and analyze data from both PED and ATLAS, which are two important databases for studying disordered and flexible proteins.
 Furthermore, by implementing different dimensionality reduction algorithms within the package, a wide variety of analyses can be performed using IDPET.</p>
 <p>As an example:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span> <span class="c1"># import idpet modules for reading, analyzing and visualizing of the IDP ensembles</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Visualization</span>
+<span class="kn">from</span> <span class="nn">idpet.ensemble</span> <span class="kn">import</span> <span class="n">Ensemble</span>
+<span class="kn">from</span> <span class="nn">idpet.ensemble_analysis</span> <span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
+<span class="kn">from</span> <span class="nn">idpet.visualization</span> <span class="kn">import</span> <span class="n">Visualization</span>
 </pre></div>
 </div>
 <p>There are two possibilities for loading the data:</p>

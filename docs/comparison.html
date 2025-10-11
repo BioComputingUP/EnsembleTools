@@ -1,23 +1,24 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>ensemble_compariosn &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+  <title>ensemble_comparison &mdash; IDPET 0.1.0 documentation</title>
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -52,7 +53,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1 current"><a class="current reference internal" href="#">ensemble_compariosn</a><ul>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">ensemble_comparison</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#idpet.comparison.all_vs_all_comparison"><code class="docutils literal notranslate"><span class="pre">all_vs_all_comparison()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#idpet.comparison.calc_freqs"><code class="docutils literal notranslate"><span class="pre">calc_freqs()</span></code></a></li>
 <li class="toctree-l2"><a class="reference internal" href="#idpet.comparison.calc_jsd"><code class="docutils literal notranslate"><span class="pre">calc_jsd()</span></code></a></li>
@@ -92,7 +93,7 @@
           <div role="navigation" aria-label="Page navigation">
   <ul class="wy-breadcrumbs">
       <li><a href="index.html" class="icon icon-home" aria-label="Home"></a></li>
-      <li class="breadcrumb-item active">ensemble_compariosn</li>
+      <li class="breadcrumb-item active">ensemble_comparison</li>
       <li class="wy-breadcrumbs-aside">
             <a href="_sources/comparison.rst.txt" rel="nofollow"> View page source</a>
       </li>
@@ -103,100 +104,100 @@
            <div itemprop="articleBody">
              
   <section id="module-idpet.comparison">
-<span id="ensemble-compariosn"></span><h1>ensemble_compariosn<a class="headerlink" href="#module-idpet.comparison" title="Link to this heading"></a></h1>
+<span id="ensemble-comparison"></span><h1>ensemble_comparison<a class="headerlink" href="#module-idpet.comparison" title="Permalink to this heading"></a></h1>
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.all_vs_all_comparison">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">all_vs_all_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensembles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#all_vs_all_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.all_vs_all_comparison" title="Link to this definition"></a></dt>
-<dd><p>Compare all pair of ensembles using divergence scores.
-Implemented scores are approximate average Jensen–Shannon divergence
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">all_vs_all_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensembles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#all_vs_all_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.all_vs_all_comparison" title="Permalink to this definition"></a></dt>
+<dd><p>Compare all pairs of ensembles using divergence scores.</p>
+<p>Implemented scores are approximate average Jensen–Shannon divergences
 (JSD) over several kinds of molecular features. The lower these scores
-are, the higher the similarity between the probability distribution of
+are, the higher the similarity between the probability distributions of
 the features of the ensembles. JSD scores here range from a minimum of 0
-to a maximum of log(2) ~= 0.6931.</p>
+to a maximum of log(2) ≈ 0.6931.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
 </dd>
 </dl>
 <section id="parameters">
-<h2>Parameters<a class="headerlink" href="#parameters" title="Link to this heading"></a></h2>
-<dl class="simple">
-<dt>ensembles: List[Ensemble]</dt><dd><p>Ensemble objectes to analyze.</p>
+<h2>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h2>
+<dl>
+<dt>ensembles<span class="classifier">List[Ensemble]</span></dt><dd><p>Ensemble objects to analyze.</p>
 </dd>
-<dt>score: str</dt><dd><p>Type of score used to compare ensembles. Choices: <cite>adaJSD</cite> (carbon
-Alfa Distance Average JSD), <cite>ramaJSD</cite> (RAMAchandran average JSD) and
+<dt>score<span class="classifier">str</span></dt><dd><p>Type of score used to compare ensembles. Choices: <cite>adaJSD</cite> (carbon
+Alpha Distance Average JSD), <cite>ramaJSD</cite> (RAMAchandran Average JSD), and
 <cite>ataJSD</cite> (Alpha Torsion Average JSD). <cite>adaJSD</cite> scores the average
-JSD over all Ca-Ca distance distributions of residue pairs with
+JSD over all Cα–Cα distance distributions of residue pairs with
 sequence separation &gt; 1. <cite>ramaJSD</cite> scores the average JSD over the
-phi-psi angle distributions of all residues. <cite>ataJSD</cite> scores the
-average JSD over all alpha torsion angles, which are the angles
-formed by four consecutive Ca atoms in a protein.</p>
+φ–ψ angle distributions of all residues. <cite>ataJSD</cite> scores the average
+JSD over all alpha torsion angles, which are the angles formed by four
+consecutive Cα atoms in a protein.</p>
 </dd>
-<dt>featurization_params: dict, optional</dt><dd><p>Optional dictionary to customize the featurization process for the
+<dt>featurization_params<span class="classifier">dict, optional</span></dt><dd><p>Optional dictionary to customize the featurization process for the
 above features.</p>
 </dd>
-<dt>bootstrap_iters: int, optional</dt><dd><p>Number of bootstrap iterations. By default its value is None. In
-this case, IDPET will directly compare each pair of ensemble $i$ and
-$j$ by using all of their conformers and perform the comparison only
-once. On the other hand, if providing an integer value to this
-argument, each pair of ensembles $i$ and $j$ will be compared
-<cite>bootstrap_iters</cite> times by randomly selecting (bootstrapping)
-conformations from them. Additionally, each ensemble will be
-auto-compared with itself by subsampling conformers via
-bootstrapping. Then IDPET will perform a statistical test to
-establish if the inter-ensemble ($i != j$) scores are significantly
-different from the intra-ensemble ($i == j$) scores. The tests work
-as follows: for each ensemble pair $i != j$ IDPET will get their
-inter-ensemble comparison scores obtained in bootstrapping. Then, it
-will get the bootstrapping scores from auto-comparisons of ensemble
-$i$ and $j$ and the scores with the higher mean here are selected as
-reference intra-ensemble scores. Finally, the inter-ensemble and
-intra-ensemble scores are compared via a one-sided Mann-Whitney U
-test with the alternative hypothesis being: inter-ensemble scores
-are stochastically greater than intra-ensemble scores. The p-values
-obtained in these tests will additionally be returned. For small
-protein structural ensembles (less than 500 conformations) most
-comparison scores in IDPET are not robust estimators of
-divergence/distance. By performing bootstrapping, you can have an
-idea of how the size of your ensembles impacts the comparison. Use
-values &gt;= 50 when comparing ensembles with very few conformations
-(less than 100). When comparing large ensembles (more than
-1,000-5,000 conformations) you can safely avoid bootstrapping.</p>
+<dt>bootstrap_iters<span class="classifier">int, optional</span></dt><dd><p>Number of bootstrap iterations. By default, its value is <code class="docutils literal notranslate"><span class="pre">None</span></code>. In
+this case, IDPET will directly compare each pair of ensembles
+<span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> by using all of their conformers and perform
+the comparison only once. On the other hand, if an integer value is
+provided for this argument, each pair of ensembles <span class="math notranslate nohighlight">\(i\)</span> and
+<span class="math notranslate nohighlight">\(j\)</span> will be compared <code class="docutils literal notranslate"><span class="pre">bootstrap_iters</span></code> times by randomly
+selecting (bootstrapping) conformations from them. Additionally, each
+ensemble will be auto-compared with itself by subsampling conformers
+via bootstrapping. Then, IDPET will perform a statistical test to
+determine whether the inter-ensemble (<span class="math notranslate nohighlight">\(i \neq j\)</span>) scores are
+significantly different from the intra-ensemble (<span class="math notranslate nohighlight">\(i = j\)</span>)
+scores.</p>
+<p>The tests work as follows: for each ensemble pair <span class="math notranslate nohighlight">\(i \neq j\)</span>,
+IDPET obtains their inter-ensemble comparison scores from
+bootstrapping. Then, it retrieves the bootstrapping scores from
+auto-comparisons of ensembles <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>, and the scores
+with the higher mean are selected as reference intra-ensemble scores.
+Finally, the inter-ensemble and intra-ensemble scores are compared via
+a one-sided Mann–Whitney U test with the alternative hypothesis that
+inter-ensemble scores are stochastically greater than intra-ensemble
+scores. The p-values obtained from these tests will additionally be
+returned.</p>
+<p>For small protein structural ensembles (fewer than 500 conformations),
+most comparison scores in IDPET are not robust estimators of
+divergence or distance. Performing bootstrapping provides an estimate
+of how ensemble size affects the comparison. Use values ≥ 50 when
+comparing ensembles with very few conformations (less than 100). When
+comparing large ensembles (more than 1,000–5,000 conformations), you
+can safely avoid bootstrapping.</p>
 </dd>
-<dt>bootstrap_frac: float, optional</dt><dd><p>Fraction of the total conformations to sample when bootstrapping.
-Default value is 1.0, which results in bootstrap samples with the
-same number of conformations of the original ensemble.</p>
+<dt>bootstrap_frac<span class="classifier">float, optional</span></dt><dd><p>Fraction of the total conformations to sample when bootstrapping.
+Default value is 1.0, which results in bootstrap samples with the same
+number of conformations as the original ensemble.</p>
 </dd>
-<dt>bootstrap_replace: bool, optional</dt><dd><p>If <cite>True</cite>, bootstrap will sample with replacement. Default is <cite>True</cite>.</p>
+<dt>bootstrap_replace<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, bootstrap will sample with replacement. Default is
+<code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
 </dd>
-<dt>bins: Union[int, str], optional</dt><dd><p>Number of bins or bin assignment rule for JSD comparisons. See the
-documentation of <cite>dpet.comparison.get_num_comparison_bins</cite> for
+<dt>bins<span class="classifier">Union[int, str], optional</span></dt><dd><p>Number of bins or bin assignment rule for JSD comparisons. See the
+documentation of <code class="docutils literal notranslate"><span class="pre">dpet.comparison.get_num_comparison_bins</span></code> for
 more information.</p>
 </dd>
-<dt>random_seed: int, optional</dt><dd><p>Random seed used when performing bootstrapping.</p>
+<dt>random_seed<span class="classifier">int, optional</span></dt><dd><p>Random seed used when performing bootstrapping.</p>
 </dd>
-<dt>verbose: bool, optional</dt><dd><p>If <cite>True</cite>, some information about the comparisons will be printed to
+<dt>verbose<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, prints additional information about the comparisons to
 stdout.</p>
 </dd>
 </dl>
 </section>
 <section id="returns">
-<h2>Returns<a class="headerlink" href="#returns" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h2>
 <dl class="simple">
-<dt>results: dict</dt><dd><dl class="simple">
-<dt>A dictionary containing the following key-value pairs:</dt><dd><dl class="simple">
-<dt><cite>scores</cite>: a (M, M, B) NumPy array storing the comparison</dt><dd><p>scores, where M is the number of ensembles being
-compared and B is the number of bootstrap iterations (B
-will be 1 if bootstrapping was not performed).</p>
-</dd>
-<dt><cite>p_values</cite>: a (M, M) NumPy array storing the p-values</dt><dd><p>obtained in the statistical test performed when using
-a bootstrapping strategy (see the <cite>bootstrap_iters</cite>)
-method. Returned only when performing a bootstrapping
-strategy.</p>
-</dd>
-</dl>
-</dd>
-</dl>
+<dt>results<span class="classifier">dict</span></dt><dd><p>A dictionary containing the following key–value pairs:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">scores</span></code>: a (M, M, B) NumPy array storing the comparison
+scores, where M is the number of ensembles being compared and
+B is the number of bootstrap iterations (B = 1 if bootstrapping
+was not performed).</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">p_values</span></code>: a (M, M) NumPy array storing the p-values
+obtained from the statistical tests performed when using
+a bootstrapping strategy (see the <code class="docutils literal notranslate"><span class="pre">bootstrap_iters</span></code> parameter).
+Returned only when performing a bootstrapping strategy.</p></li>
+</ul>
 </dd>
 </dl>
 </section>
@@ -204,12 +205,12 @@ strategy.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.calc_freqs">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">calc_freqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#calc_freqs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.calc_freqs" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">calc_freqs</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#calc_freqs"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.calc_freqs" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.calc_jsd">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">calc_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#calc_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.calc_jsd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">calc_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#calc_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.calc_jsd" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates JSD between distribution p and q.
 p_h: histogram frequencies for sample p.
 q_h: histogram frequencies for sample q.</p>
@@ -217,7 +218,7 @@ q_h: histogram frequencies for sample q.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.calc_kld_for_jsd">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">calc_kld_for_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#calc_kld_for_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.calc_kld_for_jsd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">calc_kld_for_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x_h</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m_h</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#calc_kld_for_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.calc_kld_for_jsd" title="Permalink to this definition"></a></dt>
 <dd><p>Calculates KLD between distribution x and m.
 x_h: histogram frequencies for sample p or q.
 m_h: histogram frequencies for m = 0.5*(p+q).</p>
@@ -225,23 +226,23 @@ m_h: histogram frequencies for m = 0.5*(p+q).</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.check_feature_matrices">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">check_feature_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#check_feature_matrices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.check_feature_matrices" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">check_feature_matrices</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">func</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#check_feature_matrices"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.check_feature_matrices" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.confidence_interval">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">confidence_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_boot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta_hat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'percentile'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#confidence_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.confidence_interval" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">confidence_interval</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">theta_boot</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">theta_hat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">method</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'percentile'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#confidence_interval"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.confidence_interval" title="Permalink to this definition"></a></dt>
 <dd><p>Returns bootstrap confidence intervals.
 Adapted from: <a class="reference external" href="https://github.com/scipy/scipy/blob/v1.14.0/scipy/stats/_resampling.py">https://github.com/scipy/scipy/blob/v1.14.0/scipy/stats/_resampling.py</a></p>
 </dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.get_adaJSD_matrix">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_adaJSD_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_adaJSD_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_adaJSD_matrix" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_adaJSD_matrix</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_adaJSD_matrix"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_adaJSD_matrix" title="Permalink to this definition"></a></dt>
 <dd><p>Utility function to calculate the adaJSD score between two ensembles and
 return a matrix with JSD scores for each pair of Ca-Ca distances.</p>
 <section id="id1">
-<h2>Parameters<a class="headerlink" href="#id1" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id1" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
@@ -252,7 +253,7 @@ return a matrix with JSD scores for each pair of Ca-Ca distances.</p>
 </dl>
 </section>
 <section id="output">
-<h2>Output<a class="headerlink" href="#output" title="Link to this heading"></a></h2>
+<h2>Output<a class="headerlink" href="#output" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>score<span class="classifier">float</span></dt><dd><p>The overall adaJSD score between the two ensembles.</p>
 </dd>
@@ -267,7 +268,7 @@ the number of residues.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.get_ataJSD_profile">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_ataJSD_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_ataJSD_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_ataJSD_profile" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_ataJSD_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_ataJSD_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_ataJSD_profile" title="Permalink to this definition"></a></dt>
 <dd><blockquote>
 <div><p>Utility function to calculate the ataJSD score between two ensembles and
 return a profile with JSD scores for each alpha angle in the proteins.</p>
@@ -300,11 +301,11 @@ comparisons.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.get_num_comparison_bins">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_num_comparison_bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_num_comparison_bins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_num_comparison_bins" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_num_comparison_bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_num_comparison_bins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_num_comparison_bins" title="Permalink to this definition"></a></dt>
 <dd><p>Get the number of bins to be used in comparison between two ensembles using
 an histogram-based score (such as a JSD approximation).</p>
 <section id="id4">
-<h2>Parameters<a class="headerlink" href="#id4" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h2>
 <dl>
 <dt>bins: Union[str, int]</dt><dd><p>Determines the number of bins to be used. When providing an <cite>int</cite>, the
 same value will simply be returned. When providing a string, the following
@@ -329,7 +330,7 @@ is a string.</p>
 </dl>
 </section>
 <section id="id7">
-<h2>Returns<a class="headerlink" href="#id7" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>num_bins: int</dt><dd><p>Number of bins.</p>
 </dd>
@@ -339,12 +340,12 @@ is a string.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.get_ramaJSD_profile">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_ramaJSD_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_ramaJSD_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_ramaJSD_profile" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_ramaJSD_profile</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_ramaJSD_profile"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_ramaJSD_profile" title="Permalink to this definition"></a></dt>
 <dd><p>Utility function to calculate the ramaJSD score between two ensembles and
 return a profile with JSD scores for the Ramachandran plots of pair of
 corresponding residue in the proteins.</p>
 <section id="id8">
-<h2>Parameters<a class="headerlink" href="#id8" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
@@ -355,7 +356,7 @@ corresponding residue in the proteins.</p>
 </dl>
 </section>
 <section id="id11">
-<h2>Returns<a class="headerlink" href="#id11" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>score<span class="classifier">float</span></dt><dd><p>The overall ramaJSD score between the two ensembles.</p>
 </dd>
@@ -371,12 +372,12 @@ comparisons.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.percentile_func">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">percentile_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#percentile_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.percentile_func" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">percentile_func</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">a</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#percentile_func"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.percentile_func" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.process_all_vs_all_output">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">process_all_vs_all_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparison_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#process_all_vs_all_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.process_all_vs_all_output" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">process_all_vs_all_output</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">comparison_out</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">confidence_level</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.95</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#process_all_vs_all_output"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.process_all_vs_all_output" title="Permalink to this definition"></a></dt>
 <dd><p>Takes as input a dictionary produced as output of the <cite>all_vs_all_comparison</cite>
 function. If a bootstrap analysis was performed in <cite>all_vs_all_comparison</cite>,
 this function will assign bootstrap confidence intervals.</p>
@@ -384,12 +385,12 @@ this function will assign bootstrap confidence intervals.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_adaJSD">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_adaJSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_adaJSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_adaJSD" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_adaJSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_adaJSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_adaJSD" title="Permalink to this definition"></a></dt>
 <dd><p>Utility function to calculate the adaJSD (carbon Alfa Distance Average JSD)
 score between two ensembles. The score evaluates the divergence between
 distributions of Ca-Ca distances of the ensembles.</p>
 <section id="id12">
-<h2>Parameters<a class="headerlink" href="#id12" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory],</dt><dd><p>Two Ensemble or mdtraj.Trajectory objects storing the ensemble data to
 compare.</p>
@@ -410,7 +411,7 @@ information.</p>
 </dl>
 </section>
 <section id="id13">
-<h2>Returns<a class="headerlink" href="#id13" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>avg_score<span class="classifier">float</span></dt><dd><p>The average JSD score across the F features.</p>
 </dd>
@@ -435,20 +436,20 @@ information.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_ataJSD">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_ataJSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_ataJSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_ataJSD" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_ataJSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_ataJSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_ataJSD" title="Permalink to this definition"></a></dt>
 <dd><p>Utility function to calculate the ataJSD (Alpha Torsion Average JSD) score
 between two ensembles. The score evaluates the divergence between
 distributions of alpha torsion angles (the angles formed by four consecutive
 Ca atoms in a protein) of the ensembles.</p>
 <section id="id14">
-<h2>Parameters<a class="headerlink" href="#id14" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
 </dl>
 </section>
 <section id="id15">
-<h2>Returns<a class="headerlink" href="#id15" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>avg_score<span class="classifier">float</span></dt><dd><p>The average JSD score across the F features.</p>
 </dd>
@@ -473,7 +474,7 @@ Ca atoms in a protein) of the ensembles.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_avg_2d_angle_jsd">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_avg_2d_angle_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_avg_2d_angle_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_avg_2d_angle_jsd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_avg_2d_angle_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_avg_2d_angle_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_avg_2d_angle_jsd" title="Permalink to this definition"></a></dt>
 <dd><p>Takes as input two (<a href="#id16"><span class="problematic" id="id17">*</span></a>, F, 2) bidimensional feature matrices and computes an
 average JSD score over all F bidimensional features by discretizing them
 in 2d histograms. The features in this functions are supposed to be angles
@@ -482,7 +483,7 @@ whose values range from -math.pi to math.pi. For example, int the
 residues in a protein of length L=F+2 (first and last residues don’t have
 both phi and psi values).</p>
 <section id="id18">
-<h2>Parameters<a class="headerlink" href="#id18" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>p_data, q_data: np.ndarray</dt><dd><p>NumPy arrays of shape (<a href="#id19"><span class="problematic" id="id20">*</span></a>, F, 2) containing samples from F bi-dimensional
 distributions to be compared.</p>
@@ -500,7 +501,7 @@ in the calculation.</p>
 </dl>
 </section>
 <section id="id21">
-<h2>Returns<a class="headerlink" href="#id21" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>results: Union[float, Tuple[float, np.ndarray]]</dt><dd><p>If <cite>return_bins</cite> is <cite>False</cite>, only returns a float value for the JSD
 score. The score will range from 0 (no common support) to log(2)
@@ -514,12 +515,12 @@ will also return the F scores used to compute the average JSD score.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_avg_jsd">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_avg_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_avg_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_avg_jsd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_avg_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">m1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">m2</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_avg_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_avg_jsd" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_histogram_jsd">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_histogram_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_histogram_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_histogram_jsd" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_histogram_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">p_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">q_data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">limits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_histogram_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_histogram_jsd" title="Permalink to this definition"></a></dt>
 <dd><p>Scores an approximation of Jensen-Shannon divergence by discretizing in a
 histogram the values two 1d samples provided as input.</p>
 <dl class="field-list simple">
@@ -528,7 +529,7 @@ histogram the values two 1d samples provided as input.</p>
 </dd>
 </dl>
 <section id="id22">
-<h2>Parameters<a class="headerlink" href="#id22" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h2>
 <dl>
 <dt>p_data, q_data: np.ndarray</dt><dd><p>NumPy arrays of shape (<a href="#id23"><span class="problematic" id="id24">*</span></a>, ) containing samples from two mono-dimensional
 distribution to be compared.</p>
@@ -561,7 +562,7 @@ range spanned by the bins will be define by the <cite>limits</cite> argument.</p
 </dl>
 </section>
 <section id="id25">
-<h2>Returns<a class="headerlink" href="#id25" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>results: Union[float, Tuple[float, np.ndarray]]</dt><dd><p>If <cite>return_bins</cite> is <cite>False</cite>, only returns a float value for the JSD
 score. The score will range from 0 (no common support) to log(2)
@@ -574,19 +575,19 @@ the JSD score and the number of bins.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_ramaJSD">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_ramaJSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_ramaJSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_ramaJSD" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_ramaJSD</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ens_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ens_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_ramaJSD"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_ramaJSD" title="Permalink to this definition"></a></dt>
 <dd><p>Utility unction to calculate the ramaJSD (Ramachandran plot average JSD)
 score between two ensembles. The score evaluates the divergence between
 distributions of phi-psi torsion angles of every residue in the ensembles.</p>
 <section id="id26">
-<h2>Parameters<a class="headerlink" href="#id26" title="Link to this heading"></a></h2>
+<h2>Parameters<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
 </dl>
 </section>
 <section id="id27">
-<h2>Returns<a class="headerlink" href="#id27" title="Link to this heading"></a></h2>
+<h2>Returns<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h2>
 <dl class="simple">
 <dt>avg_score<span class="classifier">float</span></dt><dd><p>The average JSD score across the F features.</p>
 </dd>
@@ -611,12 +612,12 @@ distributions of phi-psi torsion angles of every residue in the ensembles.</p>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.sqrt_rule">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">sqrt_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#sqrt_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.sqrt_rule" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">sqrt_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#sqrt_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.sqrt_rule" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.sturges_rule">
-<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">sturges_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#sturges_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.sturges_rule" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">sturges_rule</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#sturges_rule"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.sturges_rule" title="Permalink to this definition"></a></dt>
 <dd></dd></dl>
 
 </section>
