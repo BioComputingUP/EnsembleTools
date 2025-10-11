@@ -22,7 +22,9 @@ extensions = [
     'sphinx.ext.autodoc',
     'sphinx.ext.viewcode',
     'sphinx_autodoc_typehints',
-    'sphinx_design'   
+    'sphinx_design',
+    'sphinx.ext.mathjax',   # renders LaTeX equations in HTML
+       
 ]
 
 templates_path = ['_templates']

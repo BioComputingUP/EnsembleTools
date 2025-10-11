@@ -1,22 +1,22 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Comparing Ensambles &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -64,7 +64,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Package Overview</a></li>
 </ul>
 
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="comparing-ensambles">
-<h1>Comparing Ensambles<a class="headerlink" href="#comparing-ensambles" title="Link to this heading"></a></h1>
+<h1>Comparing Ensambles<a class="headerlink" href="#comparing-ensambles" title="Permalink to this heading"></a></h1>
 <p>IDPET implements different scores to compare protein ensembles with the same number of residues L, even if their sequences differ. These scores are based on JSD and they compare probability distributions of two interatomic distances or torsion angles.</p>
 <p>To estimate JSD between such continuous variables, values are discretized in histograms of N <sub>bins</sub> bins, similar to previous studies. If we define as P and Q the distributions of a molecular feature in two ensembles, their JSD is:</p>
 <div class="math notranslate nohighlight">
@@ -110,21 +110,21 @@
 <li><p><strong>ramaJSD</strong> (RAMAchandran plot average JSD)</p></li>
 </ul>
 <section id="adajsd">
-<h2>adaJSD<a class="headerlink" href="#adajsd" title="Link to this heading"></a></h2>
+<h2>adaJSD<a class="headerlink" href="#adajsd" title="Permalink to this heading"></a></h2>
 <p>The adaJSD score compares Cα-Cα distances in two ensembles and is defined as:</p>
 <div class="math notranslate nohighlight">
 \[adaJSD=\frac{1}{Npairs} \sum_{j-i&gt;1}^{ } JSD( D_{ij}^{A} || D_{ij}^{B})\]</div>
 <p>where <span class="math notranslate nohighlight">\(D_{ij}^{A}\)</span> and <span class="math notranslate nohighlight">\(D_{ij}^{B}\)</span> are the distance distributions between residue i and j in ensembles A and B, and <span class="math notranslate nohighlight">\(Npairs= {(L-1)(L-2)}/{2}\)</span> is the total number of distances evaluated. For each distance, its histogram range is defined by its minimum and maximum values in the ensembles.</p>
 </section>
 <section id="atajsd">
-<span id="id1"></span><h2>ataJSD<a class="headerlink" href="#atajsd" title="Link to this heading"></a></h2>
+<span id="id1"></span><h2>ataJSD<a class="headerlink" href="#atajsd" title="Permalink to this heading"></a></h2>
 <p>The ataJSD (Alpha Torsion Average JSD) score compares α angle distributions:</p>
 <div class="math notranslate nohighlight">
 \[\text{ataJSD} = \frac{1}{N_{\alpha}} \sum_{i=2} \text{JSD}\left( T^{[A]}_{i-1,i,i+2,i+3} \parallel T^{[B]}_{i-1,i,i+2,i+3} \right)\]</div>
 <p>where <span class="math notranslate nohighlight">\(N_{\alpha} = L - 3\)</span> is the number of α angles in a protein and <span class="math notranslate nohighlight">\(T^{[A]}_{i-1,i,i+2,i+3}\)</span> and <span class="math notranslate nohighlight">\(T^{[B]}_{i-1,i,i+2,i+3}\)</span> are the distributions of α angles formed by residue <span class="math notranslate nohighlight">\(i\)</span> and its neighbors. The histogram range is always <span class="math notranslate nohighlight">\(- \pi\)</span> to <span class="math notranslate nohighlight">\(\pi\)</span>.</p>
 </section>
 <section id="ramajsd">
-<span id="id2"></span><h2>ramaJSD<a class="headerlink" href="#ramajsd" title="Link to this heading"></a></h2>
+<span id="id2"></span><h2>ramaJSD<a class="headerlink" href="#ramajsd" title="Permalink to this heading"></a></h2>
 <p>The ramaJSD (RAMAchandran plot average JSD) score compares joint φ and ψ angle distributions:</p>
 <div class="math notranslate nohighlight">
 \[\text{ramaJSD} = \frac{1}{N_{\text{rama}}} \sum_{i=2} \text{JSD}\left( R^{[A]}_{i} \parallel R^{[B]}_{i} \right)\]</div>

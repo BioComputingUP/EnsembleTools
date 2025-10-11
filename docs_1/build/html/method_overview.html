@@ -1,22 +1,22 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Methods overview &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -69,7 +69,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Package Overview</a></li>
 </ul>
 
@@ -100,9 +100,9 @@
            <div itemprop="articleBody">
              
   <section id="methods-overview">
-<h1>Methods overview<a class="headerlink" href="#methods-overview" title="Link to this heading"></a></h1>
+<h1>Methods overview<a class="headerlink" href="#methods-overview" title="Permalink to this heading"></a></h1>
 <section id="t-sne-t-distributed-stochastic-neighbor-embedding">
-<h2>t-SNE (t-distributed Stochastic Neighbor Embedding.)<a class="headerlink" href="#t-sne-t-distributed-stochastic-neighbor-embedding" title="Link to this heading"></a></h2>
+<h2>t-SNE (t-distributed Stochastic Neighbor Embedding.)<a class="headerlink" href="#t-sne-t-distributed-stochastic-neighbor-embedding" title="Permalink to this heading"></a></h2>
 <p>t-SNE is a technique that reduces the dimensionality of data while preserving relationships between data points. It minimizes the Kullback-Leibler divergence between the joint probabilities of the high-dimensional data and its low-dimensional embedding.
 The process begins by randomly projecting data points into a low-dimensional space. These points are gradually adjusted, forming distinct clusters. At each step, points are attracted to nearby points and repelled from distant ones based on similarity measures.</p>
 <p>Steps involved in t-SNE:</p>
@@ -153,7 +153,7 @@ Conversely, a too low value risks slowing down the algorithm’s convergence. Th
 </div>
 </section>
 <section id="umap-uniform-manifold-approximation-projection">
-<h2>UMAP (Uniform Manifold Approximation &amp; Projection)<a class="headerlink" href="#umap-uniform-manifold-approximation-projection" title="Link to this heading"></a></h2>
+<h2>UMAP (Uniform Manifold Approximation &amp; Projection)<a class="headerlink" href="#umap-uniform-manifold-approximation-projection" title="Permalink to this heading"></a></h2>
 <p>UMAP (Uniform Manifold Approximation and Projection) is a non-linear dimensionality reduction algorithm that preserves the topological structure of high-dimensional data. It calculates similarity scores to identify clusters and maintains these relationships in the low-dimensional space. By adjusting the <cite>n_neighbors</cite> parameter, UMAP balances local and global structure.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis</span><span class="o">.</span><span class="n">reduce_features</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;umap&#39;</span><span class="p">,</span>  <span class="n">n_neighbors</span> <span class="o">=</span> <span class="p">[</span><span class="mi">10</span><span class="p">,</span> <span class="mi">20</span><span class="p">,</span>  <span class="mi">50</span><span class="p">,</span> <span class="mi">100</span><span class="p">],</span> <span class="n">circular</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">range_n_clusters</span><span class="o">=</span><span class="nb">range</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span><span class="mi">10</span><span class="p">,</span><span class="mi">1</span><span class="p">))</span>
 </pre></div>
@@ -199,7 +199,7 @@ This can lead to a loss of important details in the local relationships between 
 </div>
 </section>
 <section id="pca-principal-component-analysis">
-<h2>PCA (Principal Component Analysis)<a class="headerlink" href="#pca-principal-component-analysis" title="Link to this heading"></a></h2>
+<h2>PCA (Principal Component Analysis)<a class="headerlink" href="#pca-principal-component-analysis" title="Permalink to this heading"></a></h2>
 <p>PCA is a dimensionality reduction technique based on the decomposition of the eigenvectors of the covariance matrix of high-dimensional data, aiming to identify a set of components that capture the maximum variance present in the data.</p>
 <p>To achieve this, PCA projects the original data onto a new coordinate system defined by these principal components. The first principal component corresponds to the direction with the highest variance in the data, the second principal component to the direction with the second-highest variance, and so forth.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis</span><span class="o">.</span><span class="n">reduce_features</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span> <span class="n">num_dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
@@ -214,7 +214,7 @@ Conversely, a too low value might excessively reduce the dimensionality of the d
 </div>
 </section>
 <section id="kernelpca-kernel-principal-component-analysis">
-<h2>KernelPCA (Kernel-Principal Component Analysis)<a class="headerlink" href="#kernelpca-kernel-principal-component-analysis" title="Link to this heading"></a></h2>
+<h2>KernelPCA (Kernel-Principal Component Analysis)<a class="headerlink" href="#kernelpca-kernel-principal-component-analysis" title="Permalink to this heading"></a></h2>
 <p>Kernel Principal Component Analysis (KPCA) using the scikit-learn library to study various properties of conformational ensembles. KPCA is particularly effective for analyzing non-linear features, such as angular data with periodic properties. To handle angular data appropriately, we transform each angle into its sine and cosine components, capturing the inherent circular nature of the data. Using these transformed values, we construct the kernel matrix by calculating pairwise distances between the data points with a custom kernel function. This procedure allows us to preserve the periodic nature of the angles and effectively analyze the data in a lower-dimensional space, providing insights into the conformational properties of the ensembles.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis</span><span class="o">.</span><span class="n">reduce_features</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;kpca&#39;</span><span class="p">,</span> <span class="n">num_dim</span><span class="o">=</span><span class="mi">3</span><span class="p">)</span>
 </pre></div>

@@ -1,22 +1,22 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Global analysis &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
       <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
@@ -71,7 +71,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Package Overview</a></li>
 </ul>
 
@@ -101,7 +101,7 @@
            <div itemprop="articleBody">
              
   <section id="global-analysis">
-<h1>Global analysis<a class="headerlink" href="#global-analysis" title="Link to this heading"></a></h1>
+<h1>Global analysis<a class="headerlink" href="#global-analysis" title="Permalink to this heading"></a></h1>
 <p>In this demo we show how we can extract and visualize the global properties from conformational ensembles using IDPET.</p>
 <p>The global properties that studied here are : Radius of Gyration, Asphericity, Prolateness, End-to-End distance, Flory scaling exponent and Global SASA.</p>
 <p>To illustrate the output of our functions, we have chosen the analysis of the SH3 protein as an example. The graphs we present are related to the analysis of this protein, comparing three distinct ensembles downloaded directly from the Protein Ensemble Database (PED): PED00156e001, PED00157e001, and PED00158e001. These ensembles represent structural states of the N-terminal SH3 domain of the Drk protein (residues 1-59) in its unfolded form, generated with different approaches to generate pools of conformations.</p>
@@ -111,10 +111,10 @@
 <li><p><strong>PED00158</strong>: This ensemble is a combination of conformations from the RANDOM and ENSEMBLE pools, offering greater conformational diversity.</p></li>
 </ul>
 <section id="initialize-the-analysis">
-<h2>Initialize the analysis<a class="headerlink" href="#initialize-the-analysis" title="Link to this heading"></a></h2>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble</span><span class="w"> </span><span class="kn">import</span> <span class="n">Ensemble</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.ensemble_analysis</span><span class="w"> </span><span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.visualization</span><span class="w"> </span><span class="kn">import</span> <span class="n">Visualization</span>
+<h2>Initialize the analysis<a class="headerlink" href="#initialize-the-analysis" title="Permalink to this heading"></a></h2>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">from</span> <span class="nn">idpet.ensemble</span> <span class="kn">import</span> <span class="n">Ensemble</span>
+<span class="kn">from</span> <span class="nn">idpet.ensemble_analysis</span> <span class="kn">import</span> <span class="n">EnsembleAnalysis</span>
+<span class="kn">from</span> <span class="nn">idpet.visualization</span> <span class="kn">import</span> <span class="n">Visualization</span>
 
 <span class="n">ensembles</span> <span class="o">=</span> <span class="p">[</span>
  <span class="n">Ensemble</span><span class="p">(</span><span class="s1">&#39;PED00156e001&#39;</span><span class="p">,</span> <span class="n">database</span><span class="o">=</span><span class="s1">&#39;ped&#39;</span><span class="p">),</span> <span class="c1">#The ensemble derived from Random pool</span>
@@ -132,7 +132,7 @@
 </div>
 </section>
 <section id="radius-of-gyration">
-<h2>Radius of gyration<a class="headerlink" href="#radius-of-gyration" title="Link to this heading"></a></h2>
+<h2>Radius of gyration<a class="headerlink" href="#radius-of-gyration" title="Permalink to this heading"></a></h2>
 <p>The radius of gyration of a protein is the square root of the mean square distances of the protein residues from the protein’s center of mass. It is therefore a measure of the compactness of its three-dimensional structure.</p>
 <p><strong>parameters:</strong></p>
 <p><em>“bins”: Number of bins for the histogram; default is 50.</em></p>
@@ -155,7 +155,7 @@
 <img alt="_images/rg.png" class="align-center" src="_images/rg.png" />
 </section>
 <section id="end-to-end-distance">
-<h2>End to end distance<a class="headerlink" href="#end-to-end-distance" title="Link to this heading"></a></h2>
+<h2>End to end distance<a class="headerlink" href="#end-to-end-distance" title="Permalink to this heading"></a></h2>
 <p>The end_to_end_distances function is designed to visualize the distributions of end-to-end distances in molecular structure trajectories. The end-to-end distance refers to the distance between the first and last atom in a molecular chain, a parameter often used to understand the overall size of conformations of a molecule.</p>
 <p><strong>parameters:</strong></p>
 <p><em>“rg_norm”:If set to True, normalizes the end-to-end distances based on the average radius of gyration.[The default value is False]</em></p>
@@ -192,7 +192,7 @@
 <img alt="_images/end_to_end_norm.png" class="align-center" src="_images/end_to_end_norm.png" />
 </section>
 <section id="asphericity-distribution">
-<h2>Asphericity distribution<a class="headerlink" href="#asphericity-distribution" title="Link to this heading"></a></h2>
+<h2>Asphericity distribution<a class="headerlink" href="#asphericity-distribution" title="Permalink to this heading"></a></h2>
 <p>Asphericity is a measure of how much a molecule deviates from a perfect spherical shape. It indicates the extent to which a molecule is elongated or flattened compared to an ideal sphere. A protein with an asphericity value greater than zero is generally more elongated or less symmetric than a sphere.</p>
 <p>To calculate asphericity, the gyration tensor is first computed for each frame of the trajectory. The eigenvalues of this tensor, which represent the principal moments of inertia and provide insights into the molecule’s shape and symmetry, are then sorted in ascending order.</p>
 <p>Finally, asphericity is calculated using the following formula:</p>
@@ -219,7 +219,7 @@
 <img alt="_images/asphericity1.png" class="align-center" src="_images/asphericity1.png" />
 </section>
 <section id="prolatness-distribution">
-<h2>Prolatness distribution<a class="headerlink" href="#prolatness-distribution" title="Link to this heading"></a></h2>
+<h2>Prolatness distribution<a class="headerlink" href="#prolatness-distribution" title="Permalink to this heading"></a></h2>
 <p>Prolateness is a measure of a molecule’s shape, indicating how elongated it is relative to its transverse dimensions. The prolateness value ranges from +1, representing a highly elongated (prolate) shape, to -1, which corresponds to a flattened (oblate) shape. A value of 0 indicates a perfect spherical shape.</p>
 <p>To calculate prolateness, the gyration tensor is first computed for each frame of the trajectory. The eigenvalues of this tensor, which represent the molecule’s principal dimensions along its axes of inertia, are sorted in ascending order. Prolateness is then calculated using the following formula:</p>
 <div class="math notranslate nohighlight">
@@ -241,7 +241,7 @@
 <img alt="_images/prolatness.png" class="align-center" src="_images/prolatness.png" />
 </section>
 <section id="radius-of-gyration-vs-asphericity">
-<h2>Radius of gyration vs Asphericity<a class="headerlink" href="#radius-of-gyration-vs-asphericity" title="Link to this heading"></a></h2>
+<h2>Radius of gyration vs Asphericity<a class="headerlink" href="#radius-of-gyration-vs-asphericity" title="Permalink to this heading"></a></h2>
 <p>The function <em>rg_vs_asphericity</em> also prints the Pearson correlation coefficients, which measure the strength and direction of the linear relationship between the radius of gyration (Rg) and asphericity. A Pearson coefficient value close to 1 or -1 indicates a strong positive or negative correlation, respectively, while a value close to 0 indicates a weak or no correlation.</p>
 <p><em>“save”: If True, saves the plot as an image file; default is False.</em></p>
 <p><em>“ax”: The matplotlib Axes object on which to plot; if None, creates a new figure and axes.</em></p>
@@ -254,7 +254,7 @@
 <img alt="_images/rg_vs_asph.png" class="align-center" src="_images/rg_vs_asph.png" />
 </section>
 <section id="radius-of-gyration-vs-prolatness">
-<h2>Radius of gyration vs Prolatness<a class="headerlink" href="#radius-of-gyration-vs-prolatness" title="Link to this heading"></a></h2>
+<h2>Radius of gyration vs Prolatness<a class="headerlink" href="#radius-of-gyration-vs-prolatness" title="Permalink to this heading"></a></h2>
 <p>The function <em>rg_vs_prolateness</em> also prints the Pearson correlation coefficients, which measure the strength and direction of the linear relationship between the radius of gyration (Rg) and prolateness. A Pearson coefficient value close to 1 or -1 indicates a strong positive or negative correlation, respectively, while a value close to 0 indicates a weak or no correlation.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">rg_vs_prolatness</span><span class="p">()</span>
 </pre></div>
@@ -265,7 +265,7 @@
 <img alt="_images/rg_vs_prol.png" class="align-center" src="_images/rg_vs_prol.png" />
 </section>
 <section id="global-sasa-distribution">
-<h2>Global sasa distribution<a class="headerlink" href="#global-sasa-distribution" title="Link to this heading"></a></h2>
+<h2>Global sasa distribution<a class="headerlink" href="#global-sasa-distribution" title="Permalink to this heading"></a></h2>
 <p>The acronym ‘SASA’ stands for ‘Solvent Accessible Surface Area,’ which denotes the surface area of a molecule that is accessible to the solvent. The Shrake-Rupley algorithm implemented in MDTraj calculates SASA based on the positions of atoms and the specified probe radius. This algorithm partitions the molecular surface into a grid and computes areas accessible to solvent molecules. At the conformational level, ‘total SASA’ quantifies the overall surface area accessible to the solvent for each molecular conformation in the trajectory. At the residue level, SASA is computed by summing the solvent-accessible surface areas of all residues, offering insights into individual residue accessibility to the solvent.</p>
 <p><em>“bins”: Number of bins for the histogram; default is 50.</em></p>
 <p><em>“hist_range”: A tuple defining the min and max values for the histogram; if None, uses the data range.</em></p>
@@ -283,7 +283,7 @@
 <img alt="_images/output.png" class="align-center" src="_images/output.png" />
 </section>
 <section id="flory-scaling-exponents">
-<h2>Flory scaling exponents<a class="headerlink" href="#flory-scaling-exponents" title="Link to this heading"></a></h2>
+<h2>Flory scaling exponents<a class="headerlink" href="#flory-scaling-exponents" title="Permalink to this heading"></a></h2>
 <p>The Flory exponent is related to both the radius of gyration (Rg) and the end-to-end distance (Ree) of the polymer chain. For an ideal polymer chain at equilibrium—where residue-residue, residue-solvent, and solvent-solvent interactions are balanced—ν = 0.5, signifying a Gaussian chain structure. Deviations from this value indicate different conformational states:</p>
 <p>ν &lt; 0.5: A more compact structure.
 ν &gt; 0.5: A more extended structure.
@@ -294,11 +294,10 @@ As detailed in the paper [<a class="reference external" href="https://doi.org/10
 <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">code</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">v_values</span><span class="p">[</span><span class="n">code</span><span class="p">]</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/flory.png"><img alt="_images/flory.png" class="align-center" src="_images/flory.png" style="width: 247.2px; height: 98.39999999999999px;" />
-</a>
+<a class="reference internal image-reference" href="_images/flory.png"><img alt="_images/flory.png" class="align-center" src="_images/flory.png" style="width: 247.2px; height: 98.39999999999999px;" /></a>
 </section>
 <section id="summary">
-<h2>Summary<a class="headerlink" href="#summary" title="Link to this heading"></a></h2>
+<h2>Summary<a class="headerlink" href="#summary" title="Permalink to this heading"></a></h2>
 <p>This code snippet calculates and displays a summary of features for each analyzed dataset. The function <em>get_features_summary_dataframe</em> is used to create a summary DataFrame that includes information about the selected key parameters.</p>
 <p>In the provided example, the following parameters are selected: radius of gyration (rg), end-to-end distance (end_to_end), end-to-end distance to radius of gyration ratio (ee_on_rg), and Flory exponent (flory_exponent). This DataFrame is then displayed using the display(summary) statement.</p>
 <p><em>selected_features</em> : List of feature extraction methods to be used for summarizing the ensembles. Default is [“rg”, “asphericity”, “prolateness”, “sasa”, “end_to_end”, “flory_exponent”].</p>

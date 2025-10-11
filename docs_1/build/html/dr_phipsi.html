@@ -1,22 +1,22 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dimensionality reduction based on angular-based features &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -63,7 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Package Overview</a></li>
 </ul>
 
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="dimensionality-reduction-based-on-angular-based-features">
-<h1>Dimensionality reduction based on angular-based features<a class="headerlink" href="#dimensionality-reduction-based-on-angular-based-features" title="Link to this heading"></a></h1>
+<h1>Dimensionality reduction based on angular-based features<a class="headerlink" href="#dimensionality-reduction-based-on-angular-based-features" title="Permalink to this heading"></a></h1>
 <p>Here, we demonstrate the application of various dimensionality reduction methods to visualize angular features in a reduced-dimensional space. As an example, we will focus specifically on three selected PED ensembles for N-terminal SH3 domain of Drk protein.</p>
 <ul class="simple">
 <li><p><strong>PED00156</strong>: This ensemble consists of conformations generated randomly and optimized through an iterative process.</p></li>
@@ -105,8 +105,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="n">featurization</span><span class="o">=</span><span class="s1">&#39;phi_psi&#39;</span><span class="p">)</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/extraction1.png"><img alt="_images/extraction1.png" class="align-center" src="_images/extraction1.png" style="width: 429.0px; height: 105.0px;" />
-</a>
+<a class="reference internal image-reference" href="_images/extraction1.png"><img alt="_images/extraction1.png" class="align-center" src="_images/extraction1.png" style="width: 429.0px; height: 105.0px;" /></a>
 <p><strong>PARAMETERS:</strong></p>
 <p>The <em>extract_features</em> method of the analysis object is designed to extract specific features from the loaded ensembles.</p>
 <p>The parameters we can set to extract different angular data are:</p>
@@ -169,10 +168,8 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">dimensionality_reduction_scatter</span><span class="p">(</span><span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;rg&#39;</span><span class="p">,</span> <span class="n">kde_by_ensemble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">plotly</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/umap_plotly.png"><img alt="_images/umap_plotly.png" class="align-center" src="_images/umap_plotly.png" style="width: 759.6px; height: 271.2px;" />
-</a>
-<a class="reference internal image-reference" href="_images/scatter_phi_psi.png"><img alt="_images/scatter_phi_psi.png" class="align-center" src="_images/scatter_phi_psi.png" style="width: 809.0px; height: 196.0px;" />
-</a>
+<a class="reference internal image-reference" href="_images/umap_plotly.png"><img alt="_images/umap_plotly.png" class="align-center" src="_images/umap_plotly.png" style="width: 759.6px; height: 271.2px;" /></a>
+<a class="reference internal image-reference" href="_images/scatter_phi_psi.png"><img alt="_images/scatter_phi_psi.png" class="align-center" src="_images/scatter_phi_psi.png" style="width: 809.0px; height: 196.0px;" /></a>
 <p><strong>PARAMETERS:</strong></p>
 <ul class="simple">
 <li><p><em>color_by: Specifies the feature used to color points in the scatter plot. Options include: “rg” (radius of gyration), “prolateness”, “asphericity”, “sasa” (solvent accessible surface area), and “end_to_end”. Default is “rg”.</em></p></li>
@@ -188,14 +185,12 @@
 <span class="n">vis</span><span class="o">.</span><span class="n">pca_2d_landscapes</span><span class="p">(</span><span class="n">save</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/pca_2d_new.png"><img alt="_images/pca_2d_new.png" class="align-center" src="_images/pca_2d_new.png" style="width: 278.4px; height: 1148.3999999999999px;" />
-</a>
+<a class="reference internal image-reference" href="_images/pca_2d_new.png"><img alt="_images/pca_2d_new.png" class="align-center" src="_images/pca_2d_new.png" style="width: 278.4px; height: 1148.3999999999999px;" /></a>
 <p>You can also generate a 1D histogram to visualize the distribution of the data across different dimensions or components. This provides an overview of how the data is distributed along specific axes, helping to identify patterns or trends in the dataset.</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">pca_1d_histograms</span><span class="p">(</span><span class="n">sel_components</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/pca_1d_new.png"><img alt="_images/pca_1d_new.png" class="align-center" src="_images/pca_1d_new.png" style="width: 279.59999999999997px; height: 424.2px;" />
-</a>
+<a class="reference internal image-reference" href="_images/pca_1d_new.png"><img alt="_images/pca_1d_new.png" class="align-center" src="_images/pca_1d_new.png" style="width: 279.59999999999997px; height: 424.2px;" /></a>
 </section>
 
 

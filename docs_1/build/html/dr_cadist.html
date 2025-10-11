@@ -1,22 +1,22 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="./">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Dimensionality reduction based on distance-based features &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="_static/jquery.js?v=5d32c60e"></script>
       <script src="_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="_static/documentation_options.js?v=01f34227"></script>
-      <script src="_static/doctools.js?v=9bcbadda"></script>
-      <script src="_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="./" id="documentation_options" src="_static/documentation_options.js?v=2389946f"></script>
+      <script src="_static/doctools.js?v=888ff710"></script>
+      <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
@@ -63,7 +63,7 @@
 <li class="toctree-l1"><a class="reference internal" href="ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="modules.html">Package Overview</a></li>
 </ul>
 
@@ -94,7 +94,7 @@
            <div itemprop="articleBody">
              
   <section id="dimensionality-reduction-based-on-distance-based-features">
-<h1>Dimensionality reduction based on distance-based features<a class="headerlink" href="#dimensionality-reduction-based-on-distance-based-features" title="Link to this heading"></a></h1>
+<h1>Dimensionality reduction based on distance-based features<a class="headerlink" href="#dimensionality-reduction-based-on-distance-based-features" title="Permalink to this heading"></a></h1>
 <p>Here, we demonstrate the application of various dimensionality reduction methods to visualize distance-based features in a reduced-dimensional space. As an example, we will focus specifically on three selected PED ensembles for N-terminal SH3 domain of Drk protein.</p>
 <p><strong>PED00156</strong>: This ensemble consists of conformations generated randomly and optimized through an iterative process.</p>
 <p><strong>PED00157</strong>: This ensemble includes conformations generated using the ENSEMBLE method, which creates a variety of realistic conformations of an unfolded protein.</p>
@@ -103,8 +103,7 @@
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis</span><span class="o">.</span><span class="n">extract_features</span><span class="p">(</span><span class="n">featurization</span><span class="o">=</span><span class="s1">&#39;ca_dist&#39;</span> <span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="mi">2</span> <span class="p">,</span> <span class="n">max_sep</span><span class="o">=</span><span class="kc">None</span><span class="p">)</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/extraction.png"><img alt="_images/extraction.png" class="align-center" src="_images/extraction.png" style="width: 446.0px; height: 104.0px;" />
-</a>
+<a class="reference internal image-reference" href="_images/extraction.png"><img alt="_images/extraction.png" class="align-center" src="_images/extraction.png" style="width: 446.0px; height: 104.0px;" /></a>
 <p>The extract_features function from “ensamble_analysis.py” is designed to extract specific features from a dataset related to proteins.</p>
 <p>The parameters we can set are:</p>
 <p><em>“featurization”: Choose between “ca_dist” and “rmsd” as distance-based features.</em></p>
@@ -128,10 +127,8 @@ Here we continue with the analysis of SH3 PED ensembles based on distance-based 
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">dimensionality_reduction_scatter</span><span class="p">(</span><span class="n">color_by</span><span class="o">=</span><span class="s1">&#39;rg&#39;</span><span class="p">,</span> <span class="n">kde_by_ensemble</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="mi">20</span><span class="p">,</span> <span class="n">plotly</span><span class="o">=</span><span class="kc">True</span><span class="p">);</span>
 </pre></div>
 </div>
-<a class="reference internal image-reference" href="_images/plotly_ca_dist.png"><img alt="_images/plotly_ca_dist.png" class="align-center" src="_images/plotly_ca_dist.png" style="width: 733.1999999999999px; height: 272.4px;" />
-</a>
-<a class="reference internal image-reference" href="_images/scatter_ca_dist_tsne.png"><img alt="_images/scatter_ca_dist_tsne.png" class="align-center" src="_images/scatter_ca_dist_tsne.png" style="width: 899.0px; height: 199.0px;" />
-</a>
+<a class="reference internal image-reference" href="_images/plotly_ca_dist.png"><img alt="_images/plotly_ca_dist.png" class="align-center" src="_images/plotly_ca_dist.png" style="width: 733.1999999999999px; height: 272.4px;" /></a>
+<a class="reference internal image-reference" href="_images/scatter_ca_dist_tsne.png"><img alt="_images/scatter_ca_dist_tsne.png" class="align-center" src="_images/scatter_ca_dist_tsne.png" style="width: 899.0px; height: 199.0px;" /></a>
 <p><strong>b- PCA visualisation</strong></p>
 <p>First reduce feature using PCA method:</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">analysis</span><span class="o">.</span><span class="n">reduce_features</span><span class="p">(</span><span class="n">method</span><span class="o">=</span><span class="s1">&#39;pca&#39;</span><span class="p">,</span><span class="n">n_components</span> <span class="o">=</span> <span class="mi">10</span><span class="p">);</span>
@@ -142,33 +139,28 @@ Here we continue with the analysis of SH3 PED ensembles based on distance-based 
 </pre></div>
 </div>
 <p>Plot the cumulative variance. Only applicable when the dimensionality reduction method is “pca”</p>
-<a class="reference internal image-reference" href="_images/cumulative_new.png"><img alt="_images/cumulative_new.png" class="align-center" src="_images/cumulative_new.png" style="width: 281.5px; height: 226.5px;" />
-</a>
+<a class="reference internal image-reference" href="_images/cumulative_new.png"><img alt="_images/cumulative_new.png" class="align-center" src="_images/cumulative_new.png" style="width: 281.5px; height: 226.5px;" /></a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">pca_2d_landscapes</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Plot 2D landscapes when the dimensionality reduction method is “pca” or “kpca”</p>
-<a class="reference internal image-reference" href="_images/2d_land_new.png"><img alt="_images/2d_land_new.png" class="align-center" src="_images/2d_land_new.png" style="width: 232.5px; height: 957.0px;" />
-</a>
+<a class="reference internal image-reference" href="_images/2d_land_new.png"><img alt="_images/2d_land_new.png" class="align-center" src="_images/2d_land_new.png" style="width: 232.5px; height: 957.0px;" /></a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">pca_1d_histograms</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Plot 1D histogram when the dimensionality reduction method is “pca” or “kpca”.</p>
-<a class="reference internal image-reference" href="_images/1d_hist_new.png"><img alt="_images/1d_hist_new.png" class="align-center" src="_images/1d_hist_new.png" style="width: 232.5px; height: 353.5px;" />
-</a>
+<a class="reference internal image-reference" href="_images/1d_hist_new.png"><img alt="_images/1d_hist_new.png" class="align-center" src="_images/1d_hist_new.png" style="width: 232.5px; height: 353.5px;" /></a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">vis</span><span class="o">.</span><span class="n">pca_rg_correlation</span><span class="p">()</span>
 </pre></div>
 </div>
 <p>Examine and plot the correlation between PC dimension 1 and the amount of Rg. Typically high correlation can be detected in case of IDPs/IDRs</p>
-<a class="reference internal image-reference" href="_images/rg_corr_new.png"><img alt="_images/rg_corr_new.png" class="align-center" src="_images/rg_corr_new.png" style="width: 174.0px; height: 533.5px;" />
-</a>
+<a class="reference internal image-reference" href="_images/rg_corr_new.png"><img alt="_images/rg_corr_new.png" class="align-center" src="_images/rg_corr_new.png" style="width: 174.0px; height: 533.5px;" /></a>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">sel_dims</span> <span class="o">=</span> <span class="p">[</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">2</span><span class="p">]</span>  <span class="c1"># Dimensionality reduction feature we want to analyze</span>
 <span class="n">vis</span><span class="o">.</span><span class="n">pca_residue_correlation</span><span class="p">(</span><span class="n">sel_components</span><span class="o">=</span><span class="n">sel_dims</span><span class="p">)</span>
 </pre></div>
 </div>
 <p>Plot the correlation between residues based on PCA weights.</p>
-<a class="reference internal image-reference" href="_images/resid_new.png"><img alt="_images/resid_new.png" class="align-center" src="_images/resid_new.png" style="width: 783.7500000000001px; height: 209.00000000000003px;" />
-</a>
+<a class="reference internal image-reference" href="_images/resid_new.png"><img alt="_images/resid_new.png" class="align-center" src="_images/resid_new.png" style="width: 783.7500000000001px; height: 209.00000000000003px;" /></a>
 </section>
 
 

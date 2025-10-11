@@ -1,4 +1,4 @@
-ensemble_compariosn
+ensemble_comparison
 =========================================================
 
 
