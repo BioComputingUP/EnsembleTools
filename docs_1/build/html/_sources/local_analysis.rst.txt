@@ -89,8 +89,27 @@ To calculate alpha angles, the indices of all Cα atoms in the protein are ident
 
 Relative DSSP (Dictionary of Secondary Structure of Proteins) content
 ------------------------------------------------------------------------
-The following function visualizes the relative content of a specific secondary structure (helix, coil, strand) for each residue in various protein ensembles. It retrieves the DSSP data of the proteins and creates a plot showing the frequency of the selected structure at each position.
-This function does not work for coarse-grained models.
+This function visualizes the **relative content** of a selected secondary structure type (helix, coil, or strand) for each residue across multiple protein ensembles.  
+It retrieves the DSSP data for all ensembles and plots, for each residue position, the **fraction of conformers** adopting the chosen secondary structure.
+
+The relative content for residue *i* and DSSP type *d* is calculated as:
+
+.. math::
+
+   R_i(d) = \frac{N_i(d)}{N_{\text{conf}}}
+
+where:
+
+- :math:`R_i(d)` — relative content of secondary structure type *d* at residue *i*  
+- :math:`N_i(d)` — number of conformers in which residue *i* is assigned DSSP code *d*  
+- :math:`N_{\\text{conf}}` — total number of conformers in the ensemble  
+
+A value of :math:`R_i(d) = 1` indicates that the residue always adopts the specified secondary structure, while :math:`R_i(d) = 0` means it never does.  
+Intermediate values represent partial occupancy, reflecting structural heterogeneity across the ensemble.
+
+.. note::
+
+   This analysis is not applicable to coarse-grained models.
 
 **parameters:**
 

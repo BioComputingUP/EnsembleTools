@@ -157,8 +157,23 @@ If <em>two_d_hist</em> is set to False, it returns a simple scatter plot for all
 </section>
 <section id="relative-dssp-dictionary-of-secondary-structure-of-proteins-content">
 <h2>Relative DSSP (Dictionary of Secondary Structure of Proteins) content<a class="headerlink" href="#relative-dssp-dictionary-of-secondary-structure-of-proteins-content" title="Permalink to this heading"></a></h2>
-<p>The following function visualizes the relative content of a specific secondary structure (helix, coil, strand) for each residue in various protein ensembles. It retrieves the DSSP data of the proteins and creates a plot showing the frequency of the selected structure at each position.
-This function does not work for coarse-grained models.</p>
+<p>This function visualizes the <strong>relative content</strong> of a selected secondary structure type (helix, coil, or strand) for each residue across multiple protein ensembles.
+It retrieves the DSSP data for all ensembles and plots, for each residue position, the <strong>fraction of conformers</strong> adopting the chosen secondary structure.</p>
+<p>The relative content for residue <em>i</em> and DSSP type <em>d</em> is calculated as:</p>
+<div class="math notranslate nohighlight">
+\[R_i(d) = \frac{N_i(d)}{N_{\text{conf}}}\]</div>
+<p>where:</p>
+<ul class="simple">
+<li><p><span class="math notranslate nohighlight">\(R_i(d)\)</span> — relative content of secondary structure type <em>d</em> at residue <em>i</em></p></li>
+<li><p><span class="math notranslate nohighlight">\(N_i(d)\)</span> — number of conformers in which residue <em>i</em> is assigned DSSP code <em>d</em></p></li>
+<li><p><span class="math notranslate nohighlight">\(N_{\\text{conf}}\)</span> — total number of conformers in the ensemble</p></li>
+</ul>
+<p>A value of <span class="math notranslate nohighlight">\(R_i(d) = 1\)</span> indicates that the residue always adopts the specified secondary structure, while <span class="math notranslate nohighlight">\(R_i(d) = 0\)</span> means it never does.
+Intermediate values represent partial occupancy, reflecting structural heterogeneity across the ensemble.</p>
+<div class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This analysis is not applicable to coarse-grained models.</p>
+</div>
 <p><strong>parameters:</strong></p>
 <p><em>“dssp_code”: The selected dssp code , it could be selected between ‘H’ for Helix, ‘C’ for Coil and ‘E’ for strand. It works based on the simplified DSSP codes.</em></p>
 <p><em>“dpi”:The DPI (dots per inch) of the output figure. Default is 96.</em></p>
