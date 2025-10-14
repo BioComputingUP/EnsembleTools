@@ -2678,8 +2678,8 @@ class Visualization:
             else:
                 fig = ax.figure
             for ensemble in ensembles:
-                phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])
-                psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])
+                phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])[:, :-1]
+                psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])[:, 1:]
                 ax.scatter(phi_angles, psi_angles, s=1, label=ensemble.code)
             ax.set_xlabel('Phi (ϕ) Angle (degrees)', fontsize=12)
             ax.set_ylabel('Psi (ψ) Angle (degrees)', fontsize=12)
