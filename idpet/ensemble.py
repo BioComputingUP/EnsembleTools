@@ -1,6 +1,7 @@
 import os
 import sys
 from typing import List, Sequence, Tuple, Union
+import tempfile
 import mdtraj
 import numpy as np
 
@@ -8,7 +9,7 @@ from idpet.featurization.angles import featurize_a_angle, featurize_phi_psi, fea
 from idpet.featurization.distances import featurize_ca_dist
 from idpet.featurization.glob import compute_asphericity, compute_end_to_end_distances, compute_ensemble_sasa, compute_prolateness
 from idpet.featurization.ensemble_level import calc_flory_scaling_exponent
-from idpet.data.io_utils import setup_data_dir
+from idpet.data.io_utils import setup_data_dir, trajectory_extensions
 from idpet.utils import logger
 
 
@@ -36,6 +37,10 @@ class Ensemble():
 
     residue_range : Tuple, optional
         A tuple indicating the start and end of the residue range (inclusive), using 1-based indexing. Default is None.
+    
+    fix_pbc : bool, optional
+        If True, IDPET automatically removes discontinuities arising from periodic boundary conditions using MDTraj’s
+        built-in functions. Only takes effect when 'data_path' is a trajectory file.
 
     Notes
     -----
@@ -43,13 +48,14 @@ class Ensemble():
     - If the database is 'ped', the ensemble code should be in the PED ID format, which consists of a string starting with 'PED' followed by a numeric identifier, and 'e' followed by another numeric identifier. Example: 'PED00423e001'.
     - The `residue_range` parameter uses 1-based indexing, meaning the first residue is indexed as 1.
     """
-    def __init__(self, code: str, data_path: str = None, top_path: str = None, database: str = None, chain_id: str = None, residue_range: Tuple = None) -> None:
+    def __init__(self, code: str, data_path: str = None, top_path: str = None, database: str = None, chain_id: str = None, residue_range: Tuple = None, fix_pbc: bool = False) -> None:
         self.code = code
         self.data_path = data_path
         self.top_path = top_path
         self.database = database
         self.chain_id = chain_id
         self.residue_range = residue_range
+        self.fix_pbc = fix_pbc
         self.trajectory = None
     
     def _save_clean_topology(self, frame, output_path):
@@ -61,9 +67,8 @@ class Ensemble():
         min_residue_number = min(pdb_res_nums)
         shift = 1 - min_residue_number if min_residue_number <= 0 else 0
 
-        atom_res_map = {atom.index: atom.residue.index for atom in frame.topology.atoms}
+        atom_res_map = {atom.serial: atom.residue.index for atom in frame.topology.atoms}
 
-        import tempfile
         with tempfile.NamedTemporaryFile(suffix=".pdb", delete=False) as temp_pdb:
             frame.save(temp_pdb.name)
             with open(temp_pdb.name, 'r') as f:
@@ -72,7 +77,7 @@ class Ensemble():
         with open(output_path, 'w') as f:
             for line in lines:
                 if line.startswith(("ATOM", "HETATM")):
-                    atom_idx = int(line[6:11]) - 1  # PDB atom serials are 1-based
+                    atom_idx = int(line[6:11])
                     res_idx = atom_res_map[atom_idx]
                     original_resnum = pdb_res_nums[res_idx]
                     corrected_resnum = original_resnum + shift
@@ -80,15 +85,13 @@ class Ensemble():
                 f.write(line)
 
 
-
-
-    def load_trajectory(self, data_dir: str = None):
+    def load_trajectory(self, output_dir: str = None):
         """
         Load a trajectory for the ensemble.
 
         Parameters
         ----------
-        data_dir : str, optional
+        output_dir : str, optional
             The directory where the trajectory data is located or where generated trajectory files will be saved.
 
         Notes
@@ -111,7 +114,6 @@ class Ensemble():
             chain_ids = self.get_chains_from_pdb()
             logger.info(f"{self.code} chain ids: {chain_ids}")
             
-            logger.info(f"Generating trajectory for {self.code}...")
             self.trajectory = mdtraj.load(self.data_path)
 
             chain_selected = self._select_chain(chain_ids)
@@ -120,26 +122,15 @@ class Ensemble():
                 traj_suffix = f'_{self.chain_id.upper()}'
             else:
                 traj_suffix = ''
+            if self.database == 'ped':
+                self._save_trajectory_from_pdb(output_dir, traj_suffix)
 
-            # Saves files for faster access next time the data is loaded.
-            setup_data_dir(data_dir)
-            traj_dcd = os.path.join(data_dir, f'{self.code}{traj_suffix}.dcd')
-            traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
-            
-            self.trajectory.save(traj_dcd)
-            self._save_clean_topology(self.trajectory[0], traj_top)
-            
-            logger.info(f"Generated trajectory saved to {data_dir}.")
-        elif self.data_path.endswith(('.dcd', '.xtc')):
-            logger.info(f"Loading trajectory for {self.code}...")
-            self.trajectory = mdtraj.load(self.data_path, top=self.top_path)
         elif os.path.isdir(self.data_path):
             files_in_dir = [f for f in os.listdir(self.data_path) if f.endswith('.pdb')]
             if files_in_dir:
                 chain_ids = self.get_chains_from_pdb()
                 logger.info(f"{self.code} chain ids: {chain_ids}")
 
-                logger.info(f"Generating trajectory for {self.code}...")
                 full_paths = [os.path.join(self.data_path, file) for file in files_in_dir]
                 self.trajectory = mdtraj.load(full_paths)
                 
@@ -149,15 +140,16 @@ class Ensemble():
                     traj_suffix = f'_{self.chain_id.upper()}'
                 else:
                     traj_suffix = ''
+                if self.database == 'ped':
+                    self._save_trajectory_from_pdb(output_dir, traj_suffix)
 
-                setup_data_dir(data_dir)
-                traj_dcd = os.path.join(data_dir, f'{self.code}{traj_suffix}.dcd')
-                traj_top = os.path.join(data_dir, f'{self.code}{traj_suffix}.top.pdb')
-                self.trajectory.save(traj_dcd)
-                self._save_clean_topology(self.trajectory[0], traj_top)
-                logger.info(f"Generated trajectory saved to {data_dir}.")
             else:
                 raise FileNotFoundError(f"No PDB files found in directory: {self.data_path}")
+        
+        elif self.data_path.endswith(trajectory_extensions):
+            logger.info(f"Loading trajectory for {self.code}...")
+            self.trajectory = mdtraj.load(self.data_path, top=self.top_path)
+
         else:
             raise ValueError(f"Unsupported file format for data file: {self.data_path}")
 
@@ -165,17 +157,37 @@ class Ensemble():
             raise ValueError(f"Multiple chains found for ensemble {self.code}. "
                              "Chain selection is only supported for PDB files.")
         
-        # Save the trajectory for sampling
-        self.original_trajectory = self.trajectory
         # Check if a coarse-grained model was loaded
         self._check_coarse_grained()
         # Select residues
         self._select_residues()
+        # Select protein atoms only.
+        self._select_protein_atoms()
+        # Optionally fix PBC.
+        if self.data_path.endswith(trajectory_extensions) and self.fix_pbc:
+            self._run_fix_pbc()
+        # Save the trajectory for sampling
+        self.original_trajectory = self.trajectory
+
+    def _save_trajectory_from_pdb(self, output_dir: str, traj_suffix: str):
+        """Saves files for faster access next time the data is loaded."""
+        logger.info(f"Saving trajectory for {self.code}...")
+        output_dir = setup_data_dir(output_dir)
+        traj_dcd = os.path.join(output_dir, f'{self.code}{traj_suffix}.dcd')
+        traj_top = os.path.join(output_dir, f'{self.code}{traj_suffix}.top.pdb')
+        self.trajectory.save(traj_dcd)
+        self._save_clean_topology(self.trajectory[0], traj_top)
+        logger.info(f"Trajectory saved to {output_dir}.")
         
     def _check_coarse_grained(self):
         residues = self.trajectory.topology.residues
         self.coarse_grained = all(len(list(res.atoms)) == 1 for res in residues)
         self.atom_selector = "all" if self.coarse_grained else "name == CA"
+    
+    def _run_fix_pbc(self):
+        self.trajectory = self.trajectory.image_molecules(
+            anchor_molecules=[set(self.trajectory.topology.atoms)]
+        )
 
     def random_sample_trajectory(self, sample_size: int):
         """
@@ -198,7 +210,6 @@ class Ensemble():
         self.trajectory = mdtraj.Trajectory(
             xyz=self.original_trajectory.xyz[random_indices],
             topology=self.original_trajectory.topology)
-        self._select_residues()
         logger.info(f"{sample_size} conformations sampled from {self.code} trajectory.")
         
     def extract_features(self, featurization: str, *args, **kwargs):
@@ -418,6 +429,13 @@ class Ensemble():
         atom_indices = self.trajectory.topology.select(f'residue >= {start_residue} and residue <= {end_residue}')
         self.trajectory = self.trajectory.atom_slice(atom_indices)
         logger.info(f"Selected residues from ensemble {self.code}")
+    
+    def _select_protein_atoms(self):
+        protein_atoms_ids = [a.index for a in self.trajectory.topology.atoms \
+                             if a.residue.is_protein]
+        self.trajectory = self.trajectory.atom_slice(protein_atoms_ids)
+        if self.trajectory.topology.n_atoms == 0:
+            raise ValueError()
     
     def get_num_residues(self):
         return self.trajectory.topology.n_residues

@@ -10,7 +10,7 @@ import mdtraj
 from idpet.featurization.distances import rmsd
 from idpet.data.api_client import APIClient
 from idpet.ensemble import Ensemble
-from idpet.data.io_utils import setup_data_dir, extract_tar_gz
+from idpet.data.io_utils import get_output_dir, setup_data_dir, extract_tar_gz
 from idpet.dimensionality_reduction import DimensionalityReductionFactory
 from idpet.featurization.ensemble_level import ensemble_features
 from idpet.comparison import all_vs_all_comparison
@@ -36,13 +36,7 @@ class EnsembleAnalysis:
             ensembles: List[Ensemble],
             output_dir: str = None,
         ):
-        if output_dir is None:
-            self.output_dir = os.getenv(
-                "IDPET_OUTPUT_DIR",  # If defined, gets an environmental variable.
-                str(Path.home() / ".idpet" / "data")  # Else, uses a default path.
-            )
-        else:
-            self.output_dir = output_dir
+        self.output_dir = get_output_dir(output_dir)
         self.api_client = APIClient()
         self.feature_names = []
         self.all_labels = []

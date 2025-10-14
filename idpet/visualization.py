@@ -360,6 +360,11 @@ class Visualization:
             for frame in range(analysis.trajectories[ensemble].n_frames):
                 model_indexes.append(f'model{frame+1}_{ensemble}')
         return model_indexes
+    
+    def _unsqueeze_axes(self, ax):
+        if not isinstance(ax, (list, np.ndarray)):
+            ax = [ax]
+        return ax
 
     def _tsne_scatter(
             self,
@@ -1168,8 +1173,7 @@ class Visualization:
             fig, axes = plt.subplots(
                 len(analysis.ens_codes), 1, figsize=(4, 2 * len(analysis.ens_codes)), dpi=dpi
             )
-            if len(analysis.ens_codes) == 1:
-                axes = [axes]
+            axes = self._unsqueeze_axes(axes)
 
         else:
             if not isinstance(ax, (list, np.ndarray)):
@@ -1350,8 +1354,7 @@ class Visualization:
 
         if ax is None:
             fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(3, 3 * len(analysis.ens_codes)), dpi=dpi)
-            if len(analysis.ens_codes) == 1:
-                axes = [axes]
+            axes = self._unsqueeze_axes(axes)
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -1454,9 +1457,9 @@ class Visualization:
                     figsize=(3 * len(ensembles), 3),
                     dpi=96
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -1843,9 +1846,9 @@ class Visualization:
                     figsize=(3 * n_systems, 3),
                     dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2021,9 +2024,9 @@ class Visualization:
                     figsize=(3 * n_systems, 3),
                     dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2182,9 +2185,9 @@ class Visualization:
                     figsize=(3 * len(ensembles), 3),
                     dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2228,7 +2231,7 @@ class Visualization:
                 )
                 h_args = {"histtype": "step", "density": True}
                 y_max = 0
-                for hist_data_i in _bins:
+                for hist_data_i in asph_list:
                     counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
                     y_max = max(y_max, counts.max())
                 for i, (name_i, asph_data_i) in enumerate(zip(labels, asph_list)):
@@ -2340,11 +2343,11 @@ class Visualization:
                 fig, ax = plt.subplots(
                     1, len(ensembles), 
                     figsize=(3 * len(ensembles), 3),
-                    dpi= dpi
+                    dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2388,7 +2391,7 @@ class Visualization:
                 )
                 h_args = {"histtype": "step", "density": True}
                 y_max = 0
-                for hist_data_i in _bins:
+                for hist_data_i in prolat_list:
                     counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
                     y_max = max(y_max, counts.max())
                 for i, (name_i, prolat_data_i) in enumerate(zip(labels, prolat_list)):
@@ -2635,10 +2638,10 @@ class Visualization:
             if ax is None:
                 custom_axes = False
                 fig, ax = plt.subplots(1, len(ensembles), figsize=(5 * len(ensembles), 5))
+                ax = self._unsqueeze_axes(ax)
             else:
                 custom_axes = True
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
 
