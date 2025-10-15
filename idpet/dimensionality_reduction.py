@@ -331,8 +331,8 @@ class KPCAReduction(DimensionalityReduction):
         # Use angular features and a custom similarity function.
         if self.circular:
             self.gamma = 1/data.shape[1] if self.gamma is None else self.gamma
-            kernel = lambda a1, a2: unit_vector_kernel(a1, a2, gamma=self.gamma)
-            pca_in = data
+            kernel = "precomputed"  # older, slower version: kernel = lambda a1, a2: unit_vector_kernel(a1, a2, gamma=self.gamma)
+            pca_in = self._calc_precomputed_circular_kernel(data, train=True)
         # Use raw features.
         else:
             kernel = self.kernel
@@ -347,11 +347,25 @@ class KPCAReduction(DimensionalityReduction):
         return self.pca
     
     def transform(self, data) -> np.ndarray:
-        reduce_dim_data = self.pca.transform(data)
+        if self.circular:
+            pca_in = self._calc_precomputed_circular_kernel(data, train=False)
+        else:
+            pca_in = data
+        reduce_dim_data = self.pca.transform(pca_in)
         return reduce_dim_data
     
     def fit_transform(self, data) -> np.ndarray:
-        return super().fit_transform(data)
+        raise NotImplementedError()
+    
+    def _calc_precomputed_circular_kernel(self, data: np.ndarray, train: bool) -> np.ndarray:
+        """Uses numpy vectorization to speed up the calculation of angular distances."""
+        if train:
+            pca_in = unit_vector_kernel(data[None,...], data[:,None,...], self.gamma)
+            self.train_data = data
+        else:
+            pca_in = unit_vector_kernel(self.train_data[None,...], data[:,None,...], self.gamma)
+        return pca_in
+    
 
 class DimensionalityReductionFactory:
     """
