@@ -299,73 +299,58 @@ class UMAPReduction(DimensionalityReduction):
             # )
         return self.sil_scores
     
+
 class KPCAReduction(DimensionalityReduction):
-    """
-    Class for performing dimensionality reduction using Kernel PCA (KPCA) algorithm.
-
-    Parameters
-    ----------
-    circular : bool, optional
-        Whether to use circular metrics for angular features. Default is False.
-        If True, it will override the `kernel` argument.
-    num_dim : int, optional
-        Number of dimensions for the reduced space. Default is 10.
-    kernel: str, optional
-        Kernel used for PCA, as in the scikit-learn implementation: https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.KernelPCA.html
-    gamma : float, optional
-        Kernel coefficient. Default is None.
-    """
-
-    def __init__(self,
-            circular: bool = False,
-            n_components: int = 10,
-            kernel: str = "poly",
-            gamma : float = None
-        ) -> None:
+    def __init__(self, circular=False, n_components=10, kernel="poly", gamma=None):
         self.circular = circular
         self.n_components = n_components
         self.gamma = gamma
         self.kernel = kernel
+        self.dtype = np.float32
 
     def fit(self, data):
-        # Use angular features and a custom similarity function.
         if self.circular:
-            self.gamma = 1/data.shape[1] if self.gamma is None else self.gamma
-            kernel = "precomputed"  # older, slower version: kernel = lambda a1, a2: unit_vector_kernel(a1, a2, gamma=self.gamma)
-            pca_in = self._calc_precomputed_circular_kernel(data, train=True)
-        # Use raw features.
+            self.gamma = (1 / data.shape[1]) if self.gamma is None else self.gamma
+            kernel = "precomputed"
+            self.train_data = data.astype(self.dtype, copy=False)
+            pca_in = _pairwise_circular_rbf(self.train_data, self.train_data, self.gamma, dtype=self.dtype)
         else:
             kernel = self.kernel
             pca_in = data
 
-        self.pca = KernelPCA(
-            n_components=self.n_components,
-            kernel=kernel,
-            gamma=self.gamma  # Ignored if using circular.
-        )
+        self.pca = KernelPCA(n_components=self.n_components, kernel=kernel, gamma=self.gamma)
         self.pca.fit(pca_in)
         return self.pca
-    
+
     def transform(self, data) -> np.ndarray:
         if self.circular:
-            pca_in = self._calc_precomputed_circular_kernel(data, train=False)
+            data = data.astype(self.dtype, copy=False)
+            pca_in = _pairwise_circular_rbf(data, self.train_data, self.gamma, dtype=self.dtype)
         else:
             pca_in = data
-        reduce_dim_data = self.pca.transform(pca_in)
-        return reduce_dim_data
+        return self.pca.transform(pca_in)
     
     def fit_transform(self, data) -> np.ndarray:
         raise NotImplementedError()
     
-    def _calc_precomputed_circular_kernel(self, data: np.ndarray, train: bool) -> np.ndarray:
-        """Uses numpy vectorization to speed up the calculation of angular distances."""
-        if train:
-            pca_in = unit_vector_kernel(data[None,...], data[:,None,...], self.gamma)
-            self.train_data = data
-        else:
-            pca_in = unit_vector_kernel(self.train_data[None,...], data[:,None,...], self.gamma)
-        return pca_in
-    
+
+def _pairwise_circular_rbf(A: np.ndarray, B: np.ndarray, gamma: float, dtype=np.float32) -> np.ndarray:
+    """
+    A (N_A, M) and B (N_B, M) are the angles. Returns K (NA, NB) with K_ij = exp(-gamma * sum_k ||u(A_ik) - u(B_jk)||^2).
+    """
+    M = A.shape[1]
+    # Precompute cos/sin once, cast to float32 to halve memory.
+    Ac, As = np.cos(A, dtype=dtype), np.sin(A, dtype=dtype)
+    Bc, Bs = np.cos(B, dtype=dtype), np.sin(B, dtype=dtype)
+    NA = A.shape[0]
+    NB = B.shape[0]
+    K = np.empty((NA, NB), dtype=dtype)
+    # Full matmul path
+    S = Ac @ Bc.T + As @ Bs.T  # (NA, NB)
+    D = (2.0 * M) - (2.0 * S)  # (NA, NB)
+    np.exp(-gamma * D, out=K)
+    return K
+
 
 class DimensionalityReductionFactory:
     """
