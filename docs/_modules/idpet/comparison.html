@@ -522,9 +522,9 @@
 <span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
 <span class="sd">    return_bins : bool, optional</span>
 <span class="sd">        If True, also return the histogram bin edges used in the comparison.</span>
-<span class="sd">    **remaining**</span>
-<span class="sd">        Additional arguments passed to `idpet.comparison.score_adaJSD`.</span>
-
+<span class="sd">    **remaining</span>
+<span class="sd">        Additional arguments passed to `dpet.comparison.score_adaJSD`.</span>
+<span class="sd">    </span>
 <span class="sd">    Output</span>
 <span class="sd">    ------</span>
 <span class="sd">    score : float</span>
@@ -904,94 +904,87 @@
         <span class="n">verbose</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span>
     <span class="p">)</span> <span class="o">-&gt;</span> <span class="nb">dict</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
-<span class="sd">    Compare all pairs of ensembles using divergence scores.</span>
-
-<span class="sd">    Implemented scores are approximate average Jensen–Shannon divergences</span>
+<span class="sd">    Compare all pair of ensembles using divergence scores.</span>
+<span class="sd">    Implemented scores are approximate average Jensen–Shannon divergence</span>
 <span class="sd">    (JSD) over several kinds of molecular features. The lower these scores</span>
-<span class="sd">    are, the higher the similarity between the probability distributions of</span>
+<span class="sd">    are, the higher the similarity between the probability distribution of</span>
 <span class="sd">    the features of the ensembles. JSD scores here range from a minimum of 0</span>
-<span class="sd">    to a maximum of log(2) ≈ 0.6931.</span>
+<span class="sd">    to a maximum of log(2) ~= 0.6931.</span>
 
 <span class="sd">    Parameters</span>
 <span class="sd">    ----------</span>
-<span class="sd">    ensembles : List[Ensemble]</span>
-<span class="sd">        Ensemble objects to analyze.</span>
-<span class="sd">    score : str</span>
+<span class="sd">    ensembles: List[Ensemble]</span>
+<span class="sd">        Ensemble objectes to analyze.</span>
+<span class="sd">    score: str</span>
 <span class="sd">        Type of score used to compare ensembles. Choices: `adaJSD` (carbon</span>
-<span class="sd">        Alpha Distance Average JSD), `ramaJSD` (RAMAchandran Average JSD), and</span>
+<span class="sd">        Alfa Distance Average JSD), `ramaJSD` (RAMAchandran average JSD) and</span>
 <span class="sd">        `ataJSD` (Alpha Torsion Average JSD). `adaJSD` scores the average</span>
-<span class="sd">        JSD over all Cα–Cα distance distributions of residue pairs with</span>
+<span class="sd">        JSD over all Ca-Ca distance distributions of residue pairs with</span>
 <span class="sd">        sequence separation &gt; 1. `ramaJSD` scores the average JSD over the</span>
-<span class="sd">        φ–ψ angle distributions of all residues. `ataJSD` scores the average</span>
-<span class="sd">        JSD over all alpha torsion angles, which are the angles formed by four</span>
-<span class="sd">        consecutive Cα atoms in a protein.</span>
-<span class="sd">    featurization_params : dict, optional</span>
+<span class="sd">        phi-psi angle distributions of all residues. `ataJSD` scores the</span>
+<span class="sd">        average JSD over all alpha torsion angles, which are the angles</span>
+<span class="sd">        formed by four consecutive Ca atoms in a protein.</span>
+<span class="sd">    featurization_params: dict, optional</span>
 <span class="sd">        Optional dictionary to customize the featurization process for the</span>
 <span class="sd">        above features.</span>
-<span class="sd">    bootstrap_iters : int, optional</span>
-<span class="sd">        Number of bootstrap iterations. By default, its value is ``None``. In</span>
-<span class="sd">        this case, IDPET will directly compare each pair of ensembles</span>
-<span class="sd">        :math:`i` and :math:`j` by using all of their conformers and perform</span>
-<span class="sd">        the comparison only once. On the other hand, if an integer value is</span>
-<span class="sd">        provided for this argument, each pair of ensembles :math:`i` and</span>
-<span class="sd">        :math:`j` will be compared ``bootstrap_iters`` times by randomly</span>
-<span class="sd">        selecting (bootstrapping) conformations from them. Additionally, each</span>
-<span class="sd">        ensemble will be auto-compared with itself by subsampling conformers</span>
-<span class="sd">        via bootstrapping. Then, IDPET will perform a statistical test to</span>
-<span class="sd">        determine whether the inter-ensemble (:math:`i \\neq j`) scores are</span>
-<span class="sd">        significantly different from the intra-ensemble (:math:`i = j`)</span>
-<span class="sd">        scores.</span>
-
-<span class="sd">        The tests work as follows: for each ensemble pair :math:`i \\neq j`,</span>
-<span class="sd">        IDPET obtains their inter-ensemble comparison scores from</span>
-<span class="sd">        bootstrapping. Then, it retrieves the bootstrapping scores from</span>
-<span class="sd">        auto-comparisons of ensembles :math:`i` and :math:`j`, and the scores</span>
-<span class="sd">        with the higher mean are selected as reference intra-ensemble scores.</span>
-<span class="sd">        Finally, the inter-ensemble and intra-ensemble scores are compared via</span>
-<span class="sd">        a one-sided Mann–Whitney U test with the alternative hypothesis that</span>
-<span class="sd">        inter-ensemble scores are stochastically greater than intra-ensemble</span>
-<span class="sd">        scores. The p-values obtained from these tests will additionally be</span>
-<span class="sd">        returned.</span>
-
-<span class="sd">        For small protein structural ensembles (fewer than 500 conformations),</span>
-<span class="sd">        most comparison scores in IDPET are not robust estimators of</span>
-<span class="sd">        divergence or distance. Performing bootstrapping provides an estimate</span>
-<span class="sd">        of how ensemble size affects the comparison. Use values ≥ 50 when</span>
-<span class="sd">        comparing ensembles with very few conformations (less than 100). When</span>
-<span class="sd">        comparing large ensembles (more than 1,000–5,000 conformations), you</span>
-<span class="sd">        can safely avoid bootstrapping.</span>
-<span class="sd">    bootstrap_frac : float, optional</span>
+<span class="sd">    bootstrap_iters: int, optional</span>
+<span class="sd">        Number of bootstrap iterations. By default its value is None. In</span>
+<span class="sd">        this case, IDPET will directly compare each pair of ensemble $i$ and</span>
+<span class="sd">        $j$ by using all of their conformers and perform the comparison only</span>
+<span class="sd">        once. On the other hand, if providing an integer value to this</span>
+<span class="sd">        argument, each pair of ensembles $i$ and $j$ will be compared</span>
+<span class="sd">        `bootstrap_iters` times by randomly selecting (bootstrapping)</span>
+<span class="sd">        conformations from them. Additionally, each ensemble will be</span>
+<span class="sd">        auto-compared with itself by subsampling conformers via</span>
+<span class="sd">        bootstrapping. Then IDPET will perform a statistical test to</span>
+<span class="sd">        establish if the inter-ensemble ($i != j$) scores are significantly</span>
+<span class="sd">        different from the intra-ensemble ($i == j$) scores. The tests work</span>
+<span class="sd">        as follows: for each ensemble pair $i != j$ IDPET will get their</span>
+<span class="sd">        inter-ensemble comparison scores obtained in bootstrapping. Then, it</span>
+<span class="sd">        will get the bootstrapping scores from auto-comparisons of ensemble</span>
+<span class="sd">        $i$ and $j$ and the scores with the higher mean here are selected as</span>
+<span class="sd">        reference intra-ensemble scores. Finally, the inter-ensemble and</span>
+<span class="sd">        intra-ensemble scores are compared via a one-sided Mann-Whitney U</span>
+<span class="sd">        test with the alternative hypothesis being: inter-ensemble scores</span>
+<span class="sd">        are stochastically greater than intra-ensemble scores. The p-values</span>
+<span class="sd">        obtained in these tests will additionally be returned. For small</span>
+<span class="sd">        protein structural ensembles (less than 500 conformations) most</span>
+<span class="sd">        comparison scores in IDPET are not robust estimators of</span>
+<span class="sd">        divergence/distance. By performing bootstrapping, you can have an</span>
+<span class="sd">        idea of how the size of your ensembles impacts the comparison. Use</span>
+<span class="sd">        values &gt;= 50 when comparing ensembles with very few conformations</span>
+<span class="sd">        (less than 100). When comparing large ensembles (more than</span>
+<span class="sd">        1,000-5,000 conformations) you can safely avoid bootstrapping.</span>
+<span class="sd">    bootstrap_frac: float, optional</span>
 <span class="sd">        Fraction of the total conformations to sample when bootstrapping.</span>
-<span class="sd">        Default value is 1.0, which results in bootstrap samples with the same</span>
-<span class="sd">        number of conformations as the original ensemble.</span>
-<span class="sd">    bootstrap_replace : bool, optional</span>
-<span class="sd">        If ``True``, bootstrap will sample with replacement. Default is</span>
-<span class="sd">        ``True``.</span>
-<span class="sd">    bins : Union[int, str], optional</span>
+<span class="sd">        Default value is 1.0, which results in bootstrap samples with the</span>
+<span class="sd">        same number of conformations of the original ensemble.</span>
+<span class="sd">    bootstrap_replace: bool, optional</span>
+<span class="sd">        If `True`, bootstrap will sample with replacement. Default is `True`.</span>
+<span class="sd">    bins: Union[int, str], optional</span>
 <span class="sd">        Number of bins or bin assignment rule for JSD comparisons. See the</span>
-<span class="sd">        documentation of ``dpet.comparison.get_num_comparison_bins`` for</span>
+<span class="sd">        documentation of `dpet.comparison.get_num_comparison_bins` for</span>
 <span class="sd">        more information.</span>
-<span class="sd">    random_seed : int, optional</span>
+<span class="sd">    random_seed: int, optional</span>
 <span class="sd">        Random seed used when performing bootstrapping.</span>
-<span class="sd">    verbose : bool, optional</span>
-<span class="sd">        If ``True``, prints additional information about the comparisons to</span>
+<span class="sd">    verbose: bool, optional</span>
+<span class="sd">        If `True`, some information about the comparisons will be printed to</span>
 <span class="sd">        stdout.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
-<span class="sd">    results : dict</span>
-<span class="sd">        A dictionary containing the following key–value pairs:</span>
-
-<span class="sd">        - ``scores``: a (M, M, B) NumPy array storing the comparison</span>
-<span class="sd">          scores, where M is the number of ensembles being compared and</span>
-<span class="sd">          B is the number of bootstrap iterations (B = 1 if bootstrapping</span>
-<span class="sd">          was not performed).</span>
-<span class="sd">        - ``p_values``: a (M, M) NumPy array storing the p-values</span>
-<span class="sd">          obtained from the statistical tests performed when using</span>
-<span class="sd">          a bootstrapping strategy (see the ``bootstrap_iters`` parameter).</span>
-<span class="sd">          Returned only when performing a bootstrapping strategy.</span>
+<span class="sd">    results: dict</span>
+<span class="sd">        A dictionary containing the following key-value pairs:</span>
+<span class="sd">            `scores`: a (M, M, B) NumPy array storing the comparison</span>
+<span class="sd">                scores, where M is the number of ensembles being</span>
+<span class="sd">                compared and B is the number of bootstrap iterations (B</span>
+<span class="sd">                will be 1 if bootstrapping was not performed).</span>
+<span class="sd">            `p_values`: a (M, M) NumPy array storing the p-values</span>
+<span class="sd">                obtained in the statistical test performed when using</span>
+<span class="sd">                a bootstrapping strategy (see the `bootstrap_iters`)</span>
+<span class="sd">                method. Returned only when performing a bootstrapping</span>
+<span class="sd">                strategy.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
-
 
     <span class="n">score_type</span><span class="p">,</span> <span class="n">feature</span> <span class="o">=</span> <span class="n">scores_data</span><span class="p">[</span><span class="n">score</span><span class="p">]</span>
     

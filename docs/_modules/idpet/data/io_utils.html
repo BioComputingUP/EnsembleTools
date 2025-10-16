@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>idpet.data.io_utils &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2389946f"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Package Overview</a></li>
 </ul>
 
@@ -78,19 +78,25 @@
            <div itemprop="articleBody">
              
   <h1>Source code for idpet.data.io_utils</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">tarfile</span>
+<span></span><span class="kn">import</span> <span class="nn">os</span>
+<span class="kn">import</span> <span class="nn">tarfile</span>
+<span class="kn">from</span> <span class="nn">pathlib</span> <span class="kn">import</span> <span class="n">Path</span>
 
+<div class="viewcode-block" id="get_output_dir"><a class="viewcode-back" href="../../../idpet.data.html#idpet.data.io_utils.get_output_dir">[docs]</a><span class="k">def</span> <span class="nf">get_output_dir</span><span class="p">(</span><span class="n">output_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">output_dir</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">os</span><span class="o">.</span><span class="n">getenv</span><span class="p">(</span>
+            <span class="s2">&quot;IDPET_OUTPUT_DIR&quot;</span><span class="p">,</span>  <span class="c1"># If defined, gets an environmental variable.</span>
+            <span class="nb">str</span><span class="p">(</span><span class="n">Path</span><span class="o">.</span><span class="n">home</span><span class="p">()</span> <span class="o">/</span> <span class="s2">&quot;.idpet&quot;</span> <span class="o">/</span> <span class="s2">&quot;data&quot;</span><span class="p">)</span>  <span class="c1"># Else, uses a default path.</span>
+        <span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="k">return</span> <span class="n">output_dir</span></div>
 
-<div class="viewcode-block" id="setup_data_dir">
-<a class="viewcode-back" href="../../../idpet.data.html#idpet.data.io_utils.setup_data_dir">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">setup_data_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
-    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span></div>
+<div class="viewcode-block" id="setup_data_dir"><a class="viewcode-back" href="../../../idpet.data.html#idpet.data.io_utils.setup_data_dir">[docs]</a><span class="k">def</span> <span class="nf">setup_data_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">:</span> <span class="nb">str</span><span class="p">):</span>
+    <span class="n">data_dir</span> <span class="o">=</span> <span class="n">get_output_dir</span><span class="p">(</span><span class="n">data_dir</span><span class="p">)</span>
+    <span class="n">os</span><span class="o">.</span><span class="n">makedirs</span><span class="p">(</span><span class="n">data_dir</span><span class="p">,</span> <span class="n">exist_ok</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">data_dir</span></div>
 
-
-<div class="viewcode-block" id="extract_tar_gz">
-<a class="viewcode-back" href="../../../idpet.data.html#idpet.data.io_utils.extract_tar_gz">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">extract_tar_gz</span><span class="p">(</span><span class="n">tar_gz_file</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
+<div class="viewcode-block" id="extract_tar_gz"><a class="viewcode-back" href="../../../idpet.data.html#idpet.data.io_utils.extract_tar_gz">[docs]</a><span class="k">def</span> <span class="nf">extract_tar_gz</span><span class="p">(</span><span class="n">tar_gz_file</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">output_dir</span><span class="p">:</span><span class="nb">str</span><span class="p">,</span> <span class="n">new_name</span><span class="p">:</span><span class="nb">str</span><span class="p">):</span>
     <span class="c1"># Extract the .pdb file with renaming</span>
     <span class="k">with</span> <span class="n">tarfile</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">tar_gz_file</span><span class="p">,</span> <span class="s1">&#39;r:gz&#39;</span><span class="p">)</span> <span class="k">as</span> <span class="n">tar</span><span class="p">:</span>
         <span class="k">for</span> <span class="n">member</span> <span class="ow">in</span> <span class="n">tar</span><span class="o">.</span><span class="n">getmembers</span><span class="p">():</span>
@@ -99,6 +105,7 @@
                 <span class="n">tar</span><span class="o">.</span><span class="n">extract</span><span class="p">(</span><span class="n">member</span><span class="p">,</span> <span class="n">path</span><span class="o">=</span><span class="n">output_dir</span><span class="p">)</span>
                 <span class="k">break</span>  <span class="c1"># Only rename and extract the first .pdb file</span></div>
 
+<span class="n">trajectory_extensions</span> <span class="o">=</span> <span class="p">(</span><span class="s1">&#39;.dcd&#39;</span><span class="p">,</span> <span class="s1">&#39;.xtc&#39;</span><span class="p">)</span>
 </pre></div>
 
            </div>

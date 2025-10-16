@@ -18,7 +18,6 @@
       <script src="_static/doctools.js?v=888ff710"></script>
       <script src="_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="_static/design-tabs.js?v=f930bc37"></script>
-      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
     <script src="_static/js/theme.js"></script>
     <link rel="index" title="Index" href="genindex.html" />
     <link rel="search" title="Search" href="search.html" />
@@ -179,6 +178,7 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="idpet.data.html#idpet-data-io-utils-module">idpet.data.io_utils module</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="idpet.data.html#idpet.data.io_utils.extract_tar_gz"><code class="docutils literal notranslate"><span class="pre">extract_tar_gz()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="idpet.data.html#idpet.data.io_utils.get_output_dir"><code class="docutils literal notranslate"><span class="pre">get_output_dir()</span></code></a></li>
 <li class="toctree-l3"><a class="reference internal" href="idpet.data.html#idpet.data.io_utils.setup_data_dir"><code class="docutils literal notranslate"><span class="pre">setup_data_dir()</span></code></a></li>
 </ul>
 </li>
@@ -241,12 +241,12 @@
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.all_vs_all_comparison">
 <span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">all_vs_all_comparison</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ensembles</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">score</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">featurization_params</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">{}</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_iters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_frac</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1.0</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bootstrap_replace</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_seed</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">verbose</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#all_vs_all_comparison"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.all_vs_all_comparison" title="Permalink to this definition"></a></dt>
-<dd><p>Compare all pairs of ensembles using divergence scores.</p>
-<p>Implemented scores are approximate average Jensen–Shannon divergences
+<dd><p>Compare all pair of ensembles using divergence scores.
+Implemented scores are approximate average Jensen–Shannon divergence
 (JSD) over several kinds of molecular features. The lower these scores
-are, the higher the similarity between the probability distributions of
+are, the higher the similarity between the probability distribution of
 the features of the ensembles. JSD scores here range from a minimum of 0
-to a maximum of log(2) ≈ 0.6931.</p>
+to a maximum of log(2) ~= 0.6931.</p>
 <dl class="field-list simple">
 <dt class="field-odd">Return type<span class="colon">:</span></dt>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
@@ -254,65 +254,62 @@ to a maximum of log(2) ≈ 0.6931.</p>
 </dl>
 <section id="parameters">
 <h3>Parameters<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
-<dl>
-<dt>ensembles<span class="classifier">List[Ensemble]</span></dt><dd><p>Ensemble objects to analyze.</p>
+<dl class="simple">
+<dt>ensembles: List[Ensemble]</dt><dd><p>Ensemble objectes to analyze.</p>
 </dd>
-<dt>score<span class="classifier">str</span></dt><dd><p>Type of score used to compare ensembles. Choices: <cite>adaJSD</cite> (carbon
-Alpha Distance Average JSD), <cite>ramaJSD</cite> (RAMAchandran Average JSD), and
+<dt>score: str</dt><dd><p>Type of score used to compare ensembles. Choices: <cite>adaJSD</cite> (carbon
+Alfa Distance Average JSD), <cite>ramaJSD</cite> (RAMAchandran average JSD) and
 <cite>ataJSD</cite> (Alpha Torsion Average JSD). <cite>adaJSD</cite> scores the average
-JSD over all Cα–Cα distance distributions of residue pairs with
+JSD over all Ca-Ca distance distributions of residue pairs with
 sequence separation &gt; 1. <cite>ramaJSD</cite> scores the average JSD over the
-φ–ψ angle distributions of all residues. <cite>ataJSD</cite> scores the average
-JSD over all alpha torsion angles, which are the angles formed by four
-consecutive Cα atoms in a protein.</p>
+phi-psi angle distributions of all residues. <cite>ataJSD</cite> scores the
+average JSD over all alpha torsion angles, which are the angles
+formed by four consecutive Ca atoms in a protein.</p>
 </dd>
-<dt>featurization_params<span class="classifier">dict, optional</span></dt><dd><p>Optional dictionary to customize the featurization process for the
+<dt>featurization_params: dict, optional</dt><dd><p>Optional dictionary to customize the featurization process for the
 above features.</p>
 </dd>
-<dt>bootstrap_iters<span class="classifier">int, optional</span></dt><dd><p>Number of bootstrap iterations. By default, its value is <code class="docutils literal notranslate"><span class="pre">None</span></code>. In
-this case, IDPET will directly compare each pair of ensembles
-<span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span> by using all of their conformers and perform
-the comparison only once. On the other hand, if an integer value is
-provided for this argument, each pair of ensembles <span class="math notranslate nohighlight">\(i\)</span> and
-<span class="math notranslate nohighlight">\(j\)</span> will be compared <code class="docutils literal notranslate"><span class="pre">bootstrap_iters</span></code> times by randomly
-selecting (bootstrapping) conformations from them. Additionally, each
-ensemble will be auto-compared with itself by subsampling conformers
-via bootstrapping. Then, IDPET will perform a statistical test to
-determine whether the inter-ensemble (<span class="math notranslate nohighlight">\(i \neq j\)</span>) scores are
-significantly different from the intra-ensemble (<span class="math notranslate nohighlight">\(i = j\)</span>)
-scores.</p>
-<p>The tests work as follows: for each ensemble pair <span class="math notranslate nohighlight">\(i \neq j\)</span>,
-IDPET obtains their inter-ensemble comparison scores from
-bootstrapping. Then, it retrieves the bootstrapping scores from
-auto-comparisons of ensembles <span class="math notranslate nohighlight">\(i\)</span> and <span class="math notranslate nohighlight">\(j\)</span>, and the scores
-with the higher mean are selected as reference intra-ensemble scores.
-Finally, the inter-ensemble and intra-ensemble scores are compared via
-a one-sided Mann–Whitney U test with the alternative hypothesis that
-inter-ensemble scores are stochastically greater than intra-ensemble
-scores. The p-values obtained from these tests will additionally be
-returned.</p>
-<p>For small protein structural ensembles (fewer than 500 conformations),
-most comparison scores in IDPET are not robust estimators of
-divergence or distance. Performing bootstrapping provides an estimate
-of how ensemble size affects the comparison. Use values ≥ 50 when
-comparing ensembles with very few conformations (less than 100). When
-comparing large ensembles (more than 1,000–5,000 conformations), you
-can safely avoid bootstrapping.</p>
+<dt>bootstrap_iters: int, optional</dt><dd><p>Number of bootstrap iterations. By default its value is None. In
+this case, IDPET will directly compare each pair of ensemble $i$ and
+$j$ by using all of their conformers and perform the comparison only
+once. On the other hand, if providing an integer value to this
+argument, each pair of ensembles $i$ and $j$ will be compared
+<cite>bootstrap_iters</cite> times by randomly selecting (bootstrapping)
+conformations from them. Additionally, each ensemble will be
+auto-compared with itself by subsampling conformers via
+bootstrapping. Then IDPET will perform a statistical test to
+establish if the inter-ensemble ($i != j$) scores are significantly
+different from the intra-ensemble ($i == j$) scores. The tests work
+as follows: for each ensemble pair $i != j$ IDPET will get their
+inter-ensemble comparison scores obtained in bootstrapping. Then, it
+will get the bootstrapping scores from auto-comparisons of ensemble
+$i$ and $j$ and the scores with the higher mean here are selected as
+reference intra-ensemble scores. Finally, the inter-ensemble and
+intra-ensemble scores are compared via a one-sided Mann-Whitney U
+test with the alternative hypothesis being: inter-ensemble scores
+are stochastically greater than intra-ensemble scores. The p-values
+obtained in these tests will additionally be returned. For small
+protein structural ensembles (less than 500 conformations) most
+comparison scores in IDPET are not robust estimators of
+divergence/distance. By performing bootstrapping, you can have an
+idea of how the size of your ensembles impacts the comparison. Use
+values &gt;= 50 when comparing ensembles with very few conformations
+(less than 100). When comparing large ensembles (more than
+1,000-5,000 conformations) you can safely avoid bootstrapping.</p>
 </dd>
-<dt>bootstrap_frac<span class="classifier">float, optional</span></dt><dd><p>Fraction of the total conformations to sample when bootstrapping.
-Default value is 1.0, which results in bootstrap samples with the same
-number of conformations as the original ensemble.</p>
+<dt>bootstrap_frac: float, optional</dt><dd><p>Fraction of the total conformations to sample when bootstrapping.
+Default value is 1.0, which results in bootstrap samples with the
+same number of conformations of the original ensemble.</p>
 </dd>
-<dt>bootstrap_replace<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, bootstrap will sample with replacement. Default is
-<code class="docutils literal notranslate"><span class="pre">True</span></code>.</p>
+<dt>bootstrap_replace: bool, optional</dt><dd><p>If <cite>True</cite>, bootstrap will sample with replacement. Default is <cite>True</cite>.</p>
 </dd>
-<dt>bins<span class="classifier">Union[int, str], optional</span></dt><dd><p>Number of bins or bin assignment rule for JSD comparisons. See the
-documentation of <code class="docutils literal notranslate"><span class="pre">dpet.comparison.get_num_comparison_bins</span></code> for
+<dt>bins: Union[int, str], optional</dt><dd><p>Number of bins or bin assignment rule for JSD comparisons. See the
+documentation of <cite>dpet.comparison.get_num_comparison_bins</cite> for
 more information.</p>
 </dd>
-<dt>random_seed<span class="classifier">int, optional</span></dt><dd><p>Random seed used when performing bootstrapping.</p>
+<dt>random_seed: int, optional</dt><dd><p>Random seed used when performing bootstrapping.</p>
 </dd>
-<dt>verbose<span class="classifier">bool, optional</span></dt><dd><p>If <code class="docutils literal notranslate"><span class="pre">True</span></code>, prints additional information about the comparisons to
+<dt>verbose: bool, optional</dt><dd><p>If <cite>True</cite>, some information about the comparisons will be printed to
 stdout.</p>
 </dd>
 </dl>
@@ -320,17 +317,20 @@ stdout.</p>
 <section id="returns">
 <h3>Returns<a class="headerlink" href="#returns" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt>results<span class="classifier">dict</span></dt><dd><p>A dictionary containing the following key–value pairs:</p>
-<ul class="simple">
-<li><p><code class="docutils literal notranslate"><span class="pre">scores</span></code>: a (M, M, B) NumPy array storing the comparison
-scores, where M is the number of ensembles being compared and
-B is the number of bootstrap iterations (B = 1 if bootstrapping
-was not performed).</p></li>
-<li><p><code class="docutils literal notranslate"><span class="pre">p_values</span></code>: a (M, M) NumPy array storing the p-values
-obtained from the statistical tests performed when using
-a bootstrapping strategy (see the <code class="docutils literal notranslate"><span class="pre">bootstrap_iters</span></code> parameter).
-Returned only when performing a bootstrapping strategy.</p></li>
-</ul>
+<dt>results: dict</dt><dd><dl class="simple">
+<dt>A dictionary containing the following key-value pairs:</dt><dd><dl class="simple">
+<dt><cite>scores</cite>: a (M, M, B) NumPy array storing the comparison</dt><dd><p>scores, where M is the number of ensembles being
+compared and B is the number of bootstrap iterations (B
+will be 1 if bootstrapping was not performed).</p>
+</dd>
+<dt><cite>p_values</cite>: a (M, M) NumPy array storing the p-values</dt><dd><p>obtained in the statistical test performed when using
+a bootstrapping strategy (see the <cite>bootstrap_iters</cite>)
+method. Returned only when performing a bootstrapping
+strategy.</p>
+</dd>
+</dl>
+</dd>
+</dl>
 </dd>
 </dl>
 </section>
@@ -381,7 +381,7 @@ return a matrix with JSD scores for each pair of Ca-Ca distances.</p>
 </dd>
 <dt>return_bins<span class="classifier">bool, optional</span></dt><dd><p>If True, also return the histogram bin edges used in the comparison.</p>
 </dd>
-<dt><strong>remaining</strong></dt><dd><p>Additional arguments passed to <cite>idpet.comparison.score_adaJSD</cite>.</p>
+<dt><a href="#id2"><span class="problematic" id="id3">**</span></a>remaining</dt><dd><p>Additional arguments passed to <cite>dpet.comparison.score_adaJSD</cite>.</p>
 </dd>
 </dl>
 </section>
@@ -415,7 +415,7 @@ return a profile with JSD scores for each alpha angle in the proteins.</p>
 <div><p>If True, also return the histogram bin edges used in the comparison.</p>
 </div></blockquote>
 <dl class="simple">
-<dt><a href="#id2"><span class="problematic" id="id3">**</span></a>remaining</dt><dd><p>Additional arguments passed to <cite>dpet.comparison.score_ataJSD</cite>.</p>
+<dt><a href="#id4"><span class="problematic" id="id5">**</span></a>remaining</dt><dd><p>Additional arguments passed to <cite>dpet.comparison.score_ataJSD</cite>.</p>
 </dd>
 </dl>
 <dl class="simple">
@@ -437,8 +437,8 @@ comparisons.</p>
 <span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">get_num_comparison_bins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#get_num_comparison_bins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.get_num_comparison_bins" title="Permalink to this definition"></a></dt>
 <dd><p>Get the number of bins to be used in comparison between two ensembles using
 an histogram-based score (such as a JSD approximation).</p>
-<section id="id4">
-<h3>Parameters<a class="headerlink" href="#id4" title="Permalink to this heading"></a></h3>
+<section id="id6">
+<h3>Parameters<a class="headerlink" href="#id6" title="Permalink to this heading"></a></h3>
 <dl>
 <dt>bins: Union[str, int]</dt><dd><p>Determines the number of bins to be used. When providing an <cite>int</cite>, the
 same value will simply be returned. When providing a string, the following
@@ -455,15 +455,15 @@ value, returns <cite>dpet.comparison.num_default_bins</cite>.</p>
 </dd>
 </dl>
 </dd>
-<dt>x: List[np.ndarray], optional</dt><dd><p>List of M feature matrices (one for each ensembles) of shape (N_i, <a href="#id5"><span class="problematic" id="id6">*</span></a>).
+<dt>x: List[np.ndarray], optional</dt><dd><p>List of M feature matrices (one for each ensembles) of shape (N_i, <a href="#id7"><span class="problematic" id="id8">*</span></a>).
 N_i values are the number of structures in each ensemble. The minimum
 N_i will be used to apply bin assignment rule when the <cite>bins</cite> argument
 is a string.</p>
 </dd>
 </dl>
 </section>
-<section id="id7">
-<h3>Returns<a class="headerlink" href="#id7" title="Permalink to this heading"></a></h3>
+<section id="id9">
+<h3>Returns<a class="headerlink" href="#id9" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>num_bins: int</dt><dd><p>Number of bins.</p>
 </dd>
@@ -477,19 +477,19 @@ is a string.</p>
 <dd><p>Utility function to calculate the ramaJSD score between two ensembles and
 return a profile with JSD scores for the Ramachandran plots of pair of
 corresponding residue in the proteins.</p>
-<section id="id8">
-<h3>Parameters<a class="headerlink" href="#id8" title="Permalink to this heading"></a></h3>
+<section id="id10">
+<h3>Parameters<a class="headerlink" href="#id10" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
 <dt>return_bins<span class="classifier">bool, optional</span></dt><dd><p>If True, also return the histogram bin edges used in the comparison.</p>
 </dd>
-<dt><a href="#id9"><span class="problematic" id="id10">**</span></a>remaining</dt><dd><p>Additional arguments passed to <cite>dpet.comparison.score_ramaJSD</cite>.</p>
+<dt><a href="#id11"><span class="problematic" id="id12">**</span></a>remaining</dt><dd><p>Additional arguments passed to <cite>dpet.comparison.score_ramaJSD</cite>.</p>
 </dd>
 </dl>
 </section>
-<section id="id11">
-<h3>Returns<a class="headerlink" href="#id11" title="Permalink to this heading"></a></h3>
+<section id="id13">
+<h3>Returns<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>score<span class="classifier">float</span></dt><dd><p>The overall ramaJSD score between the two ensembles.</p>
 </dd>
@@ -522,8 +522,8 @@ this function will assign bootstrap confidence intervals.</p>
 <dd><p>Utility function to calculate the adaJSD (carbon Alfa Distance Average JSD)
 score between two ensembles. The score evaluates the divergence between
 distributions of Ca-Ca distances of the ensembles.</p>
-<section id="id12">
-<h3>Parameters<a class="headerlink" href="#id12" title="Permalink to this heading"></a></h3>
+<section id="id14">
+<h3>Parameters<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory],</dt><dd><p>Two Ensemble or mdtraj.Trajectory objects storing the ensemble data to
 compare.</p>
@@ -543,8 +543,8 @@ information.</p>
 </dd>
 </dl>
 </section>
-<section id="id13">
-<h3>Returns<a class="headerlink" href="#id13" title="Permalink to this heading"></a></h3>
+<section id="id15">
+<h3>Returns<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>avg_score<span class="classifier">float</span></dt><dd><p>The average JSD score across the F features.</p>
 </dd>
@@ -574,15 +574,15 @@ information.</p>
 between two ensembles. The score evaluates the divergence between
 distributions of alpha torsion angles (the angles formed by four consecutive
 Ca atoms in a protein) of the ensembles.</p>
-<section id="id14">
-<h3>Parameters<a class="headerlink" href="#id14" title="Permalink to this heading"></a></h3>
+<section id="id16">
+<h3>Parameters<a class="headerlink" href="#id16" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
 </dl>
 </section>
-<section id="id15">
-<h3>Returns<a class="headerlink" href="#id15" title="Permalink to this heading"></a></h3>
+<section id="id17">
+<h3>Returns<a class="headerlink" href="#id17" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>avg_score<span class="classifier">float</span></dt><dd><p>The average JSD score across the F features.</p>
 </dd>
@@ -608,17 +608,17 @@ Ca atoms in a protein) of the ensembles.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="idpet.comparison.score_avg_2d_angle_jsd">
 <span class="sig-prename descclassname"><span class="pre">idpet.comparison.</span></span><span class="sig-name descname"><span class="pre">score_avg_2d_angle_jsd</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">array_1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">array_2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_scores</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">return_bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/comparison.html#score_avg_2d_angle_jsd"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.comparison.score_avg_2d_angle_jsd" title="Permalink to this definition"></a></dt>
-<dd><p>Takes as input two (<a href="#id16"><span class="problematic" id="id17">*</span></a>, F, 2) bidimensional feature matrices and computes an
+<dd><p>Takes as input two (<a href="#id18"><span class="problematic" id="id19">*</span></a>, F, 2) bidimensional feature matrices and computes an
 average JSD score over all F bidimensional features by discretizing them
 in 2d histograms. The features in this functions are supposed to be angles
 whose values range from -math.pi to math.pi. For example, int the
 <cite>score_ramaJSD</cite> function the F features represent the phi-psi values of F
 residues in a protein of length L=F+2 (first and last residues don’t have
 both phi and psi values).</p>
-<section id="id18">
-<h3>Parameters<a class="headerlink" href="#id18" title="Permalink to this heading"></a></h3>
+<section id="id20">
+<h3>Parameters<a class="headerlink" href="#id20" title="Permalink to this heading"></a></h3>
 <dl class="simple">
-<dt>p_data, q_data: np.ndarray</dt><dd><p>NumPy arrays of shape (<a href="#id19"><span class="problematic" id="id20">*</span></a>, F, 2) containing samples from F bi-dimensional
+<dt>p_data, q_data: np.ndarray</dt><dd><p>NumPy arrays of shape (<a href="#id21"><span class="problematic" id="id22">*</span></a>, F, 2) containing samples from F bi-dimensional
 distributions to be compared.</p>
 </dd>
 <dt>bins: Union[int, str], optional</dt><dd><p>Determines the number of bins to be used when constructing histograms.
@@ -633,8 +633,8 @@ in the calculation.</p>
 </dd>
 </dl>
 </section>
-<section id="id21">
-<h3>Returns<a class="headerlink" href="#id21" title="Permalink to this heading"></a></h3>
+<section id="id23">
+<h3>Returns<a class="headerlink" href="#id23" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>results: Union[float, Tuple[float, np.ndarray]]</dt><dd><p>If <cite>return_bins</cite> is <cite>False</cite>, only returns a float value for the JSD
 score. The score will range from 0 (no common support) to log(2)
@@ -661,10 +661,10 @@ histogram the values two 1d samples provided as input.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">float</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]]</span></p>
 </dd>
 </dl>
-<section id="id22">
-<h3>Parameters<a class="headerlink" href="#id22" title="Permalink to this heading"></a></h3>
+<section id="id24">
+<h3>Parameters<a class="headerlink" href="#id24" title="Permalink to this heading"></a></h3>
 <dl>
-<dt>p_data, q_data: np.ndarray</dt><dd><p>NumPy arrays of shape (<a href="#id23"><span class="problematic" id="id24">*</span></a>, ) containing samples from two mono-dimensional
+<dt>p_data, q_data: np.ndarray</dt><dd><p>NumPy arrays of shape (<a href="#id25"><span class="problematic" id="id26">*</span></a>, ) containing samples from two mono-dimensional
 distribution to be compared.</p>
 </dd>
 <dt>limits: Union[str, Tuple[int]]</dt><dd><p>Define the method to calculate the minimum and maximum values of the
@@ -694,8 +694,8 @@ range spanned by the bins will be define by the <cite>limits</cite> argument.</p
 </dd>
 </dl>
 </section>
-<section id="id25">
-<h3>Returns<a class="headerlink" href="#id25" title="Permalink to this heading"></a></h3>
+<section id="id27">
+<h3>Returns<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>results: Union[float, Tuple[float, np.ndarray]]</dt><dd><p>If <cite>return_bins</cite> is <cite>False</cite>, only returns a float value for the JSD
 score. The score will range from 0 (no common support) to log(2)
@@ -712,15 +712,15 @@ the JSD score and the number of bins.</p>
 <dd><p>Utility unction to calculate the ramaJSD (Ramachandran plot average JSD)
 score between two ensembles. The score evaluates the divergence between
 distributions of phi-psi torsion angles of every residue in the ensembles.</p>
-<section id="id26">
-<h3>Parameters<a class="headerlink" href="#id26" title="Permalink to this heading"></a></h3>
+<section id="id28">
+<h3>Parameters<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</dt><dd><p>Two Ensemble objects storing the ensemble data to compare.</p>
 </dd>
 </dl>
 </section>
-<section id="id27">
-<h3>Returns<a class="headerlink" href="#id27" title="Permalink to this heading"></a></h3>
+<section id="id29">
+<h3>Returns<a class="headerlink" href="#id29" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>avg_score<span class="classifier">float</span></dt><dd><p>The average JSD score across the F features.</p>
 </dd>
@@ -838,8 +838,8 @@ Note: this function only works on phi/psi feature</p>
 <dt class="sig sig-object py" id="idpet.dimensionality_reduction.DimensionalityReduction.fit">
 <em class="property"><span class="pre">abstract</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#DimensionalityReduction.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.DimensionalityReduction.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Fit the dimensionality reduction model to the data.</p>
-<section id="id28">
-<h3>Parameters<a class="headerlink" href="#id28" title="Permalink to this heading"></a></h3>
+<section id="id30">
+<h3>Parameters<a class="headerlink" href="#id30" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
@@ -860,22 +860,22 @@ Note: this function only works on phi/psi feature</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id29">
-<h3>Parameters<a class="headerlink" href="#id29" title="Permalink to this heading"></a></h3>
+<section id="id31">
+<h3>Parameters<a class="headerlink" href="#id31" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id30">
-<h3>Returns<a class="headerlink" href="#id30" title="Permalink to this heading"></a></h3>
+<section id="id32">
+<h3>Returns<a class="headerlink" href="#id32" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id31">
-<h3>Notes<a class="headerlink" href="#id31" title="Permalink to this heading"></a></h3>
+<section id="id33">
+<h3>Notes<a class="headerlink" href="#id33" title="Permalink to this heading"></a></h3>
 <p>This method fits the dimensionality reduction model to the input data and then transforms it.</p>
 </section>
 </dd></dl>
@@ -889,22 +889,22 @@ Note: this function only works on phi/psi feature</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id32">
-<h3>Parameters<a class="headerlink" href="#id32" title="Permalink to this heading"></a></h3>
+<section id="id34">
+<h3>Parameters<a class="headerlink" href="#id34" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features) to be transformed.</p>
 </dd>
 </dl>
 </section>
-<section id="id33">
-<h3>Returns<a class="headerlink" href="#id33" title="Permalink to this heading"></a></h3>
+<section id="id35">
+<h3>Returns<a class="headerlink" href="#id35" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id34">
-<h3>Notes<a class="headerlink" href="#id34" title="Permalink to this heading"></a></h3>
+<section id="id36">
+<h3>Notes<a class="headerlink" href="#id36" title="Permalink to this heading"></a></h3>
 <p>This method transforms the input data using the fitted dimensionality reduction model.</p>
 </section>
 </dd></dl>
@@ -931,8 +931,8 @@ Note: this function only works on phi/psi feature</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><a class="reference internal" href="#idpet.dimensionality_reduction.DimensionalityReduction" title="idpet.dimensionality_reduction.DimensionalityReduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionalityReduction</span></code></a></span></p>
 </dd>
 </dl>
-<section id="id35">
-<h4>Parameters<a class="headerlink" href="#id35" title="Permalink to this heading"></a></h4>
+<section id="id37">
+<h4>Parameters<a class="headerlink" href="#id37" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>method<span class="classifier">str</span></dt><dd><p>Name of the dimensionality reduction method.</p>
 </dd>
@@ -942,8 +942,8 @@ Note: this function only works on phi/psi feature</p>
 </dd>
 </dl>
 </section>
-<section id="id36">
-<h4>Returns<a class="headerlink" href="#id36" title="Permalink to this heading"></a></h4>
+<section id="id38">
+<h4>Returns<a class="headerlink" href="#id38" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>DimensionalityReduction</dt><dd><p>Instance of the specified dimensionality reduction algorithm.</p>
 </dd>
@@ -959,8 +959,8 @@ Note: this function only works on phi/psi feature</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.dimensionality_reduction.</span></span><span class="sig-name descname"><span class="pre">KPCAReduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'poly'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">gamma</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#KPCAReduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.KPCAReduction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#idpet.dimensionality_reduction.DimensionalityReduction" title="idpet.dimensionality_reduction.DimensionalityReduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionalityReduction</span></code></a></p>
 <p>Class for performing dimensionality reduction using Kernel PCA (KPCA) algorithm.</p>
-<section id="id37">
-<h3>Parameters<a class="headerlink" href="#id37" title="Permalink to this heading"></a></h3>
+<section id="id39">
+<h3>Parameters<a class="headerlink" href="#id39" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>circular<span class="classifier">bool, optional</span></dt><dd><p>Whether to use circular metrics for angular features. Default is False.
 If True, it will override the <cite>kernel</cite> argument.</p>
@@ -976,15 +976,15 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dt class="sig sig-object py" id="idpet.dimensionality_reduction.KPCAReduction.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#KPCAReduction.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.KPCAReduction.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Fit the dimensionality reduction model to the data.</p>
-<section id="id38">
-<h4>Parameters<a class="headerlink" href="#id38" title="Permalink to this heading"></a></h4>
+<section id="id40">
+<h4>Parameters<a class="headerlink" href="#id40" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id39">
-<h4>Notes<a class="headerlink" href="#id39" title="Permalink to this heading"></a></h4>
+<section id="id41">
+<h4>Notes<a class="headerlink" href="#id41" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data.</p>
 </section>
 </dd></dl>
@@ -998,22 +998,22 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id40">
-<h4>Parameters<a class="headerlink" href="#id40" title="Permalink to this heading"></a></h4>
+<section id="id42">
+<h4>Parameters<a class="headerlink" href="#id42" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id41">
-<h4>Returns<a class="headerlink" href="#id41" title="Permalink to this heading"></a></h4>
+<section id="id43">
+<h4>Returns<a class="headerlink" href="#id43" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id42">
-<h4>Notes<a class="headerlink" href="#id42" title="Permalink to this heading"></a></h4>
+<section id="id44">
+<h4>Notes<a class="headerlink" href="#id44" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data and then transforms it.</p>
 </section>
 </dd></dl>
@@ -1027,22 +1027,22 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id43">
-<h4>Parameters<a class="headerlink" href="#id43" title="Permalink to this heading"></a></h4>
+<section id="id45">
+<h4>Parameters<a class="headerlink" href="#id45" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features) to be transformed.</p>
 </dd>
 </dl>
 </section>
-<section id="id44">
-<h4>Returns<a class="headerlink" href="#id44" title="Permalink to this heading"></a></h4>
+<section id="id46">
+<h4>Returns<a class="headerlink" href="#id46" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id45">
-<h4>Notes<a class="headerlink" href="#id45" title="Permalink to this heading"></a></h4>
+<section id="id47">
+<h4>Notes<a class="headerlink" href="#id47" title="Permalink to this heading"></a></h4>
 <p>This method transforms the input data using the fitted dimensionality reduction model.</p>
 </section>
 </dd></dl>
@@ -1055,8 +1055,8 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.dimensionality_reduction.</span></span><span class="sig-name descname"><span class="pre">PCAReduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#PCAReduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.PCAReduction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#idpet.dimensionality_reduction.DimensionalityReduction" title="idpet.dimensionality_reduction.DimensionalityReduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionalityReduction</span></code></a></p>
 <p>Principal Component Analysis (PCA) for dimensionality reduction.</p>
-<section id="id46">
-<h3>Parameters<a class="headerlink" href="#id46" title="Permalink to this heading"></a></h3>
+<section id="id48">
+<h3>Parameters<a class="headerlink" href="#id48" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>num_dim<span class="classifier">int, optional</span></dt><dd><p>Number of components to keep. Default is 10.</p>
 </dd>
@@ -1065,15 +1065,15 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dt class="sig sig-object py" id="idpet.dimensionality_reduction.PCAReduction.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#PCAReduction.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.PCAReduction.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Fit the dimensionality reduction model to the data.</p>
-<section id="id47">
-<h4>Parameters<a class="headerlink" href="#id47" title="Permalink to this heading"></a></h4>
+<section id="id49">
+<h4>Parameters<a class="headerlink" href="#id49" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id48">
-<h4>Notes<a class="headerlink" href="#id48" title="Permalink to this heading"></a></h4>
+<section id="id50">
+<h4>Notes<a class="headerlink" href="#id50" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data.</p>
 </section>
 </dd></dl>
@@ -1087,22 +1087,22 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id49">
-<h4>Parameters<a class="headerlink" href="#id49" title="Permalink to this heading"></a></h4>
+<section id="id51">
+<h4>Parameters<a class="headerlink" href="#id51" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id50">
-<h4>Returns<a class="headerlink" href="#id50" title="Permalink to this heading"></a></h4>
+<section id="id52">
+<h4>Returns<a class="headerlink" href="#id52" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id51">
-<h4>Notes<a class="headerlink" href="#id51" title="Permalink to this heading"></a></h4>
+<section id="id53">
+<h4>Notes<a class="headerlink" href="#id53" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data and then transforms it.</p>
 </section>
 </dd></dl>
@@ -1116,22 +1116,22 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id52">
-<h4>Parameters<a class="headerlink" href="#id52" title="Permalink to this heading"></a></h4>
+<section id="id54">
+<h4>Parameters<a class="headerlink" href="#id54" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features) to be transformed.</p>
 </dd>
 </dl>
 </section>
-<section id="id53">
-<h4>Returns<a class="headerlink" href="#id53" title="Permalink to this heading"></a></h4>
+<section id="id55">
+<h4>Returns<a class="headerlink" href="#id55" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id54">
-<h4>Notes<a class="headerlink" href="#id54" title="Permalink to this heading"></a></h4>
+<section id="id56">
+<h4>Notes<a class="headerlink" href="#id56" title="Permalink to this heading"></a></h4>
 <p>This method transforms the input data using the fitted dimensionality reduction model.</p>
 </section>
 </dd></dl>
@@ -1144,8 +1144,8 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.dimensionality_reduction.</span></span><span class="sig-name descname"><span class="pre">TSNEReduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">perplexity_vals</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[30]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">learning_rate</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'auto'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">range(2,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#TSNEReduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.TSNEReduction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#idpet.dimensionality_reduction.DimensionalityReduction" title="idpet.dimensionality_reduction.DimensionalityReduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionalityReduction</span></code></a></p>
 <p>Class for performing dimensionality reduction using t-SNE algorithm.</p>
-<section id="id55">
-<h3>Parameters<a class="headerlink" href="#id55" title="Permalink to this heading"></a></h3>
+<section id="id57">
+<h3>Parameters<a class="headerlink" href="#id57" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>perplexity_vals<span class="classifier">List[float], optional</span></dt><dd><p>List of perplexity values. Default is [30].</p>
 </dd>
@@ -1166,15 +1166,15 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dt class="sig sig-object py" id="idpet.dimensionality_reduction.TSNEReduction.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#TSNEReduction.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.TSNEReduction.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Fit the dimensionality reduction model to the data.</p>
-<section id="id56">
-<h4>Parameters<a class="headerlink" href="#id56" title="Permalink to this heading"></a></h4>
+<section id="id58">
+<h4>Parameters<a class="headerlink" href="#id58" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id57">
-<h4>Notes<a class="headerlink" href="#id57" title="Permalink to this heading"></a></h4>
+<section id="id59">
+<h4>Notes<a class="headerlink" href="#id59" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data.</p>
 </section>
 </dd></dl>
@@ -1188,22 +1188,22 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id58">
-<h4>Parameters<a class="headerlink" href="#id58" title="Permalink to this heading"></a></h4>
+<section id="id60">
+<h4>Parameters<a class="headerlink" href="#id60" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id59">
-<h4>Returns<a class="headerlink" href="#id59" title="Permalink to this heading"></a></h4>
+<section id="id61">
+<h4>Returns<a class="headerlink" href="#id61" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id60">
-<h4>Notes<a class="headerlink" href="#id60" title="Permalink to this heading"></a></h4>
+<section id="id62">
+<h4>Notes<a class="headerlink" href="#id62" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data and then transforms it.</p>
 </section>
 </dd></dl>
@@ -1217,22 +1217,22 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id61">
-<h4>Parameters<a class="headerlink" href="#id61" title="Permalink to this heading"></a></h4>
+<section id="id63">
+<h4>Parameters<a class="headerlink" href="#id63" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features) to be transformed.</p>
 </dd>
 </dl>
 </section>
-<section id="id62">
-<h4>Returns<a class="headerlink" href="#id62" title="Permalink to this heading"></a></h4>
+<section id="id64">
+<h4>Returns<a class="headerlink" href="#id64" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id63">
-<h4>Notes<a class="headerlink" href="#id63" title="Permalink to this heading"></a></h4>
+<section id="id65">
+<h4>Notes<a class="headerlink" href="#id65" title="Permalink to this heading"></a></h4>
 <p>This method transforms the input data using the fitted dimensionality reduction model.</p>
 </section>
 </dd></dl>
@@ -1245,8 +1245,8 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.dimensionality_reduction.</span></span><span class="sig-name descname"><span class="pre">UMAPReduction</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">n_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">2</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n_neighbors</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[15]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">circular</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">min_dist</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">0.1</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">metric</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'euclidean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range_n_clusters</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">range(2,</span> <span class="pre">10)</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">random_state</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#UMAPReduction"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.UMAPReduction" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <a class="reference internal" href="#idpet.dimensionality_reduction.DimensionalityReduction" title="idpet.dimensionality_reduction.DimensionalityReduction"><code class="xref py py-class docutils literal notranslate"><span class="pre">DimensionalityReduction</span></code></a></p>
 <p>Class for performing dimensionality reduction using Uniform Manifold Approximation and Projection (UMAP) algorithm.</p>
-<section id="id64">
-<h3>Parameters<a class="headerlink" href="#id64" title="Permalink to this heading"></a></h3>
+<section id="id66">
+<h3>Parameters<a class="headerlink" href="#id66" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>num_dim<span class="classifier">int, optional</span></dt><dd><p>Number of dimensions for the reduced space. Default is 2.</p>
 </dd>
@@ -1270,8 +1270,8 @@ If True, it will override the <cite>kernel</cite> argument.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-data docutils literal notranslate"><span class="pre">Tuple</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id65">
-<h4>Returns<a class="headerlink" href="#id65" title="Permalink to this heading"></a></h4>
+<section id="id67">
+<h4>Returns<a class="headerlink" href="#id67" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>List[Tuple]</dt><dd><p>A list of tuples containing the number of clusters and the corresponding silhouette score
 for each clustering result.</p>
@@ -1284,15 +1284,15 @@ for each clustering result.</p>
 <dt class="sig sig-object py" id="idpet.dimensionality_reduction.UMAPReduction.fit">
 <span class="sig-name descname"><span class="pre">fit</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/dimensionality_reduction.html#UMAPReduction.fit"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.dimensionality_reduction.UMAPReduction.fit" title="Permalink to this definition"></a></dt>
 <dd><p>Fit the dimensionality reduction model to the data.</p>
-<section id="id66">
-<h4>Parameters<a class="headerlink" href="#id66" title="Permalink to this heading"></a></h4>
+<section id="id68">
+<h4>Parameters<a class="headerlink" href="#id68" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id67">
-<h4>Notes<a class="headerlink" href="#id67" title="Permalink to this heading"></a></h4>
+<section id="id69">
+<h4>Notes<a class="headerlink" href="#id69" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data.</p>
 </section>
 </dd></dl>
@@ -1306,22 +1306,22 @@ for each clustering result.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id68">
-<h4>Parameters<a class="headerlink" href="#id68" title="Permalink to this heading"></a></h4>
+<section id="id70">
+<h4>Parameters<a class="headerlink" href="#id70" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features).</p>
 </dd>
 </dl>
 </section>
-<section id="id69">
-<h4>Returns<a class="headerlink" href="#id69" title="Permalink to this heading"></a></h4>
+<section id="id71">
+<h4>Returns<a class="headerlink" href="#id71" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id70">
-<h4>Notes<a class="headerlink" href="#id70" title="Permalink to this heading"></a></h4>
+<section id="id72">
+<h4>Notes<a class="headerlink" href="#id72" title="Permalink to this heading"></a></h4>
 <p>This method fits the dimensionality reduction model to the input data and then transforms it.</p>
 </section>
 </dd></dl>
@@ -1335,22 +1335,22 @@ for each clustering result.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id71">
-<h4>Parameters<a class="headerlink" href="#id71" title="Permalink to this heading"></a></h4>
+<section id="id73">
+<h4>Parameters<a class="headerlink" href="#id73" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>data<span class="classifier">np.ndarray</span></dt><dd><p>The input data array of shape (n_samples, n_features) to be transformed.</p>
 </dd>
 </dl>
 </section>
-<section id="id72">
-<h4>Returns<a class="headerlink" href="#id72" title="Permalink to this heading"></a></h4>
+<section id="id74">
+<h4>Returns<a class="headerlink" href="#id74" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>The transformed data array of shape (n_samples, n_components).</p>
 </dd>
 </dl>
 </section>
-<section id="id73">
-<h4>Notes<a class="headerlink" href="#id73" title="Permalink to this heading"></a></h4>
+<section id="id75">
+<h4>Notes<a class="headerlink" href="#id75" title="Permalink to this heading"></a></h4>
 <p>This method transforms the input data using the fitted dimensionality reduction model.</p>
 </section>
 </dd></dl>
@@ -1388,11 +1388,11 @@ cosine values for the N angles.</p>
 <span id="idpet-ensemble-module"></span><h2>idpet.ensemble module<a class="headerlink" href="#module-idpet.ensemble" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a molecular dynamics ensemble.</p>
-<section id="id74">
-<h3>Parameters<a class="headerlink" href="#id74" title="Permalink to this heading"></a></h3>
+<section id="id76">
+<h3>Parameters<a class="headerlink" href="#id76" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>code<span class="classifier">str</span></dt><dd><p>The code identifier of the ensemble.</p>
 </dd>
@@ -1407,10 +1407,13 @@ cosine values for the N angles.</p>
 </dd>
 <dt>residue_range<span class="classifier">Tuple, optional</span></dt><dd><p>A tuple indicating the start and end of the residue range (inclusive), using 1-based indexing. Default is None.</p>
 </dd>
+<dt>fix_pbc<span class="classifier">bool, optional</span></dt><dd><p>If True, IDPET automatically removes discontinuities arising from periodic boundary conditions using MDTraj’s
+built-in functions. Only takes effect when ‘data_path’ is a trajectory file.</p>
+</dd>
 </dl>
 </section>
-<section id="id75">
-<h3>Notes<a class="headerlink" href="#id75" title="Permalink to this heading"></a></h3>
+<section id="id77">
+<h3>Notes<a class="headerlink" href="#id77" title="Permalink to this heading"></a></h3>
 <ul class="simple">
 <li><p>If the database is ‘atlas’, the ensemble code should be provided as a PDB ID with a chain identifier separated by an underscore. Example: ‘3a1g_B’.</p></li>
 <li><p>If the database is ‘ped’, the ensemble code should be in the PED ID format, which consists of a string starting with ‘PED’ followed by a numeric identifier, and ‘e’ followed by another numeric identifier. Example: ‘PED00423e001’.</p></li>
@@ -1420,8 +1423,8 @@ cosine values for the N angles.</p>
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble.extract_features">
 <span class="sig-name descname"><span class="pre">extract_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">featurization</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">*</span></span><span class="n"><span class="pre">args</span></span></em>, <em class="sig-param"><span class="o"><span class="pre">**</span></span><span class="n"><span class="pre">kwargs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.extract_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.extract_features" title="Permalink to this definition"></a></dt>
 <dd><p>Extract features from the trajectory using the specified featurization method.</p>
-<section id="id76">
-<h4>Parameters<a class="headerlink" href="#id76" title="Permalink to this heading"></a></h4>
+<section id="id78">
+<h4>Parameters<a class="headerlink" href="#id78" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>featurization<span class="classifier">str</span></dt><dd><p>The method to use for feature extraction. Supported options: ‘ca_dist’, ‘phi_psi’, ‘a_angle’, ‘tr_omega’, ‘tr_phi’, and ‘ca_phi_psi’.</p>
 </dd>
@@ -1431,8 +1434,8 @@ cosine values for the N angles.</p>
 </dd>
 </dl>
 </section>
-<section id="id77">
-<h4>Notes<a class="headerlink" href="#id77" title="Permalink to this heading"></a></h4>
+<section id="id79">
+<h4>Notes<a class="headerlink" href="#id79" title="Permalink to this heading"></a></h4>
 <p>This method extracts features from the trajectory using the specified featurization method and updates the ensemble’s features attribute.</p>
 </section>
 </dd></dl>
@@ -1461,8 +1464,8 @@ cosine values for the N angles.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Sequence</span></code></span></p>
 </dd>
 </dl>
-<section id="id78">
-<h4>Parameters<a class="headerlink" href="#id78" title="Permalink to this heading"></a></h4>
+<section id="id80">
+<h4>Parameters<a class="headerlink" href="#id80" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>featurization<span class="classifier">str</span></dt><dd><p>The method to use for feature extraction. Supported options: ‘ca_dist’, ‘phi_psi’, ‘a_angle’, ‘tr_omega’, ‘tr_phi’, ‘rg’, ‘prolateness’, ‘asphericity’, ‘sasa’, ‘end_to_end’.</p>
 </dd>
@@ -1472,15 +1475,15 @@ cosine values for the N angles.</p>
 </dd>
 </dl>
 </section>
-<section id="id79">
-<h4>Returns<a class="headerlink" href="#id79" title="Permalink to this heading"></a></h4>
+<section id="id81">
+<h4>Returns<a class="headerlink" href="#id81" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>features<span class="classifier">Sequence</span></dt><dd><p>The extracted features.</p>
 </dd>
 </dl>
 </section>
-<section id="id80">
-<h4>Notes<a class="headerlink" href="#id80" title="Permalink to this heading"></a></h4>
+<section id="id82">
+<h4>Notes<a class="headerlink" href="#id82" title="Permalink to this heading"></a></h4>
 <p>This method extracts features from the trajectory using the specified featurization method.</p>
 </section>
 </dd></dl>
@@ -1504,17 +1507,17 @@ loaded.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble.load_trajectory">
-<span class="sig-name descname"><span class="pre">load_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.load_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.load_trajectory" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.load_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.load_trajectory" title="Permalink to this definition"></a></dt>
 <dd><p>Load a trajectory for the ensemble.</p>
-<section id="id81">
-<h4>Parameters<a class="headerlink" href="#id81" title="Permalink to this heading"></a></h4>
+<section id="id83">
+<h4>Parameters<a class="headerlink" href="#id83" title="Permalink to this heading"></a></h4>
 <dl class="simple">
-<dt>data_dir<span class="classifier">str, optional</span></dt><dd><p>The directory where the trajectory data is located or where generated trajectory files will be saved.</p>
+<dt>output_dir<span class="classifier">str, optional</span></dt><dd><p>The directory where the trajectory data is located or where generated trajectory files will be saved.</p>
 </dd>
 </dl>
 </section>
-<section id="id82">
-<h4>Notes<a class="headerlink" href="#id82" title="Permalink to this heading"></a></h4>
+<section id="id84">
+<h4>Notes<a class="headerlink" href="#id84" title="Permalink to this heading"></a></h4>
 <p>This method loads a trajectory for the ensemble based on the specified data path. 
 It supports loading from various file formats such as PDB, DCD, and XTC.
 If the data path points to a directory, it searches for PDB files within the directory 
@@ -1531,8 +1534,8 @@ Additional processing steps include checking for coarse-grained models, selectin
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble.normalize_features">
 <span class="sig-name descname"><span class="pre">normalize_features</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">mean</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">std</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.normalize_features"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.normalize_features" title="Permalink to this definition"></a></dt>
 <dd><p>Normalize the extracted features using the provided mean and standard deviation.</p>
-<section id="id83">
-<h4>Parameters<a class="headerlink" href="#id83" title="Permalink to this heading"></a></h4>
+<section id="id85">
+<h4>Parameters<a class="headerlink" href="#id85" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>mean<span class="classifier">float</span></dt><dd><p>The mean value used for normalization.</p>
 </dd>
@@ -1540,8 +1543,8 @@ Additional processing steps include checking for coarse-grained models, selectin
 </dd>
 </dl>
 </section>
-<section id="id84">
-<h4>Notes<a class="headerlink" href="#id84" title="Permalink to this heading"></a></h4>
+<section id="id86">
+<h4>Notes<a class="headerlink" href="#id86" title="Permalink to this heading"></a></h4>
 <p>This method normalizes the ensemble’s features using the provided mean and standard deviation.</p>
 </section>
 </dd></dl>
@@ -1550,15 +1553,15 @@ Additional processing steps include checking for coarse-grained models, selectin
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble.random_sample_trajectory">
 <span class="sig-name descname"><span class="pre">random_sample_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.random_sample_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.random_sample_trajectory" title="Permalink to this definition"></a></dt>
 <dd><p>Randomly sample frames from the original trajectory.</p>
-<section id="id85">
-<h4>Parameters<a class="headerlink" href="#id85" title="Permalink to this heading"></a></h4>
+<section id="id87">
+<h4>Parameters<a class="headerlink" href="#id87" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>sample_size<span class="classifier">int</span></dt><dd><p>The number of frames to sample from the original trajectory.</p>
 </dd>
 </dl>
 </section>
-<section id="id86">
-<h4>Notes<a class="headerlink" href="#id86" title="Permalink to this heading"></a></h4>
+<section id="id88">
+<h4>Notes<a class="headerlink" href="#id88" title="Permalink to this heading"></a></h4>
 <p>This method samples frames randomly from the original trajectory and updates the ensemble’s trajectory attribute.</p>
 </section>
 </dd></dl>
@@ -1576,8 +1579,8 @@ Additional processing steps include checking for coarse-grained models, selectin
 <p>Data analysis pipeline for ensemble data.</p>
 <p>Initializes with a list of ensemble objects and a directory path
 for storing data.</p>
-<section id="id87">
-<h3>Parameters<a class="headerlink" href="#id87" title="Permalink to this heading"></a></h3>
+<section id="id89">
+<h3>Parameters<a class="headerlink" href="#id89" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ensembles<span class="classifier">List[Ensemble])</span></dt><dd><p>List of ensembles.</p>
 </dd>
@@ -1601,8 +1604,8 @@ See <cite>dpet.comparison.all_vs_all_comparison</cite> for more information.</p>
 <dt class="sig sig-object py" id="idpet.ensemble_analysis.EnsembleAnalysis.ens_codes">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">ens_codes</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">List</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#idpet.ensemble_analysis.EnsembleAnalysis.ens_codes" title="Permalink to this definition"></a></dt>
 <dd><p>Get the ensemble codes.</p>
-<section id="id88">
-<h4>Returns<a class="headerlink" href="#id88" title="Permalink to this heading"></a></h4>
+<section id="id90">
+<h4>Returns<a class="headerlink" href="#id90" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>List[str]</dt><dd><p>A list of ensemble codes.</p>
 </dd>
@@ -1623,8 +1626,8 @@ See <cite>dpet.comparison.all_vs_all_comparison</cite> for more information.</p>
 </ol>
 </dd>
 </dl>
-<section id="id89">
-<h4>Parameters<a class="headerlink" href="#id89" title="Permalink to this heading"></a></h4>
+<section id="id91">
+<h4>Parameters<a class="headerlink" href="#id91" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>featurization_params: Dict</dt><dd><p>Parameters for feature extraction. The only required parameter is “featurization”,
 which can be “phi_psi”, “ca_dist”, “a_angle”, “tr_omega” or “tr_phi”. 
@@ -1648,8 +1651,8 @@ which can be “pca”, “tsne” or “kpca”.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">bool</span></code></span></p>
 </dd>
 </dl>
-<section id="id90">
-<h4>Returns<a class="headerlink" href="#id90" title="Permalink to this heading"></a></h4>
+<section id="id92">
+<h4>Returns<a class="headerlink" href="#id92" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>bool</dt><dd><p>True if at least one ensemble is coarse-grained, False otherwise.</p>
 </dd>
@@ -1666,8 +1669,8 @@ which can be “pca”, “tsne” or “kpca”.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id91">
-<h4>Parameters<a class="headerlink" href="#id91" title="Permalink to this heading"></a></h4>
+<section id="id93">
+<h4>Parameters<a class="headerlink" href="#id93" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>featurization<span class="classifier">str</span></dt><dd><p>Choose between “phi_psi”, “ca_dist”, “a_angle”, “tr_omega”, “tr_phi”, “rmsd”.</p>
 </dd>
@@ -1679,8 +1682,8 @@ which can be “pca”, “tsne” or “kpca”.</p>
 </dd>
 </dl>
 </section>
-<section id="id92">
-<h4>Returns<a class="headerlink" href="#id92" title="Permalink to this heading"></a></h4>
+<section id="id94">
+<h4>Returns<a class="headerlink" href="#id94" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>Dict[str, np.ndarray]</dt><dd><p>A dictionary where keys are ensemble IDs and values are the corresponding feature arrays.</p>
 </dd>
@@ -1692,8 +1695,8 @@ which can be “pca”, “tsne” or “kpca”.</p>
 <dt class="sig sig-object py" id="idpet.ensemble_analysis.EnsembleAnalysis.features">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">features</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#idpet.ensemble_analysis.EnsembleAnalysis.features" title="Permalink to this definition"></a></dt>
 <dd><p>Get the features associated with each ensemble.</p>
-<section id="id93">
-<h4>Returns<a class="headerlink" href="#id93" title="Permalink to this heading"></a></h4>
+<section id="id95">
+<h4>Returns<a class="headerlink" href="#id95" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>Dict[str, np.ndarray]</dt><dd><p>A dictionary where keys are ensemble IDs and values are the corresponding feature arrays.</p>
 </dd>
@@ -1710,8 +1713,8 @@ which can be “pca”, “tsne” or “kpca”.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id94">
-<h4>Parameters:<a class="headerlink" href="#id94" title="Permalink to this heading"></a></h4>
+<section id="id96">
+<h4>Parameters:<a class="headerlink" href="#id96" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>featurization<span class="classifier">str</span></dt><dd><p>The type of featurization to be applied. Supported options are “phi_psi”, “tr_omega”, “tr_phi”, “ca_dist”, “a_angle”, “rg”, “prolateness”, “asphericity”, “sasa”, “end_to_end” and “flory_exponent”.</p>
 </dd>
@@ -1723,16 +1726,16 @@ which can be “pca”, “tsne” or “kpca”.</p>
 </dd>
 </dl>
 </section>
-<section id="id95">
-<h4>Returns:<a class="headerlink" href="#id95" title="Permalink to this heading"></a></h4>
+<section id="id97">
+<h4>Returns:<a class="headerlink" href="#id97" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>Dict[str, np.ndarray]</dt><dd><p>A dictionary containing the extracted features for each ensemble, where the keys are ensemble IDs and the 
 values are NumPy arrays containing the features.</p>
 </dd>
 </dl>
 </section>
-<section id="id96">
-<h4>Raises:<a class="headerlink" href="#id96" title="Permalink to this heading"></a></h4>
+<section id="id98">
+<h4>Raises:<a class="headerlink" href="#id98" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>ValueError:</dt><dd><p>If featurization is not supported, or if normalization is requested for a featurization method other than “ca_dist”.
 If normalization is requested and features from ensembles have different sizes.
@@ -1752,8 +1755,8 @@ If coarse-grained models are used with featurization methods that require atomis
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">DataFrame</span></code></span></p>
 </dd>
 </dl>
-<section id="id97">
-<h4>Parameters<a class="headerlink" href="#id97" title="Permalink to this heading"></a></h4>
+<section id="id99">
+<h4>Parameters<a class="headerlink" href="#id99" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>selected_features<span class="classifier">List[str], optional</span></dt><dd><p>List of feature extraction methods to be used for summarizing the ensembles.
 Default is [“rg”, “asphericity”, “prolateness”, “sasa”, “end_to_end”, “flory_exponent”].</p>
@@ -1763,15 +1766,15 @@ feature (e.g.: standard deviation or error).</p>
 </dd>
 </dl>
 </section>
-<section id="id98">
-<h4>Returns<a class="headerlink" href="#id98" title="Permalink to this heading"></a></h4>
+<section id="id100">
+<h4>Returns<a class="headerlink" href="#id100" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>pd.DataFrame</dt><dd><p>DataFrame containing the summary statistics (average and std) for each feature in each ensemble.</p>
 </dd>
 </dl>
 </section>
-<section id="id99">
-<h4>Raises<a class="headerlink" href="#id99" title="Permalink to this heading"></a></h4>
+<section id="id101">
+<h4>Raises<a class="headerlink" href="#id101" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>ValueError</dt><dd><p>If any feature in the selected_features is not a supported feature extraction method.</p>
 </dd>
@@ -1791,8 +1794,8 @@ Trajectories are then loaded for each ensemble.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Dict</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">str</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">Trajectory</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id100">
-<h4>Returns<a class="headerlink" href="#id100" title="Permalink to this heading"></a></h4>
+<section id="id102">
+<h4>Returns<a class="headerlink" href="#id102" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>Dict[str, mdtraj.Trajectory]</dt><dd><p>A dictionary where keys are ensemble IDs and values are the corresponding MDTraj trajectories.</p>
 </dd>
@@ -1810,8 +1813,8 @@ where trajectory files will be saved or extracted.</p>
 <span class="sig-name descname"><span class="pre">random_sample_trajectories</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">sample_size</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble_analysis.html#EnsembleAnalysis.random_sample_trajectories"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble_analysis.EnsembleAnalysis.random_sample_trajectories" title="Permalink to this definition"></a></dt>
 <dd><p>Sample a defined random number of conformations from the ensemble 
 trajectory.</p>
-<section id="id101">
-<h4>Parameters<a class="headerlink" href="#id101" title="Permalink to this heading"></a></h4>
+<section id="id103">
+<h4>Parameters<a class="headerlink" href="#id103" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>sample_size: int</dt><dd><p>Number of conformations sampled from the ensemble.</p>
 </dd>
@@ -1823,8 +1826,8 @@ trajectory.</p>
 <dt class="sig sig-object py" id="idpet.ensemble_analysis.EnsembleAnalysis.reduce_dim_data">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">reduce_dim_data</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">ndarray</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#idpet.ensemble_analysis.EnsembleAnalysis.reduce_dim_data" title="Permalink to this definition"></a></dt>
 <dd><p>Get the transformed data associated with each ensemble.</p>
-<section id="id102">
-<h4>Returns<a class="headerlink" href="#id102" title="Permalink to this heading"></a></h4>
+<section id="id104">
+<h4>Returns<a class="headerlink" href="#id104" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>Dict[str, np.ndarray]</dt><dd><p>A dictionary where keys are ensemble IDs and values are the corresponding feature arrays.</p>
 </dd>
@@ -1841,8 +1844,8 @@ trajectory.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code></span></p>
 </dd>
 </dl>
-<section id="id103">
-<h4>Parameters<a class="headerlink" href="#id103" title="Permalink to this heading"></a></h4>
+<section id="id105">
+<h4>Parameters<a class="headerlink" href="#id105" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>method<span class="classifier">str</span></dt><dd><p>Choose between “pca”, “tsne”, “kpca” and “umap”.</p>
 </dd>
@@ -1971,8 +1974,8 @@ The model will then be used to transform all ensembles.</p>
 </li>
 </ul>
 </section>
-<section id="id104">
-<h4>Returns<a class="headerlink" href="#id104" title="Permalink to this heading"></a></h4>
+<section id="id106">
+<h4>Returns<a class="headerlink" href="#id106" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>np.ndarray</dt><dd><p>Returns the transformed data.</p>
 </dd>
@@ -1991,8 +1994,8 @@ The model will then be used to transform all ensembles.</p>
 <dt class="sig sig-object py" id="idpet.ensemble_analysis.EnsembleAnalysis.trajectories">
 <em class="property"><span class="pre">property</span><span class="w"> </span></em><span class="sig-name descname"><span class="pre">trajectories</span></span><em class="property"><span class="p"><span class="pre">:</span></span><span class="w"> </span><span class="pre">Dict</span><span class="p"><span class="pre">[</span></span><span class="pre">str</span><span class="p"><span class="pre">,</span></span><span class="w"> </span><span class="pre">Trajectory</span><span class="p"><span class="pre">]</span></span></em><a class="headerlink" href="#idpet.ensemble_analysis.EnsembleAnalysis.trajectories" title="Permalink to this definition"></a></dt>
 <dd><p>Get the trajectories associated with each ensemble.</p>
-<section id="id105">
-<h4>Returns<a class="headerlink" href="#id105" title="Permalink to this heading"></a></h4>
+<section id="id107">
+<h4>Returns<a class="headerlink" href="#id107" title="Permalink to this heading"></a></h4>
 <dl class="simple">
 <dt>Dict[str, mdtraj.Trajectory]</dt><dd><p>A dictionary where keys are ensemble IDs and values are the corresponding MDTraj trajectories.</p>
 </dd>
@@ -2034,8 +2037,8 @@ This method calculates the alpha angles for each ensemble in the analysis and pl
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id106">
-<h3>Parameters<a class="headerlink" href="#id106" title="Permalink to this heading"></a></h3>
+<section id="id108">
+<h3>Parameters<a class="headerlink" href="#id108" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>bins<span class="classifier">int</span></dt><dd><p>The number of bins for the histogram. Default is 50.</p>
 </dd>
@@ -2045,8 +2048,8 @@ This method calculates the alpha angles for each ensemble in the analysis and pl
 </dd>
 </dl>
 </section>
-<section id="id107">
-<h3>Returns<a class="headerlink" href="#id107" title="Permalink to this heading"></a></h3>
+<section id="id109">
+<h3>Returns<a class="headerlink" href="#id109" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2064,8 +2067,8 @@ Asphericity is calculated based on the gyration tensor.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id108">
-<h3>Parameters<a class="headerlink" href="#id108" title="Permalink to this heading"></a></h3>
+<section id="id110">
+<h3>Parameters<a class="headerlink" href="#id110" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>bins<span class="classifier">int, optional</span></dt><dd><p>The number of bins for the histogram. Default is 50.</p>
 </dd>
@@ -2091,8 +2094,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 </dd>
 </dl>
 </section>
-<section id="id109">
-<h3>Returns<a class="headerlink" href="#id109" title="Permalink to this heading"></a></h3>
+<section id="id111">
+<h3>Returns<a class="headerlink" href="#id111" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2111,8 +2114,8 @@ type and feature. It then visualizes the matrix using a heatmap.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">dict</span></code></span></p>
 </dd>
 </dl>
-<section id="id110">
-<h3>Parameters:<a class="headerlink" href="#id110" title="Permalink to this heading"></a></h3>
+<section id="id112">
+<h3>Parameters:<a class="headerlink" href="#id112" title="Permalink to this heading"></a></h3>
 <p>score, featurization_params, bootstrap_iters, bootstrap_frac,
 bootstrap_replace, bins, random_seed, verbose:</p>
 <blockquote>
@@ -2137,8 +2140,8 @@ textcolors:</p>
 for more information about these arguments.</p>
 </div></blockquote>
 </section>
-<section id="id111">
-<h3>Returns:<a class="headerlink" href="#id111" title="Permalink to this heading"></a></h3>
+<section id="id113">
+<h3>Returns:<a class="headerlink" href="#id113" title="Permalink to this heading"></a></h3>
 <dl>
 <dt>results: dict</dt><dd><dl>
 <dt>A dictionary containing the following keys:</dt><dd><p><cite>ax</cite>: the Axes object with the comparison matrix heatmap.
@@ -2156,8 +2159,8 @@ for more information about these arguments.</p>
 </dd>
 </dl>
 </section>
-<section id="id112">
-<h3>Notes:<a class="headerlink" href="#id112" title="Permalink to this heading"></a></h3>
+<section id="id114">
+<h3>Notes:<a class="headerlink" href="#id114" title="Permalink to this heading"></a></h3>
 <p>The comparison matrix is annotated with the scores, and the axes are
 labeled with the ensemble labels.</p>
 </section>
@@ -2172,8 +2175,8 @@ labeled with the ensemble labels.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">ndarray</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id113">
-<h3>Parameters<a class="headerlink" href="#id113" title="Permalink to this heading"></a></h3>
+<section id="id115">
+<h3>Parameters<a class="headerlink" href="#id115" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>log_scale<span class="classifier">bool, optional</span></dt><dd><p>If True, use log scale range. Default is True.</p>
 </dd>
@@ -2191,8 +2194,8 @@ labeled with the ensemble labels.</p>
 </dd>
 </dl>
 </section>
-<section id="id114">
-<h3>Returns<a class="headerlink" href="#id114" title="Permalink to this heading"></a></h3>
+<section id="id116">
+<h3>Returns<a class="headerlink" href="#id116" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Union[List[plt.Axes], np.ndarray]</dt><dd><p>Returns a list or array of Axes objects representing the subplot grid.</p>
 </dd>
@@ -2209,8 +2212,8 @@ labeled with the ensemble labels.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id115">
-<h3>Parameters<a class="headerlink" href="#id115" title="Permalink to this heading"></a></h3>
+<section id="id117">
+<h3>Parameters<a class="headerlink" href="#id117" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>color_by<span class="classifier">str, optional</span></dt><dd><p>The feature extraction method used for coloring points in the scatter plot. Options are “rg”, “prolateness”, “asphericity”, “sasa”, and “end_to_end”. Default is “rg”.</p>
 </dd>
@@ -2233,15 +2236,15 @@ If False, a single KDE plot will be generated for the concatenated ensembles. De
 </dd>
 </dl>
 </section>
-<section id="id116">
-<h3>Returns<a class="headerlink" href="#id116" title="Permalink to this heading"></a></h3>
+<section id="id118">
+<h3>Returns<a class="headerlink" href="#id118" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>List[plt.Axes]</dt><dd><p>List containing Axes objects for the scatter plot of original labels, clustering labels, and feature-colored labels, respectively.</p>
 </dd>
 </dl>
 </section>
-<section id="id117">
-<h3>Raises<a class="headerlink" href="#id117" title="Permalink to this heading"></a></h3>
+<section id="id119">
+<h3>Raises<a class="headerlink" href="#id119" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>NotImplementedError</dt><dd><p>If the dimensionality reduction method specified in the analysis is not supported.</p>
 </dd>
@@ -2258,8 +2261,8 @@ If False, a single KDE plot will be generated for the concatenated ensembles. De
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id118">
-<h3>Parameters<a class="headerlink" href="#id118" title="Permalink to this heading"></a></h3>
+<section id="id120">
+<h3>Parameters<a class="headerlink" href="#id120" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>min_sep<span class="classifier">int, default=2</span></dt><dd><p>Minimum sequence separation between residues to consider.</p>
 </dd>
@@ -2281,8 +2284,8 @@ If False, a single KDE plot will be generated for the concatenated ensembles. De
 </dd>
 </dl>
 </section>
-<section id="id119">
-<h3>Returns<a class="headerlink" href="#id119" title="Permalink to this heading"></a></h3>
+<section id="id121">
+<h3>Returns<a class="headerlink" href="#id121" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>List[matplotlib.axes.Axes]</dt><dd><p>List of axes objects used for plotting.</p>
 </dd>
@@ -2299,8 +2302,8 @@ If False, a single KDE plot will be generated for the concatenated ensembles. De
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]]</span></p>
 </dd>
 </dl>
-<section id="id120">
-<h3>Parameters<a class="headerlink" href="#id120" title="Permalink to this heading"></a></h3>
+<section id="id122">
+<h3>Parameters<a class="headerlink" href="#id122" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>rg_norm: bool, optional</dt><dd><p>Normalize end-to-end distances on the average radius of gyration.</p>
 </dd>
@@ -2328,8 +2331,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 </dd>
 </dl>
 </section>
-<section id="id121">
-<h3>Returns<a class="headerlink" href="#id121" title="Permalink to this heading"></a></h3>
+<section id="id123">
+<h3>Returns<a class="headerlink" href="#id123" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Union[plt.Axes, List[plt.Axes]]</dt><dd><p>The Axes object or a list of Axes objects containing the plot(s).</p>
 </dd>
@@ -2346,8 +2349,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id122">
-<h3>Parameters<a class="headerlink" href="#id122" title="Permalink to this heading"></a></h3>
+<section id="id124">
+<h3>Parameters<a class="headerlink" href="#id124" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>bins<span class="classifier">int, optional</span></dt><dd><p>The number of bins for the histogram. Default is 50.</p>
 </dd>
@@ -2373,8 +2376,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 </dd>
 </dl>
 </section>
-<section id="id123">
-<h3>Returns<a class="headerlink" href="#id123" title="Permalink to this heading"></a></h3>
+<section id="id125">
+<h3>Returns<a class="headerlink" href="#id125" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2391,8 +2394,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id124">
-<h3>Parameters<a class="headerlink" href="#id124" title="Permalink to this heading"></a></h3>
+<section id="id126">
+<h3>Parameters<a class="headerlink" href="#id126" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>save: bool, optional</dt><dd><p>If True the plot will be saved in the data directory. Default is False.</p>
 </dd>
@@ -2400,38 +2403,6 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 Default is 0 (first principal component in PCA).</p>
 </dd>
 <dt>n_bins: int, optional</dt><dd><p>Number of bins in the histograms.</p>
-</dd>
-<dt>ax: Union[None, List[plt.Axes]], optional</dt><dd><p>A list of Axes objects to plot on. Default is None, which creates new axes.</p>
-</dd>
-<dt>dpi<span class="classifier">int, optional</span></dt><dd><p>For changing the quality and dimension of the output figure. Default is 96.</p>
-</dd>
-</dl>
-</section>
-<section id="id125">
-<h3>Returns<a class="headerlink" href="#id125" title="Permalink to this heading"></a></h3>
-<dl class="simple">
-<dt>List[plt.Axes]</dt><dd><p>A list of plt.Axes objects representing the subplots created.</p>
-</dd>
-</dl>
-</section>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="idpet.visualization.Visualization.pca_2d_landscapes">
-<span class="sig-name descname"><span class="pre">pca_2d_landscapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sel_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/visualization.html#Visualization.pca_2d_landscapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.visualization.Visualization.pca_2d_landscapes" title="Permalink to this definition"></a></dt>
-<dd><p>Plot 2D landscapes when the dimensionality reduction method is “pca” or “kpca”.</p>
-<dl class="field-list simple">
-<dt class="field-odd">Return type<span class="colon">:</span></dt>
-<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
-</dd>
-</dl>
-<section id="id126">
-<h3>Parameters<a class="headerlink" href="#id126" title="Permalink to this heading"></a></h3>
-<dl class="simple">
-<dt>save: bool, optional</dt><dd><p>If True the plot will be saved in the data directory. Default is False.</p>
-</dd>
-<dt>sel_components: List[int], optional</dt><dd><p>Indices of the selected principal components to analyze, starting from 0.
-The default components are the first and second.</p>
 </dd>
 <dt>ax: Union[None, List[plt.Axes]], optional</dt><dd><p>A list of Axes objects to plot on. Default is None, which creates new axes.</p>
 </dd>
@@ -2449,6 +2420,38 @@ The default components are the first and second.</p>
 </dd></dl>
 
 <dl class="py method">
+<dt class="sig sig-object py" id="idpet.visualization.Visualization.pca_2d_landscapes">
+<span class="sig-name descname"><span class="pre">pca_2d_landscapes</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">sel_components</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">[0,</span> <span class="pre">1]</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/visualization.html#Visualization.pca_2d_landscapes"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.visualization.Visualization.pca_2d_landscapes" title="Permalink to this definition"></a></dt>
+<dd><p>Plot 2D landscapes when the dimensionality reduction method is “pca” or “kpca”.</p>
+<dl class="field-list simple">
+<dt class="field-odd">Return type<span class="colon">:</span></dt>
+<dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
+</dd>
+</dl>
+<section id="id128">
+<h3>Parameters<a class="headerlink" href="#id128" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>save: bool, optional</dt><dd><p>If True the plot will be saved in the data directory. Default is False.</p>
+</dd>
+<dt>sel_components: List[int], optional</dt><dd><p>Indices of the selected principal components to analyze, starting from 0.
+The default components are the first and second.</p>
+</dd>
+<dt>ax: Union[None, List[plt.Axes]], optional</dt><dd><p>A list of Axes objects to plot on. Default is None, which creates new axes.</p>
+</dd>
+<dt>dpi<span class="classifier">int, optional</span></dt><dd><p>For changing the quality and dimension of the output figure. Default is 96.</p>
+</dd>
+</dl>
+</section>
+<section id="id129">
+<h3>Returns<a class="headerlink" href="#id129" title="Permalink to this heading"></a></h3>
+<dl class="simple">
+<dt>List[plt.Axes]</dt><dd><p>A list of plt.Axes objects representing the subplots created.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<dl class="py method">
 <dt class="sig sig-object py" id="idpet.visualization.Visualization.pca_cumulative_explained_variance">
 <span class="sig-name descname"><span class="pre">pca_cumulative_explained_variance</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">save</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dpi</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">96</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ax</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/visualization.html#Visualization.pca_cumulative_explained_variance"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.visualization.Visualization.pca_cumulative_explained_variance" title="Permalink to this definition"></a></dt>
 <dd><p>Plot the cumulative variance. Only applicable when the
@@ -2458,8 +2461,8 @@ dimensionality reduction method is “pca”.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id128">
-<h3>Parameters<a class="headerlink" href="#id128" title="Permalink to this heading"></a></h3>
+<section id="id130">
+<h3>Parameters<a class="headerlink" href="#id130" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>save: bool, optional</dt><dd><p>If True, the plot will be saved in the data directory. Default is False.</p>
 </dd>
@@ -2469,8 +2472,8 @@ dimensionality reduction method is “pca”.</p>
 </dd>
 </dl>
 </section>
-<section id="id129">
-<h3>Returns<a class="headerlink" href="#id129" title="Permalink to this heading"></a></h3>
+<section id="id131">
+<h3>Returns<a class="headerlink" href="#id131" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes, cumvar</dt><dd><p>The Axes object for the cumulative explained variance plot and a
 numpy array with the cumulative variance.</p>
@@ -2489,8 +2492,8 @@ principal components (PCs).</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id130">
-<h3>Parameters<a class="headerlink" href="#id130" title="Permalink to this heading"></a></h3>
+<section id="id132">
+<h3>Parameters<a class="headerlink" href="#id132" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>sel_components<span class="classifier">List[int], optional</span></dt><dd><p>A list of indices specifying the PC to include in the plot.</p>
 </dd>
@@ -2511,15 +2514,15 @@ coefficients as loadings, when input features are standardized.</p>
 </dd>
 </dl>
 </section>
-<section id="id131">
-<h3>Returns<a class="headerlink" href="#id131" title="Permalink to this heading"></a></h3>
+<section id="id133">
+<h3>Returns<a class="headerlink" href="#id133" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>List[plt.Axes]</dt><dd><p>A list of plt.Axes objects representing the subplots created.</p>
 </dd>
 </dl>
 </section>
-<section id="id132">
-<h3>Notes<a class="headerlink" href="#id132" title="Permalink to this heading"></a></h3>
+<section id="id134">
+<h3>Notes<a class="headerlink" href="#id134" title="Permalink to this heading"></a></h3>
 <p>This method generates a correlation plot showing the weights of pairwise residue distances
 for selected PCA dimensions. The plot visualizes the correlation between residues based on
 the PCA weights.</p>
@@ -2537,8 +2540,8 @@ Typically high correlation can be detected in case of IDPs/IDRs .</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id133">
-<h3>Parameters<a class="headerlink" href="#id133" title="Permalink to this heading"></a></h3>
+<section id="id135">
+<h3>Parameters<a class="headerlink" href="#id135" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>save<span class="classifier">bool, optional</span></dt><dd><p>If True, the plot will be saved in the data directory. Default is False.</p>
 </dd>
@@ -2551,8 +2554,8 @@ principal component).</p>
 </dd>
 </dl>
 </section>
-<section id="id134">
-<h3>Returns<a class="headerlink" href="#id134" title="Permalink to this heading"></a></h3>
+<section id="id136">
+<h3>Returns<a class="headerlink" href="#id136" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>List[plt.Axes], dict</dt><dd><p>A list of plt.Axes objects representing the subplots created and a
 dictionary with all the raw data being plotted.</p>
@@ -2572,8 +2575,8 @@ the solvent-accessible surface area.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id135">
-<h3>Parameters<a class="headerlink" href="#id135" title="Permalink to this heading"></a></h3>
+<section id="id137">
+<h3>Parameters<a class="headerlink" href="#id137" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>probe_radius: float, optional</dt><dd><p>The radius of the probe sphere used in the Shrake–Rupley algorithm. Default is 0.14 nm.</p>
 </dd>
@@ -2588,7 +2591,7 @@ the solvent-accessible surface area.</p>
 <dt>auto_xticks: bool, optional</dt><dd><p>If True, use matplotlib default xticks. Default is True.</p>
 </dd>
 <dt>xtick_interval: int, optional</dt><dd><p>If <cite>auto_xticks</cite> is False, this parameter defines the interval between displayed residue indices
-on the x-axis. Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15, … if <a href="#id136"><span class="problematic" id="id137">`</span></a>xtick_interval`=5).</p>
+on the x-axis. Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15, … if <a href="#id138"><span class="problematic" id="id139">`</span></a>xtick_interval`=5).</p>
 </dd>
 <dt>pointer: List[int], optional</dt><dd><p>List of desired residues to highlight with vertical dashed lines. Default is None.</p>
 </dd>
@@ -2598,8 +2601,8 @@ on the x-axis. Always start with 1, followed by every <cite>xtick_interval</cite
 </dd>
 </dl>
 </section>
-<section id="id138">
-<h3>Returns<a class="headerlink" href="#id138" title="Permalink to this heading"></a></h3>
+<section id="id140">
+<h3>Returns<a class="headerlink" href="#id140" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>Axes object containing the plot.</p>
 </dd>
@@ -2619,8 +2622,8 @@ grid.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id139">
-<h3>Parameters<a class="headerlink" href="#id139" title="Permalink to this heading"></a></h3>
+<section id="id141">
+<h3>Parameters<a class="headerlink" href="#id141" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>feature: str, optional</dt><dd><p>Feature to analyze. Must be one of <cite>ca_dist</cite> (Ca-Ca distances),
 <cite>a_angle</cite> (alpha angles), <cite>phi</cite> or <cite>psi</cite> (phi or psi backbone
@@ -2653,8 +2656,8 @@ figure will be calculated as: figsize = (n_cols*subplot_width, n_rows*subplot_he
 </dd>
 </dl>
 </section>
-<section id="id140">
-<h3>Returns<a class="headerlink" href="#id140" title="Permalink to this heading"></a></h3>
+<section id="id142">
+<h3>Returns<a class="headerlink" href="#id142" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ax: plt.Axes</dt><dd><p>The Axes object for the histogram grid.</p>
 </dd>
@@ -2674,8 +2677,8 @@ scatter plot grid.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id141">
-<h3>Parameters<a class="headerlink" href="#id141" title="Permalink to this heading"></a></h3>
+<section id="id143">
+<h3>Parameters<a class="headerlink" href="#id143" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ids: Union[list, List[list]], optional</dt><dd><p>Residue indices (integers starting from zero) to define the residues
 to analyze. For angular features it must be a 1d list with N indices
@@ -2699,8 +2702,8 @@ figure will be calculated as: figsize = (n_cols*subplot_width, n_rows*subplot_he
 </dd>
 </dl>
 </section>
-<section id="id142">
-<h3>Returns<a class="headerlink" href="#id142" title="Permalink to this heading"></a></h3>
+<section id="id144">
+<h3>Returns<a class="headerlink" href="#id144" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ax: plt.Axes</dt><dd><p>The Axes object for the scatter plot grid.</p>
 </dd>
@@ -2718,8 +2721,8 @@ Prolateness is calculated based on the gyration tensor.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id143">
-<h3>Parameters<a class="headerlink" href="#id143" title="Permalink to this heading"></a></h3>
+<section id="id145">
+<h3>Parameters<a class="headerlink" href="#id145" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>bins<span class="classifier">int, optional</span></dt><dd><p>The number of bins for the histogram. Default is 50.</p>
 </dd>
@@ -2745,8 +2748,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 </dd>
 </dl>
 </section>
-<section id="id144">
-<h3>Returns<a class="headerlink" href="#id144" title="Permalink to this heading"></a></h3>
+<section id="id146">
+<h3>Returns<a class="headerlink" href="#id146" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2763,8 +2766,8 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>, <code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]]</span></p>
 </dd>
 </dl>
-<section id="id145">
-<h3>Parameters<a class="headerlink" href="#id145" title="Permalink to this heading"></a></h3>
+<section id="id147">
+<h3>Parameters<a class="headerlink" href="#id147" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>bins<span class="classifier">int, optional</span></dt><dd><p>The number of bins for the histogram. Default is 50.</p>
 </dd>
@@ -2790,15 +2793,15 @@ This applies when violin_plot is True or when multiple_hist_ax is True for histo
 </dd>
 </dl>
 </section>
-<section id="id146">
-<h3>Returns<a class="headerlink" href="#id146" title="Permalink to this heading"></a></h3>
+<section id="id148">
+<h3>Returns<a class="headerlink" href="#id148" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Union[plt.Axes, List[plt.Axes]]</dt><dd><p>Returns a single Axes object or a list of Axes objects containing the plot(s).</p>
 </dd>
 </dl>
 </section>
-<section id="id147">
-<h3>Notes<a class="headerlink" href="#id147" title="Permalink to this heading"></a></h3>
+<section id="id149">
+<h3>Notes<a class="headerlink" href="#id149" title="Permalink to this heading"></a></h3>
 <p>This method plots the distribution of the radius of gyration (Rg) within each ensemble in the analysis.</p>
 <p>The Rg values are binned according to the specified number of bins (<cite>bins</cite>) and range (<cite>hist_range</cite>) and 
 displayed as histograms. Additionally, dashed lines representing the mean and median Rg values are overlaid
@@ -2817,8 +2820,8 @@ for all ensembles in one plot.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-data docutils literal notranslate"><span class="pre">Union</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">List</span></code>[<code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>], <code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code>]</span></p>
 </dd>
 </dl>
-<section id="id148">
-<h3>Parameters<a class="headerlink" href="#id148" title="Permalink to this heading"></a></h3>
+<section id="id150">
+<h3>Parameters<a class="headerlink" href="#id150" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>two_d_hist<span class="classifier">bool, optional</span></dt><dd><p>If True, it returns a 2D histogram for each ensemble. Default is True.</p>
 </dd>
@@ -2836,8 +2839,8 @@ for all ensembles in one plot.</p>
 </dd>
 </dl>
 </section>
-<section id="id149">
-<h3>Returns<a class="headerlink" href="#id149" title="Permalink to this heading"></a></h3>
+<section id="id151">
+<h3>Returns<a class="headerlink" href="#id151" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>Union[List[plt.Axes], plt.Axes]</dt><dd><p>If two_d_hist=True, returns a list of Axes objects representing the subplot grid for each ensemble. 
 If two_d_hist=False, returns a single Axes object representing the scatter plot for all ensembles.</p>
@@ -2855,8 +2858,8 @@ If two_d_hist=False, returns a single Axes object representing the scatter plot 
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id150">
-<h3>Parameters<a class="headerlink" href="#id150" title="Permalink to this heading"></a></h3>
+<section id="id152">
+<h3>Parameters<a class="headerlink" href="#id152" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>dssp_code<span class="classifier">str, optional</span></dt><dd><p>The selected dssp code , it could be selected between ‘H’ for Helix, ‘C’ for Coil and ‘E’ for strand. It works based on
 the simplified DSSP codes</p>
@@ -2866,7 +2869,7 @@ the simplified DSSP codes</p>
 <dt>auto_xticks: bool, optional</dt><dd><p>If True, use matplotlib default xticks.</p>
 </dd>
 <dt>xtick_interval: int, optional</dt><dd><p>If <cite>auto_xticks</cite> is False, this parameter defines the interval between displayed residue indices on the x-axis.
-Residue 1 is always included,followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15 if <a href="#id151"><span class="problematic" id="id152">`</span></a>xtick_interval`=5).</p>
+Residue 1 is always included,followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15 if <a href="#id153"><span class="problematic" id="id154">`</span></a>xtick_interval`=5).</p>
 </dd>
 <dt>figsize<span class="classifier">Tuple[float, float], optional</span></dt><dd><p>The size of the figure in inches. Default is (10, 5).</p>
 </dd>
@@ -2876,8 +2879,8 @@ Residue 1 is always included,followed by every <cite>xtick_interval</cite> resid
 </dd>
 </dl>
 </section>
-<section id="id153">
-<h3>Returns<a class="headerlink" href="#id153" title="Permalink to this heading"></a></h3>
+<section id="id155">
+<h3>Returns<a class="headerlink" href="#id155" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2895,8 +2898,8 @@ the correlation between Rg and Asphericity.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id154">
-<h3>Parameters<a class="headerlink" href="#id154" title="Permalink to this heading"></a></h3>
+<section id="id156">
+<h3>Parameters<a class="headerlink" href="#id156" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>dpi: int, optional</dt><dd><p>The DPI (dots per inch) of the output figure. Default is 96.</p>
 </dd>
@@ -2910,8 +2913,8 @@ the correlation between Rg and Asphericity.</p>
 </dd>
 </dl>
 </section>
-<section id="id155">
-<h3>Returns<a class="headerlink" href="#id155" title="Permalink to this heading"></a></h3>
+<section id="id157">
+<h3>Returns<a class="headerlink" href="#id157" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2929,8 +2932,8 @@ the correlation between Rg and Prolateness.</p>
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id156">
-<h3>Parameters<a class="headerlink" href="#id156" title="Permalink to this heading"></a></h3>
+<section id="id158">
+<h3>Parameters<a class="headerlink" href="#id158" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>dpi: int, optional</dt><dd><p>The DPI (dots per inch) of the output figure. Default is 96.</p>
 </dd>
@@ -2944,8 +2947,8 @@ the correlation between Rg and Prolateness.</p>
 </dd>
 </dl>
 </section>
-<section id="id157">
-<h3>Returns<a class="headerlink" href="#id157" title="Permalink to this heading"></a></h3>
+<section id="id159">
+<h3>Returns<a class="headerlink" href="#id159" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The Axes object containing the plot.</p>
 </dd>
@@ -2966,15 +2969,15 @@ uniform distribution of dihedral angles at the residue i. (For more information 
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id158">
-<h3>Parameters<a class="headerlink" href="#id158" title="Permalink to this heading"></a></h3>
+<section id="id160">
+<h3>Parameters<a class="headerlink" href="#id160" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pointer: List[int], optional</dt><dd><p>A list of desired residues. Vertical dashed lines will be added to point to these residues. Default is None.</p>
 </dd>
 <dt>auto_xticks: bool, optional</dt><dd><p>If True, use matplotlib default xticks.</p>
 </dd>
 <dt>xtick_interval: int, optional</dt><dd><p>If <cite>auto_xticks</cite> is False, this parameter defines the interval between displayed residue indices on the x-axis.
-Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15, … if <a href="#id159"><span class="problematic" id="id160">`</span></a>xtick_interval`=5).</p>
+Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15, … if <a href="#id161"><span class="problematic" id="id162">`</span></a>xtick_interval`=5).</p>
 </dd>
 <dt>figsize: Tuple[int, int], optional</dt><dd><p>The size of the figure. Default is (15, 5).</p>
 </dd>
@@ -2986,8 +2989,8 @@ Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g
 </dd>
 </dl>
 </section>
-<section id="id161">
-<h3>Returns<a class="headerlink" href="#id161" title="Permalink to this heading"></a></h3>
+<section id="id163">
+<h3>Returns<a class="headerlink" href="#id163" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The matplotlib Axes object containing the plot.</p>
 </dd>
@@ -3010,15 +3013,15 @@ in the backbone and is particularly useful for detecting weakly ordered segments
 <dd class="field-odd"><p><span class="sphinx_autodoc_typehints-type"><code class="xref py py-class docutils literal notranslate"><span class="pre">Axes</span></code></span></p>
 </dd>
 </dl>
-<section id="id162">
-<h3>Parameters<a class="headerlink" href="#id162" title="Permalink to this heading"></a></h3>
+<section id="id164">
+<h3>Parameters<a class="headerlink" href="#id164" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>pointer: List[int], optional</dt><dd><p>A list of desired residues. Vertical dashed lines will be added to point to these residues. Default is None.</p>
 </dd>
 <dt>auto_xticks: bool, optional</dt><dd><p>If True, use matplotlib default xticks.</p>
 </dd>
 <dt>xtick_interval: int, optional</dt><dd><p>If <cite>auto_xticks</cite> is False, this parameter defines the interval between displayed residue indices on the x-axis.
-Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15, … if <a href="#id163"><span class="problematic" id="id164">`</span></a>xtick_interval`=5).</p>
+Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g., 1, 5, 10, 15, … if <a href="#id165"><span class="problematic" id="id166">`</span></a>xtick_interval`=5).</p>
 </dd>
 <dt>figsize: Tuple[int, int], optional</dt><dd><p>The size of the figure. Default is (15, 5).</p>
 </dd>
@@ -3028,8 +3031,8 @@ Always start with 1, followed by every <cite>xtick_interval</cite> residues (e.g
 </dd>
 </dl>
 </section>
-<section id="id165">
-<h3>Returns<a class="headerlink" href="#id165" title="Permalink to this heading"></a></h3>
+<section id="id167">
+<h3>Returns<a class="headerlink" href="#id167" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>The matplotlib Axes object containing the plot.</p>
 </dd>
@@ -3051,8 +3054,8 @@ The intervals are obtained by using the ‘percentile’ method. Additionally,
 it will plot an asterisk for those non-diagonal entries in for which the
 inter-ensemble scores are significantly higher than the intra-ensemble
 scores according to a Mann–Whitney U test.</p>
-<section id="id166">
-<h3>Parameters<a class="headerlink" href="#id166" title="Permalink to this heading"></a></h3>
+<section id="id168">
+<h3>Parameters<a class="headerlink" href="#id168" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ax: plt.Axes</dt><dd><p>Axes object where the heatmap should be created.</p>
 </dd>
@@ -3088,8 +3091,8 @@ plotted in lighter cells.</p>
 </dd>
 </dl>
 </section>
-<section id="id167">
-<h3>Returns<a class="headerlink" href="#id167" title="Permalink to this heading"></a></h3>
+<section id="id169">
+<h3>Returns<a class="headerlink" href="#id169" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ax: plt.Axes</dt><dd><p>The same updated Axes object from the input. The <cite>comparison_out</cite> will
 be updated to store confidence intervals if performing a bootstrap
@@ -3097,8 +3100,8 @@ analysis.</p>
 </dd>
 </dl>
 </section>
-<section id="id168">
-<h3>Notes<a class="headerlink" href="#id168" title="Permalink to this heading"></a></h3>
+<section id="id170">
+<h3>Notes<a class="headerlink" href="#id170" title="Permalink to this heading"></a></h3>
 <p>The comparison matrix is annotated with the scores, and the axes are labeled
 with the ensemble labels.</p>
 </section>
@@ -3108,8 +3111,8 @@ with the ensemble labels.</p>
 <dt class="sig sig-object py" id="idpet.visualization.plot_histogram">
 <span class="sig-prename descclassname"><span class="pre">idpet.visualization.</span></span><span class="sig-name descname"><span class="pre">plot_histogram</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">bins</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">50</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Histogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">ylabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Density'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">location</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/visualization.html#plot_histogram"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.visualization.plot_histogram" title="Permalink to this definition"></a></dt>
 <dd><p>Plot an histogram for different features.</p>
-<section id="id169">
-<h3>Parameters<a class="headerlink" href="#id169" title="Permalink to this heading"></a></h3>
+<section id="id171">
+<h3>Parameters<a class="headerlink" href="#id171" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ax: plt.Axes</dt><dd><p>Matplotlib axis object where the histograms will be for plotted.</p>
 </dd>
@@ -3130,8 +3133,8 @@ which corresponds to using the min a max value across all data.</p>
 </dd>
 </dl>
 </section>
-<section id="id170">
-<h3>Returns<a class="headerlink" href="#id170" title="Permalink to this heading"></a></h3>
+<section id="id172">
+<h3>Returns<a class="headerlink" href="#id172" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>Axis objects for the histogram plot of original labels.</p>
 </dd>
@@ -3143,8 +3146,8 @@ which corresponds to using the min a max value across all data.</p>
 <dt class="sig sig-object py" id="idpet.visualization.plot_violins">
 <span class="sig-prename descclassname"><span class="pre">idpet.visualization.</span></span><span class="sig-name descname"><span class="pre">plot_violins</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">ax</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">summary_stat</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'mean'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">title</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'Histogram'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">xlabel</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'x'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">color</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'blue'</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">x_ticks_rotation</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">45</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/visualization.html#plot_violins"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.visualization.plot_violins" title="Permalink to this definition"></a></dt>
 <dd><p>Make a violin plot.</p>
-<section id="id171">
-<h3>Parameters<a class="headerlink" href="#id171" title="Permalink to this heading"></a></h3>
+<section id="id173">
+<h3>Parameters<a class="headerlink" href="#id173" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>ax: plt.Axes</dt><dd><p>Matplotlib axis object where the histograms will be for plotted.</p>
 </dd>
@@ -3160,8 +3163,8 @@ which corresponds to using the min a max value across all data.</p>
 </dd>
 </dl>
 </section>
-<section id="id172">
-<h3>Returns<a class="headerlink" href="#id172" title="Permalink to this heading"></a></h3>
+<section id="id174">
+<h3>Returns<a class="headerlink" href="#id174" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>plt.Axes</dt><dd><p>Axis objects for the histogram plot of original labels.</p>
 </dd>

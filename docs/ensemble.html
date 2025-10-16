@@ -102,7 +102,7 @@
 <span id="ensemble-class"></span><h2>Ensemble class<a class="headerlink" href="#module-idpet.ensemble" title="Permalink to this heading"></a></h2>
 <dl class="py class">
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">idpet.ensemble.</span></span><span class="sig-name descname"><span class="pre">Ensemble</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">code</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">top_path</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">database</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">chain_id</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">residue_range</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">fix_pbc</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">False</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble" title="Permalink to this definition"></a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">object</span></code></p>
 <p>Represents a molecular dynamics ensemble.</p>
 <section id="parameters">
@@ -120,6 +120,9 @@
 <dt>chain_id<span class="classifier">str, optional</span></dt><dd><p>Chain identifier used to select a single chain to analyze in case multiple chains are loaded. Default is None.</p>
 </dd>
 <dt>residue_range<span class="classifier">Tuple, optional</span></dt><dd><p>A tuple indicating the start and end of the residue range (inclusive), using 1-based indexing. Default is None.</p>
+</dd>
+<dt>fix_pbc<span class="classifier">bool, optional</span></dt><dd><p>If True, IDPET automatically removes discontinuities arising from periodic boundary conditions using MDTraj’s
+built-in functions. Only takes effect when ‘data_path’ is a trajectory file.</p>
 </dd>
 </dl>
 </section>
@@ -218,12 +221,12 @@ loaded.</p>
 
 <dl class="py method">
 <dt class="sig sig-object py" id="idpet.ensemble.Ensemble.load_trajectory">
-<span class="sig-name descname"><span class="pre">load_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">data_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.load_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.load_trajectory" title="Permalink to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">load_trajectory</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output_dir</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="_modules/idpet/ensemble.html#Ensemble.load_trajectory"><span class="viewcode-link"><span class="pre">[source]</span></span></a><a class="headerlink" href="#idpet.ensemble.Ensemble.load_trajectory" title="Permalink to this definition"></a></dt>
 <dd><p>Load a trajectory for the ensemble.</p>
 <section id="id5">
 <h4>Parameters<a class="headerlink" href="#id5" title="Permalink to this heading"></a></h4>
 <dl class="simple">
-<dt>data_dir<span class="classifier">str, optional</span></dt><dd><p>The directory where the trajectory data is located or where generated trajectory files will be saved.</p>
+<dt>output_dir<span class="classifier">str, optional</span></dt><dd><p>The directory where the trajectory data is located or where generated trajectory files will be saved.</p>
 </dd>
 </dl>
 </section>

@@ -1,21 +1,21 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="en" data-content_root="../../../">
+<html class="writer-html5" lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>idpet.featurization.distances &mdash; IDPET 0.1.0 documentation</title>
-      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/pygments.css?v=80d5e7a1" />
       <link rel="stylesheet" type="text/css" href="../../../_static/css/theme.css?v=e59714d7" />
-      <link rel="stylesheet" type="text/css" href="../../../_static/sphinx-design.min.css?v=95c83b7e" />
+      <link rel="stylesheet" type="text/css" href="../../../_static/design-style.1e8bd061cd6da7fc9cf755528e8ffc24.min.css?v=0a3b3ea7" />
 
   
       <script src="../../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../../../_static/documentation_options.js?v=01f34227"></script>
-      <script src="../../../_static/doctools.js?v=9bcbadda"></script>
-      <script src="../../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../../../" id="documentation_options" src="../../../_static/documentation_options.js?v=2389946f"></script>
+      <script src="../../../_static/doctools.js?v=888ff710"></script>
+      <script src="../../../_static/sphinx_highlight.js?v=4825356b"></script>
       <script src="../../../_static/design-tabs.js?v=f930bc37"></script>
     <script src="../../../_static/js/theme.js"></script>
     <link rel="index" title="Index" href="../../../genindex.html" />
@@ -49,7 +49,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../../../ensemble_analysis.html">ensemble_analysis</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../ensemble.html">ensemble</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../visualization.html">visualization</a></li>
-<li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">ensemble_compariosn</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../../comparison.html">ensemble_comparison</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../../modules.html">Package Overview</a></li>
 </ul>
 
@@ -78,11 +78,11 @@
            <div itemprop="articleBody">
              
   <h1>Source code for idpet.featurization.distances</h1><div class="highlight"><pre>
-<span></span><span class="kn">from</span><span class="w"> </span><span class="nn">typing</span><span class="w"> </span><span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">numpy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">np</span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">mdtraj</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.data.topology</span><span class="w"> </span><span class="kn">import</span> <span class="n">slice_traj_to_com</span>
-<span class="kn">from</span><span class="w"> </span><span class="nn">idpet.featurization.utils</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_max_sep</span>
+<span></span><span class="kn">from</span> <span class="nn">typing</span> <span class="kn">import</span> <span class="n">List</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">,</span> <span class="n">Union</span>
+<span class="kn">import</span> <span class="nn">numpy</span> <span class="k">as</span> <span class="nn">np</span>
+<span class="kn">import</span> <span class="nn">mdtraj</span>
+<span class="kn">from</span> <span class="nn">idpet.data.topology</span> <span class="kn">import</span> <span class="n">slice_traj_to_com</span>
+<span class="kn">from</span> <span class="nn">idpet.featurization.utils</span> <span class="kn">import</span> <span class="n">get_max_sep</span>
 
 
 <span class="c1">#--------------------------------------------------------------------</span>
@@ -91,7 +91,7 @@
 
 <span class="n">ca_selector</span> <span class="o">=</span> <span class="s2">&quot;protein and name CA&quot;</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_calc_dmap</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span> 
+<span class="k">def</span> <span class="nf">_calc_dmap</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span> 
                <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span> 
                <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
     <span class="n">ca_ids</span> <span class="o">=</span> <span class="n">traj</span><span class="o">.</span><span class="n">topology</span><span class="o">.</span><span class="n">select</span><span class="p">(</span><span class="n">ca_selector</span><span class="p">)</span>
@@ -114,9 +114,7 @@
 
     <span class="k">return</span> <span class="n">dmap</span>
 
-<div class="viewcode-block" id="calc_ca_dmap">
-<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.calc_ca_dmap">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calc_ca_dmap</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
+<div class="viewcode-block" id="calc_ca_dmap"><a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.calc_ca_dmap">[docs]</a><span class="k">def</span> <span class="nf">calc_ca_dmap</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
                  <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                  <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -138,10 +136,7 @@
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">return</span> <span class="n">_calc_dmap</span><span class="p">(</span><span class="n">traj</span><span class="o">=</span><span class="n">traj</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span> <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="calc_com_dmap">
-<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.calc_com_dmap">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">calc_com_dmap</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
+<div class="viewcode-block" id="calc_com_dmap"><a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.calc_com_dmap">[docs]</a><span class="k">def</span> <span class="nf">calc_com_dmap</span><span class="p">(</span><span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
                   <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">1</span><span class="p">,</span>
                   <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">int</span><span class="p">,</span> <span class="kc">None</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">:</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
@@ -165,12 +160,11 @@
     <span class="k">return</span> <span class="n">_calc_dmap</span><span class="p">(</span><span class="n">traj</span><span class="o">=</span><span class="n">traj</span><span class="p">,</span> <span class="n">min_sep</span><span class="o">=</span><span class="n">min_sep</span><span class="p">,</span> <span class="n">max_sep</span><span class="o">=</span><span class="n">max_sep</span><span class="p">)</span></div>
 
 
-
 <span class="c1">#---------------------------------------------------------------------</span>
 <span class="c1"># Calculate (N, *) distance features. Mostly used for featurization. -</span>
 <span class="c1">#---------------------------------------------------------------------</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">_featurize_dist</span><span class="p">(</span>
+<span class="k">def</span> <span class="nf">_featurize_dist</span><span class="p">(</span>
         <span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
         <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">max_sep</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="kc">None</span><span class="p">,</span> <span class="nb">int</span><span class="p">,</span> <span class="nb">float</span><span class="p">]</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -204,9 +198,7 @@
     <span class="k">else</span><span class="p">:</span>
         <span class="k">return</span> <span class="n">ca_dist</span>
 
-<div class="viewcode-block" id="featurize_ca_dist">
-<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.featurize_ca_dist">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">featurize_ca_dist</span><span class="p">(</span>
+<div class="viewcode-block" id="featurize_ca_dist"><a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.featurize_ca_dist">[docs]</a><span class="k">def</span> <span class="nf">featurize_ca_dist</span><span class="p">(</span>
         <span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
         <span class="n">get_names</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">True</span><span class="p">,</span>
         <span class="n">atom_selector</span><span class="p">:</span> <span class="nb">str</span> <span class="o">=</span> <span class="s2">&quot;name CA&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">Union</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">Tuple</span><span class="p">[</span><span class="n">np</span><span class="o">.</span><span class="n">ndarray</span><span class="p">,</span> <span class="n">List</span><span class="p">[</span><span class="nb">str</span><span class="p">]]]:</span>
@@ -242,10 +234,7 @@
                            <span class="n">atom_selector</span><span class="o">=</span><span class="n">atom_selector</span><span class="p">,</span>
                            <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="featurize_com_dist">
-<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.featurize_com_dist">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">featurize_com_dist</span><span class="p">(</span>
+<div class="viewcode-block" id="featurize_com_dist"><a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.featurize_com_dist">[docs]</a><span class="k">def</span> <span class="nf">featurize_com_dist</span><span class="p">(</span>
         <span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
         <span class="n">min_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="mi">2</span><span class="p">,</span>
         <span class="n">max_sep</span><span class="p">:</span> <span class="nb">int</span> <span class="o">=</span> <span class="kc">None</span><span class="p">,</span>
@@ -287,17 +276,13 @@
                            <span class="n">get_names</span><span class="o">=</span><span class="n">get_names</span><span class="p">,</span>
                            <span class="n">atom_selector</span><span class="o">=</span><span class="n">atom_selector</span><span class="p">)</span></div>
 
-
-<div class="viewcode-block" id="rmsd">
-<a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.rmsd">[docs]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">rmsd</span><span class="p">(</span>
+<div class="viewcode-block" id="rmsd"><a class="viewcode-back" href="../../../idpet.featurization.html#idpet.featurization.distances.rmsd">[docs]</a><span class="k">def</span> <span class="nf">rmsd</span><span class="p">(</span>
         <span class="n">traj</span><span class="p">:</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">,</span>
         <span class="p">):</span>
     <span class="n">rmsd_matrix</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">empty</span><span class="p">((</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span><span class="p">,</span> <span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span><span class="p">))</span>
     <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">traj</span><span class="o">.</span><span class="n">n_frames</span><span class="p">):</span>
         <span class="n">rmsd_matrix</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">rmsd</span><span class="p">(</span><span class="n">traj</span><span class="p">,</span><span class="n">traj</span><span class="p">,</span> <span class="n">i</span><span class="p">)</span>
     <span class="k">return</span> <span class="n">rmsd_matrix</span></div>
-
 </pre></div>
 
            </div>
