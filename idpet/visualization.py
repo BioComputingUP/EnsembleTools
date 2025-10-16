@@ -360,6 +360,11 @@ class Visualization:
             for frame in range(analysis.trajectories[ensemble].n_frames):
                 model_indexes.append(f'model{frame+1}_{ensemble}')
         return model_indexes
+    
+    def _unsqueeze_axes(self, ax):
+        if not isinstance(ax, (list, np.ndarray)):
+            ax = [ax]
+        return ax
 
     def _tsne_scatter(
             self,
@@ -1168,8 +1173,7 @@ class Visualization:
             fig, axes = plt.subplots(
                 len(analysis.ens_codes), 1, figsize=(4, 2 * len(analysis.ens_codes)), dpi=dpi
             )
-            if len(analysis.ens_codes) == 1:
-                axes = [axes]
+            axes = self._unsqueeze_axes(axes)
 
         else:
             if not isinstance(ax, (list, np.ndarray)):
@@ -1350,8 +1354,7 @@ class Visualization:
 
         if ax is None:
             fig, axes = plt.subplots(len(analysis.ens_codes), 1, figsize=(3, 3 * len(analysis.ens_codes)), dpi=dpi)
-            if len(analysis.ens_codes) == 1:
-                axes = [axes]
+            axes = self._unsqueeze_axes(axes)
         else:
             if not isinstance(ax, (list, np.ndarray)):
                 ax = [ax]
@@ -1454,9 +1457,9 @@ class Visualization:
                     figsize=(3 * len(ensembles), 3),
                     dpi=96
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -1738,7 +1741,7 @@ class Visualization:
             # Plot the relative content for each protein
             x = np.arange(len(relative_ss_content))
             mask = x < len(dssp_data[0])  # Create a mask to filter out padded values
-            ax.plot(x[mask], relative_ss_content[mask], marker='o', linestyle='dashed', label=protein_name, alpha=1)
+            ax.plot(x[mask], relative_ss_content[mask], marker='o', linestyle='dashed', label=protein_name, alpha=0.5)
 
             bottom += relative_ss_content
         if not auto_xticks:
@@ -1843,9 +1846,9 @@ class Visualization:
                     figsize=(3 * n_systems, 3),
                     dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2021,9 +2024,9 @@ class Visualization:
                     figsize=(3 * n_systems, 3),
                     dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2182,9 +2185,9 @@ class Visualization:
                     figsize=(3 * len(ensembles), 3),
                     dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2206,8 +2209,7 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color,
-                x_ticks_rotation=x_ticks_rotation
+                color=color
             )
         else:
             if not multiple_hist_ax:
@@ -2220,7 +2222,7 @@ class Visualization:
                     range=hist_range,
                     title=title,
                     xlabel=axis_label,
-                    
+                    x_ticks_rotation=x_ticks_rotation
                 )
             else:
                 # Plot separate histograms for each ensemble on separate axes
@@ -2229,7 +2231,7 @@ class Visualization:
                 )
                 h_args = {"histtype": "step", "density": True}
                 y_max = 0
-                for hist_data_i in _bins:
+                for hist_data_i in asph_list:
                     counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
                     y_max = max(y_max, counts.max())
                 for i, (name_i, asph_data_i) in enumerate(zip(labels, asph_list)):
@@ -2341,11 +2343,11 @@ class Visualization:
                 fig, ax = plt.subplots(
                     1, len(ensembles), 
                     figsize=(3 * len(ensembles), 3),
-                    dpi= dpi
+                    dpi=dpi
                 )
+                ax = self._unsqueeze_axes(ax)
             else:
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
         else:
@@ -2367,8 +2369,7 @@ class Visualization:
                 summary_stat=summary_stat,
                 title=title,
                 xlabel=axis_label,
-                color=color,
-                x_ticks_rotation=x_ticks_rotation
+                color=color
             )
         else:
             if not multiple_hist_ax:
@@ -2381,7 +2382,7 @@ class Visualization:
                     range=hist_range,
                     title=title,
                     xlabel=axis_label,
-                    
+                    x_ticks_rotation=x_ticks_rotation
                 )
             else:
                 # Plot separate histograms for each ensemble on separate axes
@@ -2390,7 +2391,7 @@ class Visualization:
                 )
                 h_args = {"histtype": "step", "density": True}
                 y_max = 0
-                for hist_data_i in _bins:
+                for hist_data_i in prolat_list:
                     counts, _ = np.histogram(hist_data_i, bins=_bins, density=True)
                     y_max = max(y_max, counts.max())
                 for i, (name_i, prolat_data_i) in enumerate(zip(labels, prolat_list)):
@@ -2637,10 +2638,10 @@ class Visualization:
             if ax is None:
                 custom_axes = False
                 fig, ax = plt.subplots(1, len(ensembles), figsize=(5 * len(ensembles), 5))
+                ax = self._unsqueeze_axes(ax)
             else:
                 custom_axes = True
-                if not isinstance(ax, (list, np.ndarray)):
-                    ax = [ax]
+                ax = self._unsqueeze_axes(ax)
                 ax = np.array(ax).flatten()
                 fig = ax[0].figure
 
@@ -2677,8 +2678,8 @@ class Visualization:
             else:
                 fig = ax.figure
             for ensemble in ensembles:
-                phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])
-                psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])
+                phi_angles = np.degrees(mdtraj.compute_phi(ensemble.trajectory)[1])[:, :-1]
+                psi_angles = np.degrees(mdtraj.compute_psi(ensemble.trajectory)[1])[:, 1:]
                 ax.scatter(phi_angles, psi_angles, s=1, label=ensemble.code)
             ax.set_xlabel('Phi (ϕ) Angle (degrees)', fontsize=12)
             ax.set_ylabel('Psi (ψ) Angle (degrees)', fontsize=12)
