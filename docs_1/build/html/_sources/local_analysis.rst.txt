@@ -134,24 +134,53 @@ Intermediate values represent partial occupancy, reflecting structural heterogen
 .. image:: _static/images/sh3/global_analysis/contentH.png
    :align: center
 
-Site-specific flexibility parameter
--------------------------------------
-The "Site-specific flexibility parameter" quantifies the local flexibility of a protein chain at a specific residue, it anges from 0 (high flexibility) to 1 (no flexibility).
-If all conformers have the same dihedral angles at a residue, the circular variance is equal to one, indicating no flexibility, conversely, for a large ensemble with a uniform distribution of dihedral angles, the circular variance tends to zero.
+Site-specific Flexibility Parameter
+-----------------------------------
 
-The site-specific flexibility parameter is defined using the circular variance of the Ramachandran angles
+The **site-specific flexibility parameter** quantifies the local flexibility of a protein chain at each residue.  
+It ranges from 0 (high flexibility) to 1 (no flexibility).  
+If all conformers have identical dihedral angles at a residue, the circular variance equals one, indicating no flexibility.  
+Conversely, for a large ensemble with a uniform distribution of dihedral angles, the circular variance tends toward zero.
 
-:math:`\phi_{i}` and :math:`\psi_{i}`. The circular variance of :math:`\phi_{i}` is given by:
-
-.. math::
-
-   R_{\phi_{i}} =(\frac{1}{C} \sum_{c=1}^{C} w_{c} sin \phi_{i,c})^2 + (\frac{1}{C} \sum_{c=1}^{C} w_{c} cos \phi_{i,c})^2
-
-An analogous expression applies for :math:`R_{\psi_{i}}`. The site-specific flexibility parameter :math:`f_{i}` is then defined as:
+The site-specific flexibility parameter is defined using the circular variance of the Ramachandran angles  
+:math:`\phi_i` and :math:`\psi_i`. The circular variance of :math:`\phi_i` is given by:
 
 .. math::
 
-    f_i = 1 - \frac{1}{2} \left( R_{\phi_i} + R_{\psi_i} \right) 
+   R_{\phi_i} = \left( \frac{1}{C} \sum_{c=1}^{C} w_c \sin \phi_{i,c} \right)^2 + 
+                \left( \frac{1}{C} \sum_{c=1}^{C} w_c \cos \phi_{i,c} \right)^2
+
+An analogous expression applies for :math:`R_{\psi_i}`.  
+The site-specific flexibility parameter :math:`f_i` is then defined as:
+
+.. math::
+
+   f_i = 1 - \frac{1}{2} \left( R_{\phi_i} + R_{\psi_i} \right)
+
+This parameter describes the dispersion of backbone dihedral angles (:math:`\phi`, :math:`\psi`) for each residue and  
+is conceptually similar to the *dihedral angle order parameter* originally introduced by Hyberts and Wagner [#hyberts1992]_.  
+Both quantify how narrowly distributed local torsion angles are across an ensemble,  
+differing mainly in scale—Hyberts’ order parameter measures structural order directly,  
+whereas Jeschke’s flexibility parameter expresses its inverse (i.e., disorder).  
+
+The implementation in IDPET follows the formulation proposed by Jeschke [#jeschke2024]_,  
+who also introduced the *site-specific order parameter* (next section) to describe the orientational correlation  
+of backbone segments along the entire chain. This complementary measure captures how persistently  
+local chain orientations are maintained across conformers, thereby extending the concept of local dihedral order  
+to characterize global backbone orientational order within an ensemble.
+
+----
+
+.. [#hyberts1992] Hyberts, S. G., Goldberg, M. S., Havel, T. F., & Wagner, G. (1992).
+   *The solution structure of eglin C based on measurements of many NOEs and coupling constants and its comparison with X-ray structures.*
+   *Protein Science*, **1**(3), 310–321.
+   https://doi.org/10.1002/pro.5560010606
+
+.. [#jeschke2024] Jeschke, G. (2024).
+   *Protein ensemble modeling and analysis with MMMx.*
+   *Protein Science*.
+   https://doi.org/10.1002/pro.4906
+
  
 
 **parameters:**

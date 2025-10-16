@@ -57,7 +57,7 @@
 <li class="toctree-l3"><a class="reference internal" href="#d-ramachandran-histograms">2D Ramachandran histograms</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#alpha-angles-dihedral-distribution">Alpha angles dihedral distribution</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#relative-dssp-dictionary-of-secondary-structure-of-proteins-content">Relative DSSP (Dictionary of Secondary Structure of Proteins) content</a></li>
-<li class="toctree-l3"><a class="reference internal" href="#site-specific-flexibility-parameter">Site-specific flexibility parameter</a></li>
+<li class="toctree-l3"><a class="reference internal" href="#site-specific-flexibility-parameter">Site-specific Flexibility Parameter</a></li>
 <li class="toctree-l3"><a class="reference internal" href="#site-specific-order-parameter">Site-specific order parameter</a></li>
 </ul>
 </li>
@@ -188,16 +188,47 @@ Intermediate values represent partial occupancy, reflecting structural heterogen
 <img alt="_images/contentH.png" class="align-center" src="_images/contentH.png" />
 </section>
 <section id="site-specific-flexibility-parameter">
-<h2>Site-specific flexibility parameter<a class="headerlink" href="#site-specific-flexibility-parameter" title="Permalink to this heading"></a></h2>
-<p>The “Site-specific flexibility parameter” quantifies the local flexibility of a protein chain at a specific residue, it anges from 0 (high flexibility) to 1 (no flexibility).
-If all conformers have the same dihedral angles at a residue, the circular variance is equal to one, indicating no flexibility, conversely, for a large ensemble with a uniform distribution of dihedral angles, the circular variance tends to zero.</p>
-<p>The site-specific flexibility parameter is defined using the circular variance of the Ramachandran angles</p>
-<p><span class="math notranslate nohighlight">\(\phi_{i}\)</span> and <span class="math notranslate nohighlight">\(\psi_{i}\)</span>. The circular variance of <span class="math notranslate nohighlight">\(\phi_{i}\)</span> is given by:</p>
+<h2>Site-specific Flexibility Parameter<a class="headerlink" href="#site-specific-flexibility-parameter" title="Permalink to this heading"></a></h2>
+<p>The <strong>site-specific flexibility parameter</strong> quantifies the local flexibility of a protein chain at each residue.
+It ranges from 0 (high flexibility) to 1 (no flexibility).
+If all conformers have identical dihedral angles at a residue, the circular variance equals one, indicating no flexibility.
+Conversely, for a large ensemble with a uniform distribution of dihedral angles, the circular variance tends toward zero.</p>
+<p>The site-specific flexibility parameter is defined using the circular variance of the Ramachandran angles
+<span class="math notranslate nohighlight">\(\phi_i\)</span> and <span class="math notranslate nohighlight">\(\psi_i\)</span>. The circular variance of <span class="math notranslate nohighlight">\(\phi_i\)</span> is given by:</p>
 <div class="math notranslate nohighlight">
-\[R_{\phi_{i}} =(\frac{1}{C} \sum_{c=1}^{C} w_{c} sin \phi_{i,c})^2 + (\frac{1}{C} \sum_{c=1}^{C} w_{c} cos \phi_{i,c})^2\]</div>
-<p>An analogous expression applies for <span class="math notranslate nohighlight">\(R_{\psi_{i}}\)</span>. The site-specific flexibility parameter <span class="math notranslate nohighlight">\(f_{i}\)</span> is then defined as:</p>
+\[R_{\phi_i} = \left( \frac{1}{C} \sum_{c=1}^{C} w_c \sin \phi_{i,c} \right)^2 +
+             \left( \frac{1}{C} \sum_{c=1}^{C} w_c \cos \phi_{i,c} \right)^2\]</div>
+<p>An analogous expression applies for <span class="math notranslate nohighlight">\(R_{\psi_i}\)</span>.
+The site-specific flexibility parameter <span class="math notranslate nohighlight">\(f_i\)</span> is then defined as:</p>
 <div class="math notranslate nohighlight">
 \[f_i = 1 - \frac{1}{2} \left( R_{\phi_i} + R_{\psi_i} \right)\]</div>
+<p>This parameter describes the dispersion of backbone dihedral angles (<span class="math notranslate nohighlight">\(\phi\)</span>, <span class="math notranslate nohighlight">\(\psi\)</span>) for each residue and
+is conceptually similar to the <em>dihedral angle order parameter</em> originally introduced by Hyberts and Wagner <a class="footnote-reference brackets" href="#hyberts1992" id="id1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>.
+Both quantify how narrowly distributed local torsion angles are across an ensemble,
+differing mainly in scale—Hyberts’ order parameter measures structural order directly,
+whereas Jeschke’s flexibility parameter expresses its inverse (i.e., disorder).</p>
+<p>The implementation in IDPET follows the formulation proposed by Jeschke <a class="footnote-reference brackets" href="#jeschke2024" id="id2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>,
+who also introduced the <em>site-specific order parameter</em> (next section) to describe the orientational correlation
+of backbone segments along the entire chain. This complementary measure captures how persistently
+local chain orientations are maintained across conformers, thereby extending the concept of local dihedral order
+to characterize global backbone orientational order within an ensemble.</p>
+<hr class="docutils" />
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="hyberts1992" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id1">1</a><span class="fn-bracket">]</span></span>
+<p>Hyberts, S. G., Goldberg, M. S., Havel, T. F., &amp; Wagner, G. (1992).
+<em>The solution structure of eglin C based on measurements of many NOEs and coupling constants and its comparison with X-ray structures.</em>
+<em>Protein Science</em>, <a href="#id3"><span class="problematic" id="id4">**</span></a>1**(3), 310–321.
+<a class="reference external" href="https://doi.org/10.1002/pro.5560010606">https://doi.org/10.1002/pro.5560010606</a></p>
+</aside>
+<aside class="footnote brackets" id="jeschke2024" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#id2">2</a><span class="fn-bracket">]</span></span>
+<p>Jeschke, G. (2024).
+<em>Protein ensemble modeling and analysis with MMMx.</em>
+<em>Protein Science</em>.
+<a class="reference external" href="https://doi.org/10.1002/pro.4906">https://doi.org/10.1002/pro.4906</a></p>
+</aside>
+</aside>
 <p><strong>parameters:</strong></p>
 <p><em>“dpi”:The DPI (dots per inch) of the output figure. Default is 96.</em></p>
 <p><em>“auto_xticks”:If True, use matplotlib default xticks.</em></p>
