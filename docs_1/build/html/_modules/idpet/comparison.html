@@ -940,17 +940,17 @@
 <span class="sd">        this case, IDPET will directly compare each pair of ensemble $i$ and</span>
 <span class="sd">        $j$ by using all of their conformers and perform the comparison only</span>
 <span class="sd">        once. On the other hand, if providing an integer value to this</span>
-<span class="sd">        argument, each pair of ensembles $i$ and $j$ will be compared</span>
+<span class="sd">        argument, each pair of ensembles *i* and *j* will be compared</span>
 <span class="sd">        `bootstrap_iters` times by randomly selecting (bootstrapping)</span>
 <span class="sd">        conformations from them. Additionally, each ensemble will be</span>
 <span class="sd">        auto-compared with itself by subsampling conformers via</span>
 <span class="sd">        bootstrapping. Then IDPET will perform a statistical test to</span>
-<span class="sd">        establish if the inter-ensemble ($i != j$) scores are significantly</span>
-<span class="sd">        different from the intra-ensemble ($i == j$) scores. The tests work</span>
-<span class="sd">        as follows: for each ensemble pair $i != j$ IDPET will get their</span>
+<span class="sd">        establish if the inter-ensemble (*i* != *j*) scores are significantly</span>
+<span class="sd">        different from the intra-ensemble (*i* == *j*) scores. The tests work</span>
+<span class="sd">        as follows: for each ensemble pair *i* != *j* IDPET will get their</span>
 <span class="sd">        inter-ensemble comparison scores obtained in bootstrapping. Then, it</span>
 <span class="sd">        will get the bootstrapping scores from auto-comparisons of ensemble</span>
-<span class="sd">        $i$ and $j$ and the scores with the higher mean here are selected as</span>
+<span class="sd">        *i* and *j* and the scores with the higher mean here are selected as</span>
 <span class="sd">        reference intra-ensemble scores. Finally, the inter-ensemble and</span>
 <span class="sd">        intra-ensemble scores are compared via a one-sided Mann-Whitney U</span>
 <span class="sd">        test with the alternative hypothesis being: inter-ensemble scores</span>
