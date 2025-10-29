@@ -398,7 +398,13 @@ class EnsembleAnalysis:
 
         - tsne:
             - perplexity_vals : List[float], optional
-                List of perplexity values. Default is range(2, 10, 2).
+                The perplexity is related to the number of nearest neighbors that 
+                are used in the manifold learning. It can be interpreted as a 
+                smooth measure of the effective number of neighbors for each point. 
+                Typical values range from 5 to 50. 
+                Choosing a value too small may make the data appear too clustered, 
+                while a value too large may cause different clusters to merge.
+                see also https://scikit-learn.org/stable/auto_examples/manifold/plot_t_sne_perplexity.html
             - metric : str, optional
                 Metric to use. Default is "euclidean". 
             - circular : bool, optional

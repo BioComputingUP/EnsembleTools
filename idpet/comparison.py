@@ -371,7 +371,9 @@ def score_adaJSD(
         compare.
     bins: Union[str, int], optional
         Determines the number of bins to be used when constructing histograms.
-        See `dpet.comparison.get_num_comparison_bins` for more information.
+        See `idpet.comparison.get_num_comparison_bins` for more information.
+        See also :func:`idpet.comparison.all_vs_all_comparison`.
+
     return_bins: bool, optional
         If `True`, returns the number of bins used in the calculation.
     return_scores: bool, optional
@@ -520,6 +522,9 @@ def score_ataJSD(
     ----------
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
+
+    bins: Union[str, int], optional
+    See :func:`idpet.comparison.all_vs_all_comparison`.
 
     Returns
     -------
@@ -723,6 +728,9 @@ def score_ramaJSD(
     ----------
     ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]
         Two Ensemble objects storing the ensemble data to compare.
+    
+    bins: Union[int, str], optional
+    See :func:`idpet.comparison.all_vs_all_comparison`.
 
     Returns
     -------
@@ -757,7 +765,7 @@ def score_ramaJSD(
 def get_ramaJSD_profile(
         ens_1: Union[Ensemble, mdtraj.Trajectory],
         ens_2: Union[Ensemble, mdtraj.Trajectory],
-        bins: Union[str, int],
+        bins: Union[str, int] = "auto",
         return_bins: bool = False,
         *args, **kwargs
     ):
@@ -870,11 +878,7 @@ def all_vs_all_comparison(
         obtained in these tests will additionally be returned. For small
         protein structural ensembles (less than 500 conformations) most
         comparison scores in IDPET are not robust estimators of
-        divergence/distance. By performing bootstrapping, you can have an
-        idea of how the size of your ensembles impacts the comparison. Use
-        values >= 50 when comparing ensembles with very few conformations
-        (less than 100). When comparing large ensembles (more than
-        1,000-5,000 conformations) you can safely avoid bootstrapping.
+        divergence/distance. Bootstrapping helps estimate how ensemble size affects the robustness of the comparisons. Use values >= 50 when comparing small ensembles, with fewer than 100 conformations. For ensembles with more than 100 conformations, 10 iterations are typically sufficient to distinguish the distributions of auto- and intra-comparison scores. For large ensembles, with more than 1,000 conformations, bootstrapping can generally be omitted without loss of accuracy.
     bootstrap_frac: float, optional
         Fraction of the total conformations to sample when bootstrapping.
         Default value is 1.0, which results in bootstrap samples with the
@@ -885,6 +889,18 @@ def all_vs_all_comparison(
         Number of bins or bin assignment rule for JSD comparisons. See the
         documentation of `dpet.comparison.get_num_comparison_bins` for
         more information.
+        *for the bins="auto" argument*: In IDPET, JSD-based scores are computed by
+        discretizing data into histograms. The number of bins can influence the results,
+        so users can either set this parameter manually or rely on the default bins="auto" option.
+        With this setting, IDPET automatically determines the number of bins using the square-root
+        rule (https://en.wikipedia.org/wiki/Histogram#Square-root_choice), based on the smallest ensemble
+        size. If the smallest ensemble contains more than 2,500 conformers, the number of bins is capped
+        at 50. A bin count greater than 10 generally provides sufficient resolution to discriminate
+        interatomic distance or torsion angle distributions in JSD-based analyses of IDPs.
+        Increasing the number of bins over 10 can improve resolution and discriminative power but also 
+        requires larger ensemble sizes to avoid sparse histograms. For most protein ensembles, 
+        values above 50 rarely improves the resolution of the analysis, therefore the maximum bin number
+        of the "auto" option is capped to this value.
     random_seed: int, optional
         Random seed used when performing bootstrapping.
     verbose: bool, optional

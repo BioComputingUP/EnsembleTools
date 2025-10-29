@@ -103,7 +103,14 @@ class TSNEReduction(DimensionalityReduction):
     Parameters
     ----------
     perplexity_vals : List[float], optional
-        List of perplexity values. Default is [30].
+        The perplexity is related to the number of nearest neighbors that 
+        are used in the manifold learning. It can be interpreted as a 
+        smooth measure of the effective number of neighbors for each point. 
+        Typical values range from 5 to 50. 
+        Choosing a value too small may make the data appear too clustered, 
+        while a value too large may cause different clusters to merge.
+        see also https://scikit-learn.org/stable/auto_examples/manifold/plot_t_sne_perplexity.html
+          Default is [30].
     metric : str, optional
         Metric to use. Default is "euclidean".
     circular : bool, optional
@@ -114,6 +121,7 @@ class TSNEReduction(DimensionalityReduction):
         Learning rate. Default is 100.0.
     range_n_clusters : List[int], optional
         Range of cluster values. Default is range(2, 10, 1).
+        Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions.
     random_state: int, optional
         Random seed for sklearn.
     """
