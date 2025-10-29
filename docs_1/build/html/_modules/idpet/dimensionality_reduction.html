@@ -304,7 +304,7 @@
 <span class="sd">    metric : str, optional</span>
 <span class="sd">        The metric to use for distance calculation. Default is &#39;euclidean&#39;.</span>
 <span class="sd">    range_n_clusters : range or List, optional</span>
-<span class="sd">        Range of cluster values to consider for silhouette scoring. Default is range(2, 10, 1).</span>
+<span class="sd">        Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions. Default is range(2, 10, 1).</span>
 <span class="sd">    random_state : int, optional</span>
 <span class="sd">        Random state of the UMAP implementation.</span>
 <span class="sd">    &quot;&quot;&quot;</span>

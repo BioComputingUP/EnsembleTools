@@ -414,7 +414,7 @@ class EnsembleAnalysis:
             - learning_rate : float, optional
                 Learning rate. Default is 100.0.
             - range_n_clusters : List[int], optional
-                Range of cluster values. Default is range(2, 10, 1).
+                Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions. Default is range(2, 10, 1).
             - random_state: int, optional
                 Random seed for sklearn.
         - umap:
@@ -431,7 +431,7 @@ class EnsembleAnalysis:
             - random_state: int, optional
                 Random seed for sklearn.    
             - range_n_clusters : List[int], optional
-                Range of cluster values. Default is range(2, 10, 1).
+                Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions. Default is range(2, 10, 1).
 
         - kpca:
             - circular : bool, optional

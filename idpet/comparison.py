@@ -857,8 +857,8 @@ def all_vs_all_comparison(
         above features.
     bootstrap_iters: int, optional
         Number of bootstrap iterations. By default its value is None. In
-        this case, IDPET will directly compare each pair of ensemble $i$ and
-        $j$ by using all of their conformers and perform the comparison only
+        this case, IDPET will directly compare each pair of ensemble *i* and
+        *j* by using all of their conformers and perform the comparison only
         once. On the other hand, if providing an integer value to this
         argument, each pair of ensembles *i* and *j* will be compared
         `bootstrap_iters` times by randomly selecting (bootstrapping)

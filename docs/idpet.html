@@ -270,8 +270,8 @@ formed by four consecutive Ca atoms in a protein.</p>
 above features.</p>
 </dd>
 <dt>bootstrap_iters: int, optional</dt><dd><p>Number of bootstrap iterations. By default its value is None. In
-this case, IDPET will directly compare each pair of ensemble $i$ and
-$j$ by using all of their conformers and perform the comparison only
+this case, IDPET will directly compare each pair of ensemble <em>i</em> and
+<em>j</em> by using all of their conformers and perform the comparison only
 once. On the other hand, if providing an integer value to this
 argument, each pair of ensembles <em>i</em> and <em>j</em> will be compared
 <cite>bootstrap_iters</cite> times by randomly selecting (bootstrapping)
@@ -1279,7 +1279,7 @@ Highly disordered ensembles typically do not form more than ~10 distinct, visual
 </dd>
 <dt>metric<span class="classifier">str, optional</span></dt><dd><p>The metric to use for distance calculation. Default is ‘euclidean’.</p>
 </dd>
-<dt>range_n_clusters<span class="classifier">range or List, optional</span></dt><dd><p>Range of cluster values to consider for silhouette scoring. Default is range(2, 10, 1).</p>
+<dt>range_n_clusters<span class="classifier">range or List, optional</span></dt><dd><p>Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions. Default is range(2, 10, 1).</p>
 </dd>
 <dt>random_state<span class="classifier">int, optional</span></dt><dd><p>Random state of the UMAP implementation.</p>
 </dd>
@@ -1926,7 +1926,7 @@ see also <a class="reference external" href="https://scikit-learn.org/stable/aut
 </dl>
 </li>
 <li><dl class="simple">
-<dt>range_n_clusters<span class="classifier">List[int], optional</span></dt><dd><p>Range of cluster values. Default is range(2, 10, 1).</p>
+<dt>range_n_clusters<span class="classifier">List[int], optional</span></dt><dd><p>Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions. Default is range(2, 10, 1).</p>
 </dd>
 </dl>
 </li>
@@ -1972,7 +1972,7 @@ see also <a class="reference external" href="https://scikit-learn.org/stable/aut
 </dl>
 </li>
 <li><dl class="simple">
-<dt>range_n_clusters<span class="classifier">List[int], optional</span></dt><dd><p>Range of cluster values. Default is range(2, 10, 1).</p>
+<dt>range_n_clusters<span class="classifier">List[int], optional</span></dt><dd><p>Highly disordered ensembles typically do not form more than ~10 distinct, visually separable clusters. Therefore, exploring more than 10 clusters is usually unnecessary. But users can modify this parameter based on their specific datasets and research questions. Default is range(2, 10, 1).</p>
 </dd>
 </dl>
 </li>
