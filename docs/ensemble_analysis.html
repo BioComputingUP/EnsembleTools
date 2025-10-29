@@ -405,7 +405,13 @@ The model will then be used to transform all ensembles.</p>
 <li><dl class="simple">
 <dt>tsne:</dt><dd><ul>
 <li><dl class="simple">
-<dt>perplexity_vals<span class="classifier">List[float], optional</span></dt><dd><p>List of perplexity values. Default is range(2, 10, 2).</p>
+<dt>perplexity_vals<span class="classifier">List[float], optional</span></dt><dd><p>The perplexity is related to the number of nearest neighbors that 
+are used in the manifold learning. It can be interpreted as a 
+smooth measure of the effective number of neighbors for each point. 
+Typical values range from 5 to 50. 
+Choosing a value too small may make the data appear too clustered, 
+while a value too large may cause different clusters to merge.
+see also <a class="reference external" href="https://scikit-learn.org/stable/auto_examples/manifold/plot_t_sne_perplexity.html">https://scikit-learn.org/stable/auto_examples/manifold/plot_t_sne_perplexity.html</a></p>
 </dd>
 </dl>
 </li>

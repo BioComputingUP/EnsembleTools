@@ -478,7 +478,13 @@
 
 <span class="sd">        - tsne:</span>
 <span class="sd">            - perplexity_vals : List[float], optional</span>
-<span class="sd">                List of perplexity values. Default is range(2, 10, 2).</span>
+<span class="sd">                The perplexity is related to the number of nearest neighbors that </span>
+<span class="sd">                are used in the manifold learning. It can be interpreted as a </span>
+<span class="sd">                smooth measure of the effective number of neighbors for each point. </span>
+<span class="sd">                Typical values range from 5 to 50. </span>
+<span class="sd">                Choosing a value too small may make the data appear too clustered, </span>
+<span class="sd">                while a value too large may cause different clusters to merge.</span>
+<span class="sd">                see also https://scikit-learn.org/stable/auto_examples/manifold/plot_t_sne_perplexity.html</span>
 <span class="sd">            - metric : str, optional</span>
 <span class="sd">                Metric to use. Default is &quot;euclidean&quot;. </span>
 <span class="sd">            - circular : bool, optional</span>

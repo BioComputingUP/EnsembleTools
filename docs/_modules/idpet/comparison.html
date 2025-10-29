@@ -451,7 +451,9 @@
 <span class="sd">        compare.</span>
 <span class="sd">    bins: Union[str, int], optional</span>
 <span class="sd">        Determines the number of bins to be used when constructing histograms.</span>
-<span class="sd">        See `dpet.comparison.get_num_comparison_bins` for more information.</span>
+<span class="sd">        See `idpet.comparison.get_num_comparison_bins` for more information.</span>
+<span class="sd">        See also :func:`idpet.comparison.all_vs_all_comparison`.</span>
+
 <span class="sd">    return_bins: bool, optional</span>
 <span class="sd">        If `True`, returns the number of bins used in the calculation.</span>
 <span class="sd">    return_scores: bool, optional</span>
@@ -600,6 +602,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
 <span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+
+<span class="sd">    bins: Union[str, int], optional</span>
+<span class="sd">    See :func:`idpet.comparison.all_vs_all_comparison`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -803,6 +808,9 @@
 <span class="sd">    ----------</span>
 <span class="sd">    ens_1, ens_2: Union[Ensemble, mdtraj.Trajectory]</span>
 <span class="sd">        Two Ensemble objects storing the ensemble data to compare.</span>
+<span class="sd">    </span>
+<span class="sd">    bins: Union[int, str], optional</span>
+<span class="sd">    See :func:`idpet.comparison.all_vs_all_comparison`.</span>
 
 <span class="sd">    Returns</span>
 <span class="sd">    -------</span>
@@ -837,7 +845,7 @@
 <div class="viewcode-block" id="get_ramaJSD_profile"><a class="viewcode-back" href="../../idpet.html#idpet.comparison.get_ramaJSD_profile">[docs]</a><span class="k">def</span> <span class="nf">get_ramaJSD_profile</span><span class="p">(</span>
         <span class="n">ens_1</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
         <span class="n">ens_2</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="n">Ensemble</span><span class="p">,</span> <span class="n">mdtraj</span><span class="o">.</span><span class="n">Trajectory</span><span class="p">],</span>
-        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">],</span>
+        <span class="n">bins</span><span class="p">:</span> <span class="n">Union</span><span class="p">[</span><span class="nb">str</span><span class="p">,</span> <span class="nb">int</span><span class="p">]</span> <span class="o">=</span> <span class="s2">&quot;auto&quot;</span><span class="p">,</span>
         <span class="n">return_bins</span><span class="p">:</span> <span class="nb">bool</span> <span class="o">=</span> <span class="kc">False</span><span class="p">,</span>
         <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span>
     <span class="p">):</span>
@@ -950,11 +958,7 @@
 <span class="sd">        obtained in these tests will additionally be returned. For small</span>
 <span class="sd">        protein structural ensembles (less than 500 conformations) most</span>
 <span class="sd">        comparison scores in IDPET are not robust estimators of</span>
-<span class="sd">        divergence/distance. By performing bootstrapping, you can have an</span>
-<span class="sd">        idea of how the size of your ensembles impacts the comparison. Use</span>
-<span class="sd">        values &gt;= 50 when comparing ensembles with very few conformations</span>
-<span class="sd">        (less than 100). When comparing large ensembles (more than</span>
-<span class="sd">        1,000-5,000 conformations) you can safely avoid bootstrapping.</span>
+<span class="sd">        divergence/distance. Bootstrapping helps estimate how ensemble size affects the robustness of the comparisons. Use values &gt;= 50 when comparing small ensembles, with fewer than 100 conformations. For ensembles with more than 100 conformations, 10 iterations are typically sufficient to distinguish the distributions of auto- and intra-comparison scores. For large ensembles, with more than 1,000 conformations, bootstrapping can generally be omitted without loss of accuracy.</span>
 <span class="sd">    bootstrap_frac: float, optional</span>
 <span class="sd">        Fraction of the total conformations to sample when bootstrapping.</span>
 <span class="sd">        Default value is 1.0, which results in bootstrap samples with the</span>
@@ -965,6 +969,18 @@
 <span class="sd">        Number of bins or bin assignment rule for JSD comparisons. See the</span>
 <span class="sd">        documentation of `dpet.comparison.get_num_comparison_bins` for</span>
 <span class="sd">        more information.</span>
+<span class="sd">        *for the bins=&quot;auto&quot; argument*: In IDPET, JSD-based scores are computed by</span>
+<span class="sd">        discretizing data into histograms. The number of bins can influence the results,</span>
+<span class="sd">        so users can either set this parameter manually or rely on the default bins=&quot;auto&quot; option.</span>
+<span class="sd">        With this setting, IDPET automatically determines the number of bins using the square-root</span>
+<span class="sd">        rule (https://en.wikipedia.org/wiki/Histogram#Square-root_choice), based on the smallest ensemble</span>
+<span class="sd">        size. If the smallest ensemble contains more than 2,500 conformers, the number of bins is capped</span>
+<span class="sd">        at 50. A bin count greater than 10 generally provides sufficient resolution to discriminate</span>
+<span class="sd">        interatomic distance or torsion angle distributions in JSD-based analyses of IDPs.</span>
+<span class="sd">        Increasing the number of bins over 10 can improve resolution and discriminative power but also </span>
+<span class="sd">        requires larger ensemble sizes to avoid sparse histograms. For most protein ensembles, </span>
+<span class="sd">        values above 50 rarely improves the resolution of the analysis, therefore the maximum bin number</span>
+<span class="sd">        of the &quot;auto&quot; option is capped to this value.</span>
 <span class="sd">    random_seed: int, optional</span>
 <span class="sd">        Random seed used when performing bootstrapping.</span>
 <span class="sd">    verbose: bool, optional</span>
