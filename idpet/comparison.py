@@ -860,17 +860,17 @@ def all_vs_all_comparison(
         this case, IDPET will directly compare each pair of ensemble $i$ and
         $j$ by using all of their conformers and perform the comparison only
         once. On the other hand, if providing an integer value to this
-        argument, each pair of ensembles $i$ and $j$ will be compared
+        argument, each pair of ensembles *i* and *j* will be compared
         `bootstrap_iters` times by randomly selecting (bootstrapping)
         conformations from them. Additionally, each ensemble will be
         auto-compared with itself by subsampling conformers via
         bootstrapping. Then IDPET will perform a statistical test to
-        establish if the inter-ensemble ($i != j$) scores are significantly
-        different from the intra-ensemble ($i == j$) scores. The tests work
-        as follows: for each ensemble pair $i != j$ IDPET will get their
+        establish if the inter-ensemble (*i* != *j*) scores are significantly
+        different from the intra-ensemble (*i* == *j*) scores. The tests work
+        as follows: for each ensemble pair *i* != *j* IDPET will get their
         inter-ensemble comparison scores obtained in bootstrapping. Then, it
         will get the bootstrapping scores from auto-comparisons of ensemble
-        $i$ and $j$ and the scores with the higher mean here are selected as
+        *i* and *j* and the scores with the higher mean here are selected as
         reference intra-ensemble scores. Finally, the inter-ensemble and
         intra-ensemble scores are compared via a one-sided Mann-Whitney U
         test with the alternative hypothesis being: inter-ensemble scores
