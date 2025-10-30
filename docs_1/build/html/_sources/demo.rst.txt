@@ -72,7 +72,23 @@ Here’s a summary of the example notebooks available in the github repository:
 
       UMAP embedding for global manifold learning and visualization.
 
+   .. card:: ``idpet_vs_soursop``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/idpet_vs_soursop.ipynb
+      :link-type: url
 
+      A comparative analysis between IDPET and Soursop packages for ensemble analysis.
+
+   .. card:: ``MDP``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/MDP.ipynb
+      :link-type: url
+
+      Example to perform analysis for Multi Domain Proteins.
+
+   .. card:: ``alpha_synuclein``
+      :link: https://github.com/BioComputingUP/EnsembleTools/blob/main/notebooks/alpha_synuclein.ipynb
+      :link-type: url
+
+      Analyze the structural features and dynamics of 5 different ensembles of the alpha-synuclein protein.
 
 .. raw:: html
 
