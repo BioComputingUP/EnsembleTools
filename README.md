@@ -4,7 +4,7 @@
 
 [![PyPI](https://img.shields.io/pypi/v/idpet.svg)](https://pypi.org/project/idpet/)
 <!-- [![DOI](https://img.shields.io/badge/DOI-10.5281/zenodo.1234567-blue)](https://doi.org/10.5281/zenodo.1234567) -->
-[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1CVyHXXSpO_sL-zf-7TCfKIzrY3_6lId1#scrollTo=K8IvUJvEcwN6)
+[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/drive/1CVyHXXSpO_sL-zf-7TCfKIzrY3_6lId1#scrollTo=bIKhG64_cwNX)
 ---
 
 ## IDPEnsembleTools: An Open-Source Library for Analysis of Conformational Ensembles of Disordered Proteins
